@@ -1,0 +1,75 @@
+<nav class="navbar-default navbar-static-side" role="navigation">
+        <div class="sidebar-collapse">
+            <ul class="nav metismenu" id="side-menu">
+                <li class="nav-header">
+                    <div class="dropdown profile-element">
+                        <img alt="image" class="rounded-circle" src="img/profile_small.jpg"/>
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <span class="block m-t-xs font-bold">David Williams</span>
+                            <span class="text-muted text-xs block">Art Director <b class="caret"></b></span>
+                        </a>
+                        <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                            <li><a class="dropdown-item" href="profile.html">Profile</a></li>
+                            <li><a class="dropdown-item" href="contacts.html">Contacts</a></li>
+                            <li><a class="dropdown-item" href="mailbox.html">Mailbox</a></li>
+                            <li class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="login.html">Logout</a></li>
+                        </ul>
+                    </div>
+                    <div class="logo-element">
+                        IN+
+                    </div>
+                </li>
+
+                <li>
+                    <a href="{% url 'dashboard' %}"><i class="fa fa-dashboard"></i> <span class="nav-label">Tableau de bord</span></a>
+                </li>
+                <li style="margin-bottom: 15px;">
+
+                <li>
+                    <a href="{% url 'clients' %}"><i class="fa fa-users"></i> <span class="nav-label">Souscripteurs</span></a>
+                </li>
+                <li>
+                    <a href="{% url 'credits' %}"><i class="fa fa-bank"></i> <span class="nav-label">Credits clients</span></a>
+                </li>
+                <li>
+                    <a href="{% url 'epargne' %}"><i class="fa fa-money"></i> <span class="nav-label">Comptes Epargnes</span></a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-diamond"></i> <span class="nav-label">Opérations</span></a>
+                </li>
+                <li style="margin-bottom: 15px;">
+
+
+                <li>
+                    <a href="#"><i class="fa fa-book"></i> <span class="nav-label">Rapports</span></a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-area-chart"></i> <span class="nav-label">Statistiques</span></a>
+                </li>
+                <li style="margin-bottom: 15px;">
+
+
+                <li>
+                    <a href="#"><i class="fa fa-archive"></i> <span class="nav-label">Historiques</span><span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level collapse">
+                        <li><a href="graph_flot.html">Transactions</a></li>
+                        <li><a href="graph_morris.html">Opérations</a></li>
+                    </ul>
+                </li>
+                <li style="margin-bottom: 15px;">
+                
+
+                <li>
+                    <a href="#"><i class="fa fa-sliders"></i> <span class="nav-label">Paramètres</span></a>
+                </li>
+                <li style="margin-bottom: 15px;">
+
+               
+                <li class="landing_link">
+                    <a href="{% url 'login' %}"><i class="fa fa-signout"></i> <span class="nav-label">Déconnexion</span> </a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>

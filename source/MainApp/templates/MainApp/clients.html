@@ -1,0 +1,117 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>INSPINIA | Issue list</title>
+
+    <link href="{% static 'dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'dist/font-awesome/css/font-awesome.css' %}" rel="stylesheet">
+
+    <!-- Toastr style -->
+    <link href="{% static 'dist/css/plugins/toastr/toastr.min.css' %}" rel="stylesheet">
+
+    <link href="{% static 'dist/css/animate.css' %}" rel="stylesheet">
+    <link href="{% static 'dist/css/style.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        {% include "sidebar.html" %}
+
+        <div id="page-wrapper" class="gray-bg">
+            
+            {% include "header.html" %}
+
+        
+            
+
+            <div class="wrapper wrapper-content  animated fadeInRight">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="ibox">
+                            <div class="ibox-title">
+                                <h5>Tous les souscripteurs</h5>
+                                <div class="ibox-tools">
+                                    <a href="" class="btn btn-primary btn-xs"><i class="fa fa-plus"></i> nouveau souscripteur</a>
+                                </div>
+                            </div>
+                            <div class="ibox-content">
+
+                                <div class="table-responsive">
+                                    <table class="table table-hover issue-tracker">
+                                        <tbody>
+                                            {% for x in '012345678936823456789368767767'|make_list %}
+                                                <tr>
+                                                    <td>
+                                                        {% if faker.boolean %}
+                                                            <span class="label label-primary">Nouveau</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="">
+                                                        <a href="{% url 'client' %}">{{ faker.name }} {{ faker.last_name }}</a><br>
+                                                        <small>{{ faker.job }}</small>
+                                                    </td>
+                                                    <td><i class="fa fa-phone"></i> {{ faker.phone_number }}</td>
+                                                    <td> {{faker.address}} </td>
+                                                    <td> {{faker.birthdate}} </td>
+                                                    <td> {{faker.numeric_digit}} </td>
+                                                    <td>
+                                                        <span class="pie">0.52,1.041</span>
+                                                        2d
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <button class="btn btn-white btn-xs"> Epargne</button>
+                                                        <button class="btn btn-white btn-xs"> Pret</button>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="footer">
+                <div class="float-right">
+                    10GB of <strong>250GB</strong> Free.
+                </div>
+                <div>
+                    <strong>Copyright</strong> Example Company &copy; 2014-2018
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Mainly scripts -->
+    <script src="{% static 'dist/js/jquery-3.1.1.min.js' %}"></script>
+    <script src="{% static 'dist/js/popper.min.js' %}"></script>
+    <script src="{% static 'dist/js/bootstrap.js' %}"></script>
+    <script src="{% static 'dist/js/plugins/metisMenu/jquery.metisMenu.js' %}"></script>
+    <script src="{% static 'dist/js/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="{% static 'dist/js/inspinia.js' %}"></script>
+    <script src="{% static 'dist/js/plugins/pace/pace.min.js' %}"></script>
+
+    <!-- Peity -->
+    <script src="{% static 'dist/js/plugins/peity/jquery.peity.min.js' %}"></script>
+
+    <!-- Peity demo data -->
+    <script src="{% static 'dist/js/demo/peity-demo.js' %}"></script>
+</body>
+
+</html>

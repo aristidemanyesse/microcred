@@ -1,0 +1,93 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>INSPINIA | Contacts 2</title>
+
+    <link href="{% static 'dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'dist/font-awesome/css/font-awesome.css' %}" rel="stylesheet">
+
+    <link href="{% static 'dist/css/animate.css' %}" rel="stylesheet">
+    <link href="{% static 'dist/css/style.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        {% include "sidebar.html" %}
+
+        <div id="page-wrapper" class="gray-bg">
+
+            {% include "header.html" %}
+
+            
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <div class="ibox">
+                <div class="ibox-title">
+                    <h5>Comptes Epargnes</h5>
+                    <div class="ibox-tools">
+                        <a href="" class="btn btn-primary btn-xs"><i class="fa fa-plus"></i> Nouveau compte</a>
+                    </div>
+                </div>
+            </div>
+
+                <div class="row">
+                    {% for x in '012345678936823456789368767767'|make_list %}
+                        <div class="col-lg-3">
+                            <div class="contact-box center-version">
+
+                                <a href="profile.html">
+                                    <h3 class="m-b-xs"><strong>{{ faker.name }} {{ faker.last_name }}</strong></h3>
+                                    <div class="font-bold">Epargne {% if x == '9' %}Fédilis{% else %}Joalide{% endif %}</div>
+                                    <address class="m-t-sm">
+                                        <strong>Ouvert le {{ faker.date_time_this_decade|date:"d/m/Y" }}</strong><br>
+                                        dernier mouvement le {{ faker.date_time_this_decade|date:"d/m/Y" }}<br>
+                                    </address>
+                                </a>
+                                <div class="contact-box-footer">
+                                    <div class="m-t-xs btn-group">
+                                        <a href="" class="btn btn-xs btn-white"><i class="fa fa-arrow"></i> Transfert</a>
+                                        <a href="" class="btn btn-xs btn-white"><i class="fa fa-lock"></i> Vérouiller </a>
+                                        <a href="{% url 'credit' %}" class="btn btn-xs btn-white"><i class="fa fa-eye"></i> Détails</a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="footer">
+                <div class="float-right">
+                    10GB of <strong>250GB</strong> Free.
+                </div>
+                <div>
+                    <strong>Copyright</strong> Example Company &copy; 2014-2018
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Mainly scripts -->
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="js/inspinia.js"></script>
+    <script src="js/plugins/pace/pace.min.js"></script>
+
+</body>
+
+</html>
