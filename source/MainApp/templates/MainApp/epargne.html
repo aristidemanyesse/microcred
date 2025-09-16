@@ -1,93 +1,593 @@
+{% extends "base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html>
+{% block content %}
+<div class="container-fluid">
 
-<head>
+    <div class="page-title-head d-flex align-items-center">
+        <div class="flex-grow-1">
+            <h4 class="fs-sm text-uppercase fw-bold m-0">Reviews</h4>
+        </div>
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <div class="text-end">
+            <ol class="breadcrumb m-0 py-0">
+                <li class="breadcrumb-item"><a href="javascript: void(0);">Inspinia</a></li>
 
-    <title>INSPINIA | Contacts 2</title>
+                <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
 
-    <link href="{% static 'dist/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'dist/font-awesome/css/font-awesome.css' %}" rel="stylesheet">
-
-    <link href="{% static 'dist/css/animate.css' %}" rel="stylesheet">
-    <link href="{% static 'dist/css/style.css' %}" rel="stylesheet">
-
-</head>
-
-<body>
-
-    <div id="wrapper">
-
-        {% include "sidebar.html" %}
-
-        <div id="page-wrapper" class="gray-bg">
-
-            {% include "header.html" %}
-
-            
-            <div class="wrapper wrapper-content animated fadeInRight">
-                <div class="ibox">
-                <div class="ibox-title">
-                    <h5>Comptes Epargnes</h5>
-                    <div class="ibox-tools">
-                        <a href="" class="btn btn-primary btn-xs"><i class="fa fa-plus"></i> Nouveau compte</a>
-                    </div>
-                </div>
-            </div>
-
-                <div class="row">
-                    {% for x in '012345678936823456789368767767'|make_list %}
-                        <div class="col-lg-3">
-                            <div class="contact-box center-version">
-
-                                <a href="profile.html">
-                                    <h3 class="m-b-xs"><strong>{{ faker.name }} {{ faker.last_name }}</strong></h3>
-                                    <div class="font-bold">Epargne {% if x == '9' %}Fédilis{% else %}Joalide{% endif %}</div>
-                                    <address class="m-t-sm">
-                                        <strong>Ouvert le {{ faker.date_time_this_decade|date:"d/m/Y" }}</strong><br>
-                                        dernier mouvement le {{ faker.date_time_this_decade|date:"d/m/Y" }}<br>
-                                    </address>
-                                </a>
-                                <div class="contact-box-footer">
-                                    <div class="m-t-xs btn-group">
-                                        <a href="" class="btn btn-xs btn-white"><i class="fa fa-arrow"></i> Transfert</a>
-                                        <a href="" class="btn btn-xs btn-white"><i class="fa fa-lock"></i> Vérouiller </a>
-                                        <a href="{% url 'credit' %}" class="btn btn-xs btn-white"><i class="fa fa-eye"></i> Détails</a>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="footer">
-                <div class="float-right">
-                    10GB of <strong>250GB</strong> Free.
-                </div>
-                <div>
-                    <strong>Copyright</strong> Example Company &copy; 2014-2018
-                </div>
-            </div>
-
+                <li class="breadcrumb-item active">Reviews</li>
+            </ol>
         </div>
     </div>
 
-    <!-- Mainly scripts -->
-    <script src="js/jquery-3.1.1.min.js"></script>
-    <script src="js/popper.min.js"></script>
-    <script src="js/bootstrap.js"></script>
-    <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
-    <script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <div class="row justify-content-center">
+        <div class="col-xxl-10">
+            <div data-table data-table-rows-per-page="5" class="card">
+                <div class="card-header p-0 d-block">
+                    <div class="row g-0 align-items-center">
+                        <div class="col-xl-6 border-end border-dashed">
 
-    <!-- Custom and plugin javascript -->
-    <script src="js/inspinia.js"></script>
-    <script src="js/plugins/pace/pace.min.js"></script>
+                            <div class="row align-items-center g-0">
+                                <div class="col-xl-7">
+                                    <div class="d-flex align-items-center gap-4 p-4">
+                                        <img src="assets/images/ratings.svg" alt="Product" height="80">
+                                        <div>
+                                            <h3 class="text-primary d-flex align-items-center gap-2 mb-2 fw-bold">
+                                                4.92 <i class="ti ti-star-filled"></i>
+                                            </h3>
+                                            <p class="mb-2">Based on 245 verified reviews</p>
+                                            <p class="pe-2 h6 text-muted mb-2 lh-base">Feedback collected from real
+                                                customers who purchased our templates</p>
+                                            <span class="badge badge-label text-bg-success">+12 new this week</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-5">
+                                    <div class="p-3">
+                                        <!-- 5 Star -->
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <div class="flex-shrink-0" style="width: 50px;">5 Star</div>
+                                            <div class="progress w-100 bg-label-primary" style="height:8px;">
+                                                <div class="progress-bar bg-primary" role="progressbar"
+                                                    style="width: 85%;" aria-valuenow="85" aria-valuemin="0"
+                                                    aria-valuemax="100"></div>
+                                            </div>
+                                            <div class="flex-shrink-0 text-end" style="width: 30px;"><span
+                                                    class="badge text-bg-light">128</span></div>
+                                        </div>
 
-</body>
+                                        <!-- 4 Star -->
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <div class="flex-shrink-0" style="width: 50px;">4 Star</div>
+                                            <div class="progress w-100 bg-label-primary" style="height:8px;">
+                                                <div class="progress-bar bg-primary" role="progressbar"
+                                                    style="width: 10%;" aria-valuenow="10" aria-valuemin="0"
+                                                    aria-valuemax="100"></div>
+                                            </div>
+                                            <div class="flex-shrink-0 text-end" style="width: 30px;"><span
+                                                    class="badge text-bg-light">37</span></div>
+                                        </div>
 
-</html>
+                                        <!-- 3 Star -->
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <div class="flex-shrink-0" style="width: 50px;">3 Star</div>
+                                            <div class="progress w-100 bg-label-primary" style="height:8px;">
+                                                <div class="progress-bar bg-primary" role="progressbar"
+                                                    style="width: 3%;" aria-valuenow="3" aria-valuemin="0"
+                                                    aria-valuemax="100"></div>
+                                            </div>
+                                            <div class="flex-shrink-0 text-end" style="width: 30px;"><span
+                                                    class="badge text-bg-light">15</span></div>
+                                        </div>
+
+                                        <!-- 2 Star -->
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <div class="flex-shrink-0" style="width: 50px;">2 Star</div>
+                                            <div class="progress w-100 bg-label-primary" style="height:8px;">
+                                                <div class="progress-bar bg-primary" role="progressbar"
+                                                    style="width: 1%;" aria-valuenow="1" aria-valuemin="0"
+                                                    aria-valuemax="100"></div>
+                                            </div>
+                                            <div class="flex-shrink-0 text-end" style="width: 30px;"><span
+                                                    class="badge text-bg-light">7</span></div>
+                                        </div>
+
+                                        <!-- 1 Star -->
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="flex-shrink-0" style="width: 50px;">1 Star</div>
+                                            <div class="progress w-100 bg-label-primary" style="height:8px;">
+                                                <div class="progress-bar bg-primary" role="progressbar"
+                                                    style="width: 1%;" aria-valuenow="1" aria-valuemin="0"
+                                                    aria-valuemax="100"></div>
+                                            </div>
+                                            <div class="flex-shrink-0 text-end" style="width: 30px;"><span
+                                                    class="badge text-bg-light">2</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> <!-- end col-->
+                        <div class="col-xl-6">
+                            <div class="pe-3 ps-1">
+                                <div id="reviews-30days-chart"></div>
+                            </div>
+                        </div>
+                    </div> <!-- end row-->
+                </div>
+
+                <div class="card-header border-light d-flex align-items-center justify-content-between flex-wrap gap-2">
+
+                    <div class="d-flex gap-2">
+                        <div class="app-search">
+                            <input data-table-search type="search" class="form-control" placeholder="Search reviews...">
+                            <i data-lucide="search" class="app-search-icon text-muted"></i>
+                        </div>
+                        <button data-table-delete-selected class="btn btn-danger d-none">Delete</button>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+
+                        <!-- Records Per Page -->
+                        <div>
+                            <select data-table-set-rows-per-page class="form-select form-control my-1 my-md-0">
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                            </select>
+                        </div>
+
+                        <!-- Export Dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle drop-arrow-none" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i data-lucide="download" class="me-1"></i> Export <i
+                                    class="ti ti-chevron-down align-middle ms-1"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#">Export as PDF</a></li>
+                                <li><a class="dropdown-item" href="#">Export as CSV</a></li>
+                                <li><a class="dropdown-item" href="#">Export as Excel</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- View All Dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle drop-arrow-none" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                View All <i class="ti ti-chevron-down align-middle ms-1"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#">All</a></li>
+                                <li><a class="dropdown-item" href="#">Pending</a></li>
+                                <li><a class="dropdown-item" href="#">Approved</a></li>
+                                <li><a class="dropdown-item" href="#">Disabled</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Add New Review Button -->
+                        <!-- <a href="#!" class="btn btn-danger btn-icon">
+                                        <i data-lucide="plus" class="fs-sm"></i>
+                                    </a> -->
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                                <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
+                                    <thead class="bg-light align-middle bg-opacity-25 thead-sm">
+                                        <tr class="text-uppercase fs-xxs">
+                                            <th class="ps-3" style="width: 1%;">
+                                                <input data-table-select-all class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox" id="select-all-files" value="option">
+                                            </th>
+                                            <th>ID</th>
+                                            <th>Create & End Date</th>
+                                            <th data-table-sort="name">Clients Name</th>
+                                            <th data-table-sort>Purchase</th>
+                                            <th data-table-sort>Amount</th>
+                                            <th data-table-sort data-column="status">Status</th>
+                                            <th class="text-center">Actions</th>
+                                        </tr>
+                                    </thead><!-- end table-head -->
+                                    <tbody>
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 file-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <h5 class="m-0">
+                                                    <span class="ti ti-file-invoice text-success fs-lg"></span>
+                                                    <a href="invoice-details.html" class="link-reset fw-semibold">#INS-0120010</a>
+                                                </h5>
+                                            </td>
+                                            <td>Feb 2 - Feb 10, 2025</td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-7.jpg" alt="avatar-7" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Emily
+                                                                Parker</a>
+                                                        </h5>
+                                                        <p class="text-muted fs-xs mb-0">emily@startupwave.io</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>Inspinia - Extended License</td>
+                                            <td>$999.00 USD</td>
+                                            <td>
+                                                <span class="badge bg-success-subtle text-success badge-label">Paid</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="invoice-details.html" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="javascript:void(0);" class="btn btn-light btn-icon btn-sm rounded-circle"> <i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="javascript:void(0);" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"> <i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 file-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <h5 class="m-0">
+                                                    <span class="ti ti-file-invoice text-warning fs-lg"></span>
+                                                    <a href="invoice-details.html" class="link-reset fw-semibold">#INS-0120009</a>
+                                                </h5>
+                                            </td>
+                                            <td>Feb 5 - Feb 12, 2025</td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar-sm flex-shrink-0">
+                                                        <span class="avatar-title text-bg-info fw-bold rounded-circle">
+                                                            MS
+                                                        </span>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Michael
+                                                                Scott</a>
+                                                        </h5>
+                                                        <p class="text-muted fs-xs mb-0">michael@dundermifflin.com</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>CRM Dashboard - Regular License</td>
+                                            <td>$249.00 USD</td>
+                                            <td>
+                                                <span class="badge bg-warning-subtle text-warning badge-label">Pending</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="invoice-details.html" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="javascript:void(0);" class="btn btn-light btn-icon btn-sm rounded-circle"> <i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="javascript:void(0);" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"> <i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 file-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <h5 class="m-0">
+                                                    <span class="ti ti-file-invoice text-danger fs-lg"></span>
+                                                    <a href="invoice-details.html" class="link-reset fw-semibold">#INS-0120008</a>
+                                                </h5>
+                                            </td>
+                                            <td>Jan 10 - Jan 15, 2025</td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-3.jpg" alt="avatar-3" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Samantha
+                                                                Reed</a>
+                                                        </h5>
+                                                        <p class="text-muted fs-xs mb-0">samantha@alphatech.com</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>Landing Page - Agency Pack</td>
+                                            <td>$349.00 USD</td>
+                                            <td>
+                                                <span class="badge bg-danger-subtle text-danger badge-label">Overdue</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="invoice-details.html" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="javascript:void(0);" class="btn btn-light btn-icon btn-sm rounded-circle"> <i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="javascript:void(0);" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"> <i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 file-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <h5 class="m-0">
+                                                    <span class="ti ti-file-invoice text-primary fs-lg"></span>
+                                                    <a href="invoice-details.html" class="link-reset fw-semibold">#INS-0120007</a>
+                                                </h5>
+                                            </td>
+                                            <td>Mar 1 - Mar 5, 2025</td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-2.jpg" alt="avatar-2" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Jonathan
+                                                                Lee</a>
+                                                        </h5>
+                                                        <p class="text-muted fs-xs mb-0">jonathan@zenflow.io</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>Task Manager - SaaS Version</td>
+                                            <td>$799.00 USD</td>
+                                            <td>
+                                                <span class="badge bg-info-subtle text-info badge-label">Draft</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="invoice-details.html" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="javascript:void(0);" class="btn btn-light btn-icon btn-sm rounded-circle"> <i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="javascript:void(0);" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"> <i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 file-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <h5 class="m-0">
+                                                    <span class="ti ti-file-invoice text-success fs-lg"></span>
+                                                    <a href="invoice-details.html" class="link-reset fw-semibold">#INS-0120006</a>
+                                                </h5>
+                                            </td>
+                                            <td>Mar 10 - Mar 15, 2025</td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar-sm flex-shrink-0">
+                                                        <span class="avatar-title text-bg-primary fw-bold rounded-circle">
+                                                            CD
+                                                        </span>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Carlos
+                                                                Diaz</a>
+                                                        </h5>
+                                                        <p class="text-muted fs-xs mb-0">carlos@themeverse.com</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>Admin Panel - Developer License</td>
+                                            <td>$1,199.00 USD</td>
+                                            <td>
+                                                <span class="badge bg-success-subtle text-success badge-label">Paid</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="invoice-details.html" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="javascript:void(0);" class="btn btn-light btn-icon btn-sm rounded-circle"> <i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="javascript:void(0);" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"> <i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 file-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <h5 class="m-0">
+                                                    <span class="ti ti-file-invoice text-warning fs-lg"></span>
+                                                    <a href="invoice-details.html" class="link-reset fw-semibold">#INS-0120005</a>
+                                                </h5>
+                                            </td>
+                                            <td>Mar 20 - Mar 25, 2025</td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-4.jpg" alt="avatar-4" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Lisa
+                                                                Brown</a></h5>
+                                                        <p class="text-muted fs-xs mb-0">lisa@digitize.io</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>Analytics Suite - Enterprise</td>
+                                            <td>$1,499.00 USD</td>
+                                            <td>
+                                                <span class="badge bg-warning-subtle text-warning badge-label">Pending</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="invoice-details.html" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="javascript:void(0);" class="btn btn-light btn-icon btn-sm rounded-circle"> <i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="javascript:void(0);" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"> <i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 file-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <h5 class="m-0">
+                                                    <span class="ti ti-file-invoice text-primary fs-lg"></span>
+                                                    <a href="invoice-details.html" class="link-reset fw-semibold">#INS-0120004</a>
+                                                </h5>
+                                            </td>
+                                            <td>Apr 1 - Apr 7, 2025</td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar-sm flex-shrink-0">
+                                                        <span class="avatar-title text-bg-success fw-bold rounded-circle">
+                                                            RM
+                                                        </span>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Ryan
+                                                                Mitchell</a>
+                                                        </h5>
+                                                        <p class="text-muted fs-xs mb-0">ryan@bizsol.com</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>Sales App - Regular License</td>
+                                            <td>$499.00 USD</td>
+                                            <td>
+                                                <span class="badge bg-info-subtle text-info badge-label">Draft</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="invoice-details.html" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 file-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <h5 class="m-0">
+                                                    <span class="ti ti-file-invoice text-success fs-lg"></span>
+                                                    <a href="invoice-details.html" class="link-reset fw-semibold">#INS-0120003</a>
+                                                </h5>
+                                            </td>
+                                            <td>Apr 8 - Apr 12, 2025</td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-8.jpg" alt="avatar-8" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Nina
+                                                                Hughes</a>
+                                                        </h5>
+                                                        <p class="text-muted fs-xs mb-0">nina@creativelabs.io</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>Marketing Kit - Extended License</td>
+                                            <td>$899.00 USD</td>
+                                            <td>
+                                                <span class="badge bg-success-subtle text-success badge-label">Paid</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="invoice-details.html" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 file-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <h5 class="m-0">
+                                                    <span class="ti ti-file-invoice text-warning fs-lg"></span>
+                                                    <a href="invoice-details.html" class="link-reset fw-semibold">#INS-0120002</a>
+                                                </h5>
+                                            </td>
+                                            <td>Apr 10 - Apr 14, 2025</td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-9.jpg" alt="avatar-9" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Oliver
+                                                                Grant</a>
+                                                        </h5>
+                                                        <p class="text-muted fs-xs mb-0">oliver@nextgenapps.com</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>Mobile Kit - Standard Plan</td>
+                                            <td>$599.00 USD</td>
+                                            <td>
+                                                <span class="badge bg-warning-subtle text-warning badge-label">Pending</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="invoice-details.html" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="ps-3">
+                                                <input class="form-check-input form-check-input-light fs-14 file-item-check mt-0" type="checkbox" value="option">
+                                            </td>
+                                            <td>
+                                                <h5 class="m-0">
+                                                    <span class="ti ti-file-invoice text-danger fs-lg"></span>
+                                                    <a href="invoice-details.html" class="link-reset fw-semibold">#INS-0120001</a>
+                                                </h5>
+                                            </td>
+                                            <td>Apr 15 - Apr 20, 2025</td>
+                                            <td>
+                                                <div class="d-flex justify-content-start align-items-center gap-2">
+                                                    <div class="avatar avatar-sm">
+                                                        <img src="assets/images/users/user-10.jpg" alt="avatar-10" class="img-fluid rounded-circle">
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name" href="pages-profile.html" class="link-reset">Sophia
+                                                                Kim</a></h5>
+                                                        <p class="text-muted fs-xs mb-0">sophia@pixelhub.io</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>UI Kit - Commercial License</td>
+                                            <td>$749.00 USD</td>
+                                            <td>
+                                                <span class="badge bg-danger-subtle text-danger badge-label">Overdue</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <a href="invoice-details.html" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-edit fs-lg"></i></a>
+                                                    <a href="#" data-table-delete-row class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-trash fs-lg"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                    </tbody><!-- end table-body -->
+                                </table><!-- end table -->
+                            </div>
+                            <div class="card-footer border-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div data-table-pagination-info="invoices"></div>
+
+                                    <div data-table-pagination></div>
+                                </div>
+                            </div>
+            </div>
+
+        </div><!-- end col -->
+    </div><!-- end row -->
+
+</div>
+
+{% endblock %}

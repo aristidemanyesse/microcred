@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" data-topbar-color="gradient" data-menu-color="light">
+
+<head>
+    <meta charset="utf-8">
+    <title>ASSANAH CRED | {{TITLE_PAGE}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Inspinia is the #1 best-selling admin dashboard template on Wrapmarket. Perfect for building CRM, CMS, project management tools, and custom web apps with clean UI, responsive design, and powerful features.">
+    <meta name="keywords" content="Inspinia, admin dashboard, Wrapmarket, Wrapbootstrap, HTML template, Bootstrap admin, CRM template, CMS template, responsive admin, web app UI, admin theme, best admin template">
+    <meta name="author" content="WebAppLayers">
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="assets/images/favicon.ico">
+
+    <link rel="stylesheet" href="{% static 'dist/plugins/jsvectormap.min.css' %}">
+    <!-- Theme Config Js -->
+    <script src="{% static 'dist/js/config.js' %}"></script>
+    <!-- Tabler Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+    <!-- Vendor css -->
+    <link href="{% static 'dist/css/vendors.min.css' %}" rel="stylesheet" type="text/css">
+
+    <!-- App css -->
+    <link href="{% static 'dist/css/app.min.css' %}" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    {% block body %}
+    <!-- Begin page -->
+    <div class="wrapper">
+        
+        <!-- Sidenav Menu Start -->
+        {% include 'sidebar.html' %}
+        <!-- Sidenav Menu End -->
+
+        <!-- Topbar Start -->
+        {% include 'header.html' %}
+        <!-- Topbar End -->
+
+        
+
+        <!-- ============================================================== -->
+        <!-- Start Main Content -->
+        <!-- ============================================================== -->
+
+        
+
+        <div class="content-page">
+            {% block content %}
+
+            {% endblock %}
+
+            <!-- Footer Start -->
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-6 text-center text-md-start">
+                            © 2014 - <script>document.write(new Date().getFullYear())</script> Inspinia By <span class="fw-semibold">WebAppLayers</span> 
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-md-end d-none d-md-block">
+                                10GB of <span class="fw-bold">250GB</span> Free.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+            <!-- end Footer -->
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- End of Main Content -->
+        <!-- ============================================================== -->
+
+    </div>
+    <!-- END wrapper -->
+    {% endblock %}
+
+   {% include 'hover.html' %}
+
+    <!-- Vendor js -->
+    <script src="{% static 'dist/js/vendors.min.js' %}"></script>
+
+    <!-- App js -->
+    <script src="{% static 'dist/js/app.js' %}"></script>
+
+    <!-- E Charts js -->
+    <script src="{% static 'dist/plugins/echarts.min.js' %}"></script>
+
+    <!-- JVector Maps-->
+    <script src="{% static 'dist/plugins/jsvectormap.min.js' %}"></script>
+
+    <!-- Custom table -->
+    <script src="{% static 'dist/plugins/custom-table.js' %}"></script>
+
+    <!-- Dashboard 2 Page js -->
+    <script src="{% static 'dist/plugins/dashboard-2.js' %}"></script>
+
+    {% block scripts %}
+
+    {% endblock %}
+
+</body>
+
+</html>

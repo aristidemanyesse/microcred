@@ -1,15 +1,21 @@
 from django.urls import path
 from . import views
 
-
+app_name = 'MainApp'
 
 urlpatterns = [
-    path('', views.login_view, name='login'),
-    path('dashboard/', views.dashboard_view, name='dashboard'),
+    path('', views.dashboard_view, name='dashboard'),
     path('clients/', views.clients_view, name='clients'),
     path('client/', views.client_view, name='client'),
-    path('credits/', views.credits_view, name='credits'),
-    path('credit/', views.credit_view, name='credit'),
+    
+    path('prets/', views.prets_view, name='prets'),
+    path('demandes/', views.demandes_view, name='demandes'),
+    path('pret/', views.pret_view, name='pret'),
+    path('echeances/', views.echeances_view, name='echeances'),
+    path('penalites/', views.penalites_view, name='penalites'),
+    
+    path('epargnes/', views.epargnes_view, name='epargnes'),
     path('epargne/', views.epargne_view, name='epargne'),
+    
     path('rapports/', views.rapports_view, name='rapports'),
 ]

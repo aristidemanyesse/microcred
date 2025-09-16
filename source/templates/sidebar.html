@@ -1,75 +1,119 @@
-<nav class="navbar-default navbar-static-side" role="navigation">
-        <div class="sidebar-collapse">
-            <ul class="nav metismenu" id="side-menu">
-                <li class="nav-header">
-                    <div class="dropdown profile-element">
-                        <img alt="image" class="rounded-circle" src="img/profile_small.jpg"/>
-                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <span class="block m-t-xs font-bold">David Williams</span>
-                            <span class="text-muted text-xs block">Art Director <b class="caret"></b></span>
-                        </a>
-                        <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                            <li><a class="dropdown-item" href="profile.html">Profile</a></li>
-                            <li><a class="dropdown-item" href="contacts.html">Contacts</a></li>
-                            <li><a class="dropdown-item" href="mailbox.html">Mailbox</a></li>
-                            <li class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="login.html">Logout</a></li>
-                        </ul>
-                    </div>
-                    <div class="logo-element">
-                        IN+
-                    </div>
-                </li>
+{% load static %}
 
-                <li>
-                    <a href="{% url 'dashboard' %}"><i class="fa fa-dashboard"></i> <span class="nav-label">Tableau de bord</span></a>
-                </li>
-                <li style="margin-bottom: 15px;">
+<div class="sidenav-menu">
 
-                <li>
-                    <a href="{% url 'clients' %}"><i class="fa fa-users"></i> <span class="nav-label">Souscripteurs</span></a>
-                </li>
-                <li>
-                    <a href="{% url 'credits' %}"><i class="fa fa-bank"></i> <span class="nav-label">Credits clients</span></a>
-                </li>
-                <li>
-                    <a href="{% url 'epargne' %}"><i class="fa fa-money"></i> <span class="nav-label">Comptes Epargnes</span></a>
-                </li>
-                <li>
-                    <a href="#"><i class="fa fa-diamond"></i> <span class="nav-label">Opérations</span></a>
-                </li>
-                <li style="margin-bottom: 15px;">
+    <!-- Brand Logo -->
+    <a href="{% url 'MainApp:dashboard' %}" class="logo">
+        <span class="logo logo-light">
+            <span class="logo-lg"><img src="{% static 'dist/images/logo.jpeg' %}" alt="logo"></span>
+            <span class="logo-sm"><img src="{% static 'dist/images/logo.jpeg' %}" alt="small logo"></span>
+        </span>
 
+        <span class="logo logo-dark">
+            <span class="logo-lg"><img src="{% static 'dist/images/logo.jpeg' %}" alt="dark logo"></span>
+            <span class="logo-sm"><img src="{% static 'dist/images/logo.jpeg' %}" alt="small logo"></span>
+        </span>
+    </a>
 
-                <li>
-                    <a href="#"><i class="fa fa-book"></i> <span class="nav-label">Rapports</span></a>
-                </li>
-                <li>
-                    <a href="#"><i class="fa fa-area-chart"></i> <span class="nav-label">Statistiques</span></a>
-                </li>
-                <li style="margin-bottom: 15px;">
+    <!-- Sidebar Hover Menu Toggle Button -->
+    <button class="button-on-hover">
+        <i class="ti ti-menu-4 fs-22 align-middle"></i>
+    </button>
 
+    <!-- Full Sidebar Menu Close Button -->
+    <button class="button-close-offcanvas">
+        <i class="ti ti-x align-middle"></i>
+    </button>
 
-                <li>
-                    <a href="#"><i class="fa fa-archive"></i> <span class="nav-label">Historiques</span><span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level collapse">
-                        <li><a href="graph_flot.html">Transactions</a></li>
-                        <li><a href="graph_morris.html">Opérations</a></li>
-                    </ul>
-                </li>
-                <li style="margin-bottom: 15px;">
+    <div class="scrollbar" data-simplebar>
+
+        <!-- User -->
+        <div class="sidenav-user">
+            <div class="d-flex justify-content-between align-items-center">
                 
-
-                <li>
-                    <a href="#"><i class="fa fa-sliders"></i> <span class="nav-label">Paramètres</span></a>
-                </li>
-                <li style="margin-bottom: 15px;">
-
-               
-                <li class="landing_link">
-                    <a href="{% url 'login' %}"><i class="fa fa-signout"></i> <span class="nav-label">Déconnexion</span> </a>
-                </li>
-            </ul>
-
+            </div>
         </div>
-    </nav>
+
+        <!--- Sidenav Menu -->
+        <ul class="side-nav">
+            <li class="side-nav-title" data-lang="menu-title">Menu</li>
+
+            <li class="side-nav-item">
+                <a href="{% url 'MainApp:dashboard' %}" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-layout-dashboard"></i></span>
+                    <span class="menu-text" data-lang="landing-page">Tableau de bord</span>
+                </a>
+            </li>
+            <li class="side-nav-item">
+                <a href="{% url 'MainApp:clients' %}" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-users"></i></span>
+                    <span class="menu-text" data-lang="landing-page">Souscripteurs</span>
+                </a>
+            </li>
+
+            <li class="side-nav-title" data-lang="menu-title">Gestion des prêts</li>
+
+            <li class="side-nav-item">
+                <a href="{% url 'MainApp:prets' %}" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-calendar-dollar"></i></span>
+                    <span class="menu-text" data-lang="landing-page">Prêts en cours</span>
+                </a>
+            </li>
+
+            <li class="side-nav-item">
+                <a href="{% url 'MainApp:demandes' %}" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-signature"></i></span>
+                    <span class="menu-text" data-lang="landing-page">Demandes de prêts</span>
+                </a>
+            </li>
+
+            <li class="side-nav-item">
+                <a href="{% url 'MainApp:echeances' %}" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-clock-dollar"></i></span>
+                    <span class="menu-text" data-lang="landing-page">Echéances à venir</span>
+                </a>
+            </li>
+
+            <li class="side-nav-item">
+                <a href="{% url 'MainApp:penalites' %}" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-devices-dollar"></i></span>
+                    <span class="menu-text" data-lang="landing-page">Pénalités</span>
+                </a>
+            </li>
+
+            <li class="side-nav-title" data-lang="menu-title">Gestion des épargnes</li>
+
+            <li class="side-nav-item">
+                <a href="{% url 'MainApp:epargnes' %}" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-coins"></i></span>
+                    <span class="menu-text" data-lang="landing-page">Comptes épargnes</span>
+                </a>
+            </li>
+
+            <li class="side-nav-title" data-lang="apps-title">Administration</li>
+
+
+            <li class="side-nav-item">
+                <a href="{% url 'MainApp:rapports' %}" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-chart-dots"></i></span>
+                    <span class="menu-text" data-lang="landing-page">Rapports Stats</span>
+                </a>
+            </li>
+            <li class="side-nav-item">
+                <a href="{% url 'AuthentificationApp:users' %}" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-user-shield"></i></span>
+                    <span class="menu-text" data-lang="landing-page">Gestion des utilisateurs</span>
+                </a>
+            </li>
+
+
+            <li class="side-nav-item">
+                <a href="{% url 'MainApp:dashboard' %}" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-settings-star"></i></span>
+                    <span class="menu-text" data-lang="landing-page">Paramétrages</span>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+</div>

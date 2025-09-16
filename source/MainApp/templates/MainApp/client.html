@@ -1,489 +1,452 @@
+{% extends "base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html>
+{% block content %}
 
-<head>
+<div class="container-fluid">
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <div class="page-title-head d-flex align-items-center">
+        <div class="flex-grow-1">
+            <h4 class="fs-sm text-uppercase fw-bold m-0">Projects List</h4>
+        </div>
 
-    <title>INSPINIA | Profile 2</title>
+        <div class="text-end">
+            <ol class="breadcrumb m-0 py-0">
+                <li class="breadcrumb-item"><a href="javascript: void(0);">Inspinia</a></li>
 
-    <link href="{% static 'dist/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'dist/font-awesome/css/font-awesome.css' %}" rel="stylesheet">
+                <li class="breadcrumb-item"><a href="javascript: void(0);">Apps</a></li>
 
-    <link href="{% static 'dist/css/animate.css' %}" rel="stylesheet">
-    <link href="{% static 'dist/css/style.css' %}" rel="stylesheet">
-
-</head>
-
-<body>
-
-    <div id="wrapper">
-
-        {% include "sidebar.html" %}
-
-        <div id="page-wrapper" class="gray-bg">
-            
-            {% include "header.html" %}
-           
-            
-            <div class="wrapper wrapper-content animated fadeInRight">
-
-                <div class="row m-b-lg m-t-lg">
-                    <div class="col-md-6">
-
-                        <div class="profile-image">
-                            <img src="img/a4.jpg" class="rounded-circle circle-border m-b-md" alt="profile">
-                        </div>
-                        <div class="profile-info">
-                            <div class="">
-                                <div>
-                                    <h2 class="no-margins">
-                                        Alex Smith
-                                    </h2>
-                                    <h4>Founder of Groupeq</h4>
-                                    <small>
-                                        There are many variations of passages of Lorem Ipsum available, but the majority
-                                        have suffered alteration in some form Ipsum available.
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <table class="table small m-b-xs">
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <strong>142</strong> Projects
-                                    </td>
-                                    <td>
-                                        <strong>22</strong> Followers
-                                    </td>
-
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>61</strong> Comments
-                                    </td>
-                                    <td>
-                                        <strong>54</strong> Articles
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>154</strong> Tags
-                                    </td>
-                                    <td>
-                                        <strong>32</strong> Friends
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-md-3">
-                        <small>Sales in last 24h</small>
-                        <h2 class="no-margins">206 480</h2>
-                        <div id="sparkline1"></div>
-                    </div>
-
-                </div>
-                <div class="row">
-
-                    <div class="col-lg-3">
-
-                        <div class="ibox">
-                            <div class="ibox-content">
-                                <h3>About Alex Smith</h3>
-
-                                <p class="small">
-                                    There are many variations of passages of Lorem Ipsum available, but the majority
-                                    have
-                                    suffered alteration in some form, by injected humour, or randomised words which
-                                    don't.
-                                    <br />
-                                    <br />
-                                    If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't
-                                    anything embarrassing
-                                </p>
-
-                                <p class="small font-bold">
-                                    <span><i class="fa fa-circle text-navy"></i> Online status</span>
-                                </p>
-
-                            </div>
-                        </div>
-
-                        <div class="ibox">
-                            <div class="ibox-content">
-                                <h3>Followers and friends</h3>
-                                <p class="small">
-                                    If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't
-                                    anything embarrassing
-                                </p>
-                                <div class="user-friends">
-                                    <a href=""><img alt="image" class="rounded-circle" src="img/a3.jpg"></a>
-                                    <a href=""><img alt="image" class="rounded-circle" src="img/a1.jpg"></a>
-                                    <a href=""><img alt="image" class="rounded-circle" src="img/a2.jpg"></a>
-                                    <a href=""><img alt="image" class="rounded-circle" src="img/a4.jpg"></a>
-                                    <a href=""><img alt="image" class="rounded-circle" src="img/a5.jpg"></a>
-                                    <a href=""><img alt="image" class="rounded-circle" src="img/a6.jpg"></a>
-                                    <a href=""><img alt="image" class="rounded-circle" src="img/a7.jpg"></a>
-                                    <a href=""><img alt="image" class="rounded-circle" src="img/a8.jpg"></a>
-                                    <a href=""><img alt="image" class="rounded-circle" src="img/a2.jpg"></a>
-                                    <a href=""><img alt="image" class="rounded-circle" src="img/a1.jpg"></a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="ibox">
-                            <div class="ibox-content">
-                                <h3>Personal friends</h3>
-                                <ul class="list-unstyled file-list">
-                                    <li><a href=""><i class="fa fa-file"></i> Project_document.docx</a></li>
-                                    <li><a href=""><i class="fa fa-file-picture-o"></i> Logo_zender_company.jpg</a></li>
-                                    <li><a href=""><i class="fa fa-stack-exchange"></i> Email_from_Alex.mln</a></li>
-                                    <li><a href=""><i class="fa fa-file"></i> Contract_20_11_2014.docx</a></li>
-                                    <li><a href=""><i class="fa fa-file-powerpoint-o"></i> Presentation.pptx</a></li>
-                                    <li><a href=""><i class="fa fa-file"></i> 10_08_2015.docx</a></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="ibox">
-                            <div class="ibox-content">
-                                <h3>Private message</h3>
-
-                                <p class="small">
-                                    Send private message to Alex Smith
-                                </p>
-
-                                <div class="form-group">
-                                    <label>Subject</label>
-                                    <input type="email" class="form-control" placeholder="Message subject">
-                                </div>
-                                <div class="form-group">
-                                    <label>Message</label>
-                                    <textarea class="form-control" placeholder="Your message" rows="3"></textarea>
-                                </div>
-                                <button class="btn btn-primary btn-block">Send</button>
-
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="col-lg-5">
-
-                        <div class="social-feed-box">
-
-                            <div class="float-right social-action dropdown">
-                                <button data-toggle="dropdown" class="dropdown-toggle btn-white">
-                                    <i class="fa fa-angle-down"></i>
-                                </button>
-                                <ul class="dropdown-menu m-t-xs">
-                                    <li><a href="#">Config</a></li>
-                                </ul>
-                            </div>
-                            <div class="social-avatar">
-                                <a href="" class="float-left">
-                                    <img alt="image" src="img/a1.jpg">
-                                </a>
-                                <div class="media-body">
-                                    <a href="#">
-                                        Andrew Williams
-                                    </a>
-                                    <small class="text-muted">Today 4:21 pm - 12.06.2014</small>
-                                </div>
-                            </div>
-                            <div class="social-body">
-                                <p>
-                                    Many desktop publishing packages and web page editors now use Lorem Ipsum as their
-                                    default model text, and a search for 'lorem ipsum' will uncover many web sites still
-                                    in their infancy. Packages and web page editors now use Lorem Ipsum as their
-                                    default model text.
-                                </p>
-
-                                <div class="btn-group">
-                                    <button class="btn btn-white btn-xs"><i class="fa fa-thumbs-up"></i> Like
-                                        this!</button>
-                                    <button class="btn btn-white btn-xs"><i class="fa fa-comments"></i> Comment</button>
-                                    <button class="btn btn-white btn-xs"><i class="fa fa-share"></i> Share</button>
-                                </div>
-                            </div>
-                            <div class="social-footer">
-                                <div class="social-comment">
-                                    <a href="" class="float-left">
-                                        <img alt="image" src="img/a1.jpg">
-                                    </a>
-                                    <div class="media-body">
-                                        <a href="#">
-                                            Andrew Williams
-                                        </a>
-                                        Internet tend to repeat predefined chunks as necessary, making this the first
-                                        true generator on the Internet. It uses a dictionary of over 200 Latin words.
-                                        <br />
-                                        <a href="#" class="small"><i class="fa fa-thumbs-up"></i> 26 Like this!</a> -
-                                        <small class="text-muted">12.06.2014</small>
-                                    </div>
-                                </div>
-
-                                <div class="social-comment">
-                                    <a href="" class="float-left">
-                                        <img alt="image" src="img/a2.jpg">
-                                    </a>
-                                    <div class="media-body">
-                                        <a href="#">
-                                            Andrew Williams
-                                        </a>
-                                        Making this the first true generator on the Internet. It uses a dictionary of.
-                                        <br />
-                                        <a href="#" class="small"><i class="fa fa-thumbs-up"></i> 11 Like this!</a> -
-                                        <small class="text-muted">10.07.2014</small>
-                                    </div>
-                                </div>
-
-                                <div class="social-comment">
-                                    <a href="" class="float-left">
-                                        <img alt="image" src="img/a3.jpg">
-                                    </a>
-                                    <div class="media-body">
-                                        <textarea class="form-control" placeholder="Write comment..."></textarea>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <div class="social-feed-box">
-
-                            <div class="float-right social-action dropdown">
-                                <button data-toggle="dropdown" class="dropdown-toggle btn-white">
-                                    <i class="fa fa-angle-down"></i>
-                                </button>
-                                <ul class="dropdown-menu m-t-xs">
-                                    <li><a href="#">Config</a></li>
-                                </ul>
-                            </div>
-                            <div class="social-avatar">
-                                <a href="" class="float-left">
-                                    <img alt="image" src="img/a6.jpg">
-                                </a>
-                                <div class="media-body">
-                                    <a href="#">
-                                        Andrew Williams
-                                    </a>
-                                    <small class="text-muted">Today 4:21 pm - 12.06.2014</small>
-                                </div>
-                            </div>
-                            <div class="social-body">
-                                <p>
-                                    Many desktop publishing packages and web page editors now use Lorem Ipsum as their
-                                    default model text, and a search for 'lorem ipsum' will uncover many web sites still
-                                    in their infancy. Packages and web page editors now use Lorem Ipsum as their
-                                    default model text.
-                                </p>
-                                <p>
-                                    Lorem Ipsum as their
-                                    default model text, and a search for 'lorem ipsum' will uncover many web sites still
-                                    in their infancy. Packages and web page editors now use Lorem Ipsum as their
-                                    default model text.
-                                </p>
-                                <img src="img/gallery/3.jpg" class="img-fluid">
-                                <div class="btn-group">
-                                    <button class="btn btn-white btn-xs"><i class="fa fa-thumbs-up"></i> Like
-                                        this!</button>
-                                    <button class="btn btn-white btn-xs"><i class="fa fa-comments"></i> Comment</button>
-                                    <button class="btn btn-white btn-xs"><i class="fa fa-share"></i> Share</button>
-                                </div>
-                            </div>
-                            <div class="social-footer">
-                                <div class="social-comment">
-                                    <a href="" class="float-left">
-                                        <img alt="image" src="img/a1.jpg">
-                                    </a>
-                                    <div class="media-body">
-                                        <a href="#">
-                                            Andrew Williams
-                                        </a>
-                                        Internet tend to repeat predefined chunks as necessary, making this the first
-                                        true generator on the Internet. It uses a dictionary of over 200 Latin words.
-                                        <br />
-                                        <a href="#" class="small"><i class="fa fa-thumbs-up"></i> 26 Like this!</a> -
-                                        <small class="text-muted">12.06.2014</small>
-                                    </div>
-                                </div>
-
-                                <div class="social-comment">
-                                    <a href="" class="float-left">
-                                        <img alt="image" src="img/a2.jpg">
-                                    </a>
-                                    <div class="media-body">
-                                        <a href="#">
-                                            Andrew Williams
-                                        </a>
-                                        Making this the first true generator on the Internet. It uses a dictionary of.
-                                        <br />
-                                        <a href="#" class="small"><i class="fa fa-thumbs-up"></i> 11 Like this!</a> -
-                                        <small class="text-muted">10.07.2014</small>
-                                    </div>
-                                </div>
-
-                                <div class="social-comment">
-                                    <a href="" class="float-left">
-                                        <img alt="image" src="img/a8.jpg">
-                                    </a>
-                                    <div class="media-body">
-                                        <a href="#">
-                                            Andrew Williams
-                                        </a>
-                                        Making this the first true generator on the Internet. It uses a dictionary of.
-                                        <br />
-                                        <a href="#" class="small"><i class="fa fa-thumbs-up"></i> 11 Like this!</a> -
-                                        <small class="text-muted">10.07.2014</small>
-                                    </div>
-                                </div>
-
-                                <div class="social-comment">
-                                    <a href="" class="float-left">
-                                        <img alt="image" src="img/a3.jpg">
-                                    </a>
-                                    <div class="media-body">
-                                        <textarea class="form-control" placeholder="Write comment..."></textarea>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                    <div class="col-lg-4 m-b-lg">
-                        <div id="vertical-timeline" class="vertical-container light-timeline no-margins">
-                            <div class="vertical-timeline-block">
-                                <div class="vertical-timeline-icon navy-bg">
-                                    <i class="fa fa-briefcase"></i>
-                                </div>
-
-                                <div class="vertical-timeline-content">
-                                    <h2>Meeting</h2>
-                                    <p>Conference on the sales results for the previous year. Monica please examine
-                                        sales trends in marketing and products. Below please find the current status of
-                                        the sale.
-                                    </p>
-                                    <a href="#" class="btn btn-sm btn-primary"> More info</a>
-                                    <span class="vertical-date">
-                                        Today <br>
-                                        <small>Dec 24</small>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="vertical-timeline-block">
-                                <div class="vertical-timeline-icon blue-bg">
-                                    <i class="fa fa-file-text"></i>
-                                </div>
-
-                                <div class="vertical-timeline-content">
-                                    <h2>Send documents to Mike</h2>
-                                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
-                                        Ipsum has been the industry's standard dummy text ever since.</p>
-                                    <a href="#" class="btn btn-sm btn-success"> Download document </a>
-                                    <span class="vertical-date">
-                                        Today <br>
-                                        <small>Dec 24</small>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="vertical-timeline-block">
-                                <div class="vertical-timeline-icon lazur-bg">
-                                    <i class="fa fa-coffee"></i>
-                                </div>
-
-                                <div class="vertical-timeline-content">
-                                    <h2>Coffee Break</h2>
-                                    <p>Go to shop and find some products. Lorem Ipsum is simply dummy text of the
-                                        printing and typesetting industry. Lorem Ipsum has been the industry's. </p>
-                                    <a href="#" class="btn btn-sm btn-info">Read more</a>
-                                    <span class="vertical-date"> Yesterday <br><small>Dec 23</small></span>
-                                </div>
-                            </div>
-
-                            <div class="vertical-timeline-block">
-                                <div class="vertical-timeline-icon yellow-bg">
-                                    <i class="fa fa-phone"></i>
-                                </div>
-
-                                <div class="vertical-timeline-content">
-                                    <h2>Phone with Jeronimo</h2>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iusto, optio, dolorum
-                                        provident rerum aut hic quasi placeat iure tempora laudantium ipsa ad debitis
-                                        unde? Iste voluptatibus minus veritatis qui ut.</p>
-                                    <span class="vertical-date">Yesterday <br><small>Dec 23</small></span>
-                                </div>
-                            </div>
-
-                            <div class="vertical-timeline-block">
-                                <div class="vertical-timeline-icon navy-bg">
-                                    <i class="fa fa-comments"></i>
-                                </div>
-
-                                <div class="vertical-timeline-content">
-                                    <h2>Chat with Monica and Sandra</h2>
-                                    <p>Web sites still in their infancy. Various versions have evolved over the years,
-                                        sometimes by accident, sometimes on purpose (injected humour and the like). </p>
-                                    <span class="vertical-date">Yesterday <br><small>Dec 23</small></span>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-            <div class="footer">
-                <div class="float-right">
-                    10GB of <strong>250GB</strong> Free.
-                </div>
-                <div>
-                    <strong>Copyright</strong> Example Company &copy; 2014-2018
-                </div>
-            </div>
-
+                <li class="breadcrumb-item active">Projects List</li>
+            </ol>
         </div>
     </div>
 
-    <!-- Mainly scripts -->
-    <script src="{% static 'dist/js/jquery-3.1.1.min.js' %}"></script>
-    <script src="{% static 'dist/js/popper.min.js' %}"></script>
-    <script src="{% static 'dist/js/bootstrap.js' %}"></script>
-    <script src="{% static 'dist/js/plugins/metisMenu/jquery.metisMenu.js' %}"></script>
-    <script src="{% static 'dist/js/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-warning alert-bordered border-start border-warning d-flex align-items-start gap-2">
+                <i class="ti ti-info-circle fs-xxl"></i>
+                <div>
+                    To enable the gradient topbar, add
+                    <code>data-topbar-color="gradient"</code> to the
+                    <code>&lt;html&gt;</code> tag in your layout.
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Custom and plugin javascript -->
-    <script src="{% static 'dist/js/inspinia.js' %}"></script>
-    <script src="{% static 'dist/js/plugins/pace/pace.min.js' %}"></script>
 
-    <!-- Sparkline -->
-    <script src="{% static 'dist/js/plugins/sparkline/jquery.sparkline.min.js' %}"></script>
+    <div class="row">
+        <div class="col-12">
+            <article class="card border-top-0">
+          
 
-    <script>
-        $(document).ready(function() {
-            $("#sparkline1").sparkline([34, 43, 43, 35, 44, 32, 44, 48], {
-                type: 'line',
-                width: '100%',
-                height: '50',
-                lineColor: '#1ab394',
-                fillColor: "transparent"
-            });
-        });
-    </script>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-start align-items-center gap-3">
+                            <div class="avatar avatar-xxl">
+                                <img src="assets/images/users/user-2.jpg" alt="avatar-2"
+                                    class="img-fluid img-thumbnail rounded-circle">
+                            </div>
+                            <div>
+                                <h4 class="text-nowrap fw-bold mb-1"> Damian D. </h4>
+                                <p class="text-muted mb-1">Product Designer</p>
+                                <span class="badge badge-soft-primary fw-medium ms-2 fs-xs ms-auto">Author</span>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a class="btn btn-outline-primary" href="#!">Follow</a>
+                            <a class="btn btn-primary" href="#!">Message</a>
+                            <button class="btn btn-icon btn-dark" data-bs-toggle="dropdown">
+                                <i class="ti ti-dots fs-24"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Edit Profile</a></li>
+                                <li><a class="dropdown-item text-danger" href="#">Report</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div> <!-- end col-->
+    </div> <!-- end row-->
 
-</body>
+    <div class="row">
+        <div class="col-xl-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Informations personnelles</h4>
+                </div>
+                <div class="card-body">
+                    <div class="">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                <i class="ti ti-briefcase fs-xl text-secondary"></i>
+                            </div>
+                            <p class="mb-0 fs-sm">UI/UX Designer & Full-Stack Developer</p>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                <i class="ti ti-school fs-xl text-secondary"></i>
+                            </div>
+                            <p class="mb-0 fs-sm">Studied at <span class="text-dark fw-semibold">Stanford
+                                    University</span>
+                            </p>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                <i class="ti ti-map-pin fs-xl text-secondary"></i>
+                            </div>
+                            <p class="mb-0 fs-sm">Lives in <span class="text-dark fw-semibold">San Francisco,
+                                    CA</span></p>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                <i class="ti ti-users fs-xl text-secondary"></i>
+                            </div>
+                            <p class="mb-0 fs-sm">Followed by <span class="text-dark fw-semibold">25.3k
+                                    People</span></p>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                <i class="ti ti-mail fs-xl text-secondary"></i>
+                            </div>
+                            <p class="mb-0 fs-sm">Email <a href="mailto:hello@example.com"
+                                    class="text-primary fw-semibold">hello@example.com</a>
+                            </p>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                <i class="ti ti-link fs-xl text-secondary"></i>
+                            </div>
+                            <p class="mb-0 fs-sm">Website <a href="https://www.example.dev"
+                                    class="text-primary fw-semibold">www.example.dev</a>
+                            </p>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                <i class="ti ti-world fs-xl text-secondary"></i>
+                            </div>
+                            <p class="mb-0 fs-sm">Languages <span class="text-dark fw-semibold">English, Hindi,
+                                    Japanese</span>
+                            </p>
+                        </div>
+                    </div>
+                    <!---->
+                </div>
+            </div> <!-- end card-->
 
-</html>
+        </div> <!-- end col-->
+
+        <div class="col-xl-8">
+            <div class="row row-cols-xxl-4 row-cols-md-2 row-cols-1 align-items-center">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <a href="javascript:void(0);" data-table-delete-row
+                                class="btn btn-light btn-icon btn-sm rounded-circle text-muted float-end mt-n1 fs-md">
+                                <i class="ti ti-eye "></i></a>
+                            <h5 title="Revenue Generated">Revenue</h5>
+                            <div class="d-flex align-items-center gap-2 my-3">
+                                <div class="avatar-md flex-shrink-0">
+                                    <span class="avatar-title text-bg-primary rounded-circle fs-22">
+                                        <i class="ti ti-credit-card"></i>
+                                    </span>
+                                </div>
+                                <h3 class="mb-0">$25.5k</h3>
+                                <span class="badge badge-soft-primary fw-medium ms-2 fs-xs ms-auto">+1.5%</span>
+                            </div>
+                            <p class="mb-0">
+                                <span class="text-primary"><i class="ti ti-point-filled"></i></span>
+                                <span class="text-nowrap text-muted">Total Revenue</span>
+                                <span class="float-end"><b>$12.5M</b></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <a href="#!" class="text-muted float-end mt-n1 fs-xl"><i
+                                    class="ti ti-external-link"></i></a>
+                            <h5 title="Number of Messages">Messages</h5>
+                            <div class="d-flex align-items-center gap-2 my-3">
+                                <div class="avatar-md flex-shrink-0">
+                                    <span class="avatar-title text-bg-secondary rounded-circle fs-22">
+                                        <i class="ti ti-message-circle"></i>
+                                    </span>
+                                </div>
+                                <h3 class="mb-0">69.5k</h3>
+                                <span class="badge badge-soft-secondary fw-medium ms-2 fs-xs ms-auto">+5 New</span>
+                            </div>
+                            <p class="mb-0">
+                                <span class="text-secondary"><i class="ti ti-point-filled"></i></span>
+                                <span class="text-nowrap text-muted">Total Messages</span>
+                                <span class="float-end"><b>32.1M</b></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <a href="#!" class="text-muted float-end mt-n1 fs-xl"><i
+                                    class="ti ti-external-link"></i></a>
+                            <h5 title="Total Clients">Clients</h5>
+                            <div class="d-flex align-items-center gap-2 my-3">
+                                <div class="avatar-md flex-shrink-0">
+                                    <span class="avatar-title text-bg-secondary rounded-circle fs-22">
+                                        <i class="ti ti-users"></i>
+                                    </span>
+                                </div>
+                                <h3 class="mb-0">184</h3>
+                                <span class="badge badge-soft-secondary fw-medium ms-2 fs-xs ms-auto">+4 New</span>
+                            </div>
+                            <p class="mb-0">
+                                <span class="text-secondary"><i class="ti ti-point-filled"></i></span>
+                                <span class="text-nowrap text-muted">Total Clients</span>
+                                <span class="float-end"><b>9,835</b></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- end row -->
+
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Liste des dernieres opérations</h4>
+                </div> <!-- end card-header-->
+
+                <div class="card-body p-0">
+                    <div class="">
+                        <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
+                            <thead class="bg-light align-middle bg-opacity-25 thead-sm">
+                                <tr class="text-uppercase fs-xxs">
+                                    <th class="ps-3" style="width: 1%;">
+                                        <input data-table-select-all
+                                            class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox"
+                                            id="select-all-files" value="option">
+                                    </th>
+                                    <th>ID</th>
+                                    <th>Create & End Date</th>
+                                    <th data-table-sort="name">Clients Name</th>
+                                    <th data-table-sort>Purchase</th>
+                                    <th data-table-sort>Amount</th>
+                                    <th data-table-sort data-column="status">Status</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead><!-- end table-head -->
+                            <tbody>
+                                <tr>
+                                    <td class="ps-3">
+                                        <input
+                                            class="form-check-input form-check-input-light fs-14 file-item-check mt-0"
+                                            type="checkbox" value="option">
+                                    </td>
+                                    <td>
+                                        <h5 class="m-0">
+                                            <span class="ti ti-file-invoice text-success fs-lg"></span>
+                                            <a href="invoice-details.html"
+                                                class="link-reset fw-semibold">#INS-0120010</a>
+                                        </h5>
+                                    </td>
+                                    <td>Feb 2 - Feb 10, 2025</td>
+                                    <td>
+                                        <div class="d-flex justify-content-start align-items-center gap-2">
+                                            <div class="avatar avatar-sm">
+                                                <img src="assets/images/users/user-7.jpg" alt="avatar-7"
+                                                    class="img-fluid rounded-circle">
+                                            </div>
+                                            <div>
+                                                <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name"
+                                                        href="pages-profile.html" class="link-reset">Emily
+                                                        Parker</a>
+                                                </h5>
+                                                <p class="text-muted fs-xs mb-0">emily@startupwave.io</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Inspinia - Extended License</td>
+                                    <td>$999.00 USD</td>
+                                    <td>
+                                        <span class="badge bg-success-subtle text-success badge-label">Paid</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center justify-content-center gap-1">
+                                            <a href="invoice-details.html"
+                                                class="btn btn-light btn-icon btn-sm rounded-circle"><i
+                                                    class="ti ti-eye fs-lg"></i></a>
+                                            <a href="javascript:void(0);"
+                                                class="btn btn-light btn-icon btn-sm rounded-circle"> <i
+                                                    class="ti ti-edit fs-lg"></i></a>
+                                            <a href="javascript:void(0);" data-table-delete-row
+                                                class="btn btn-light btn-icon btn-sm rounded-circle"> <i
+                                                    class="ti ti-trash fs-lg"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="ps-3">
+                                        <input
+                                            class="form-check-input form-check-input-light fs-14 file-item-check mt-0"
+                                            type="checkbox" value="option">
+                                    </td>
+                                    <td>
+                                        <h5 class="m-0">
+                                            <span class="ti ti-file-invoice text-warning fs-lg"></span>
+                                            <a href="invoice-details.html"
+                                                class="link-reset fw-semibold">#INS-0120009</a>
+                                        </h5>
+                                    </td>
+                                    <td>Feb 5 - Feb 12, 2025</td>
+                                    <td>
+                                        <div class="d-flex justify-content-start align-items-center gap-2">
+                                            <div class="avatar-sm flex-shrink-0">
+                                                <span class="avatar-title text-bg-info fw-bold rounded-circle">
+                                                    MS
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name"
+                                                        href="pages-profile.html" class="link-reset">Michael
+                                                        Scott</a>
+                                                </h5>
+                                                <p class="text-muted fs-xs mb-0">michael@dundermifflin.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>CRM Dashboard - Regular License</td>
+                                    <td>$249.00 USD</td>
+                                    <td>
+                                        <span class="badge bg-warning-subtle text-warning badge-label">Pending</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center justify-content-center gap-1">
+                                            <a href="invoice-details.html"
+                                                class="btn btn-light btn-icon btn-sm rounded-circle"><i
+                                                    class="ti ti-eye fs-lg"></i></a>
+                                            <a href="javascript:void(0);"
+                                                class="btn btn-light btn-icon btn-sm rounded-circle"> <i
+                                                    class="ti ti-edit fs-lg"></i></a>
+                                            <a href="javascript:void(0);" data-table-delete-row
+                                                class="btn btn-light btn-icon btn-sm rounded-circle"> <i
+                                                    class="ti ti-trash fs-lg"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="ps-3">
+                                        <input
+                                            class="form-check-input form-check-input-light fs-14 file-item-check mt-0"
+                                            type="checkbox" value="option">
+                                    </td>
+                                    <td>
+                                        <h5 class="m-0">
+                                            <span class="ti ti-file-invoice text-danger fs-lg"></span>
+                                            <a href="invoice-details.html"
+                                                class="link-reset fw-semibold">#INS-0120008</a>
+                                        </h5>
+                                    </td>
+                                    <td>Jan 10 - Jan 15, 2025</td>
+                                    <td>
+                                        <div class="d-flex justify-content-start align-items-center gap-2">
+                                            <div class="avatar avatar-sm">
+                                                <img src="assets/images/users/user-3.jpg" alt="avatar-3"
+                                                    class="img-fluid rounded-circle">
+                                            </div>
+                                            <div>
+                                                <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name"
+                                                        href="pages-profile.html" class="link-reset">Samantha
+                                                        Reed</a>
+                                                </h5>
+                                                <p class="text-muted fs-xs mb-0">samantha@alphatech.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Landing Page - Agency Pack</td>
+                                    <td>$349.00 USD</td>
+                                    <td>
+                                        <span class="badge bg-danger-subtle text-danger badge-label">Overdue</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center justify-content-center gap-1">
+                                            <a href="invoice-details.html"
+                                                class="btn btn-light btn-icon btn-sm rounded-circle"><i
+                                                    class="ti ti-eye fs-lg"></i></a>
+                                            <a href="javascript:void(0);"
+                                                class="btn btn-light btn-icon btn-sm rounded-circle"> <i
+                                                    class="ti ti-edit fs-lg"></i></a>
+                                            <a href="javascript:void(0);" data-table-delete-row
+                                                class="btn btn-light btn-icon btn-sm rounded-circle"> <i
+                                                    class="ti ti-trash fs-lg"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="ps-3">
+                                        <input
+                                            class="form-check-input form-check-input-light fs-14 file-item-check mt-0"
+                                            type="checkbox" value="option">
+                                    </td>
+                                    <td>
+                                        <h5 class="m-0">
+                                            <span class="ti ti-file-invoice text-primary fs-lg"></span>
+                                            <a href="invoice-details.html"
+                                                class="link-reset fw-semibold">#INS-0120007</a>
+                                        </h5>
+                                    </td>
+                                    <td>Mar 1 - Mar 5, 2025</td>
+                                    <td>
+                                        <div class="d-flex justify-content-start align-items-center gap-2">
+                                            <div class="avatar avatar-sm">
+                                                <img src="assets/images/users/user-2.jpg" alt="avatar-2"
+                                                    class="img-fluid rounded-circle">
+                                            </div>
+                                            <div>
+                                                <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name"
+                                                        href="pages-profile.html" class="link-reset">Jonathan
+                                                        Lee</a>
+                                                </h5>
+                                                <p class="text-muted fs-xs mb-0">jonathan@zenflow.io</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Task Manager - SaaS Version</td>
+                                    <td>$799.00 USD</td>
+                                    <td>
+                                        <span class="badge bg-info-subtle text-info badge-label">Draft</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center justify-content-center gap-1">
+                                            <a href="invoice-details.html"
+                                                class="btn btn-light btn-icon btn-sm rounded-circle"><i
+                                                    class="ti ti-eye fs-lg"></i></a>
+                                            <a href="javascript:void(0);"
+                                                class="btn btn-light btn-icon btn-sm rounded-circle"> <i
+                                                    class="ti ti-edit fs-lg"></i></a>
+                                            <a href="javascript:void(0);" data-table-delete-row
+                                                class="btn btn-light btn-icon btn-sm rounded-circle"> <i
+                                                    class="ti ti-trash fs-lg"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                            </tbody><!-- end table-body -->
+                        </table><!-- end table -->
+                    </div>
+                </div> <!-- end card-body-->
+            </div> <!-- end card-->
+
+        </div>
+    </div> <!-- end row-->
+
+</div>
+<!-- container -->
+
+{% endblock  %}

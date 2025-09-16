@@ -3,11 +3,15 @@ from annoying.decorators import render_to
 from faker import Faker
 
 
-def login_view(request):
-    return render(request, 'MainApp/login.html')
 
+@render_to('MainApp/dashboard.html')
 def dashboard_view(request):
-    return render(request, 'MainApp/dashboard.html')
+    ctx = {
+        'TITLE_PAGE' : "Tableau de bord",
+    }
+    return ctx
+
+
 
 @render_to('MainApp/clients.html')
 def clients_view(request):
@@ -28,11 +32,38 @@ def client_view(request):
     return ctx
 
 
-def credits_view(request):
-    return render(request, 'MainApp/credits.html')
 
-@render_to('MainApp/credit.html')
-def credit_view(request):
+@render_to('MainApp/prets.html')
+def prets_view(request):
+    return render(request, 'MainApp/prets.html')
+
+
+@render_to('MainApp/demandes.html')
+def demandes_view(request):
+    return render(request, 'MainApp/demandes.html')
+
+
+@render_to('MainApp/echeances.html')
+def echeances_view(request):
+    return render(request, 'MainApp/echeances.html')
+
+
+@render_to('MainApp/penalites.html')
+def penalites_view(request):
+    return render(request, 'MainApp/penalites.html')
+
+
+@render_to('MainApp/pret.html')
+def pret_view(request):
+    faker = Faker("fr_FR")
+    ctx = {
+        "faker": faker,
+    }
+    return ctx
+
+
+@render_to('MainApp/epargnes.html')
+def epargnes_view(request):
     faker = Faker("fr_FR")
     ctx = {
         "faker": faker,
@@ -48,5 +79,8 @@ def epargne_view(request):
     }
     return ctx
 
+
+@render_to('MainApp/rapports.html')
 def rapports_view(request):
-    return render(request, 'MainApp/rapports.html')
+    ctx = {}
+    return ctx

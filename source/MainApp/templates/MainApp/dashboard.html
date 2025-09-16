@@ -1,513 +1,241 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html>
+{% block content %}
+<div class="container-fluid">
 
-<head>
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>INSPINIA | Dashboard v.2</title>
-
-    <link href="{% static 'dist/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'dist/font-awesome/css/font-awesome.css' %}" rel="stylesheet">
-
-    <link href="{% static 'dist/css/animate.css' %}" rel="stylesheet">
-    <link href="{% static 'dist/css/style.css' %}" rel="stylesheet">
-</head>
-
-<body>
-    <div id="wrapper">
-
-        {% include "sidebar.html" %}
-
-        <div id="page-wrapper" class="gray-bg">
-
-            {% include "header.html" %}
-
-            <div class="wrapper wrapper-content">
-                <div class="row">
-                    <div class="col-lg-3">
-                        <div class="ibox ">
-                            <div class="ibox-title">
-                                <h5>Versements du jour</h5>
-                            </div>
-                            <div class="ibox-content">
-                                <h1 class="no-margins">40 890 Fcfa</h1>
-                                <div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i></div>
-                                <small>Total income</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="ibox ">
-                            <div class="ibox-title">
-                                <h5>Demandes de prêts en cours</h5>
-                            </div>
-                            <div class="ibox-content">
-                                <h1 class="no-margins">25</h1>
-                                <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i></div>
-                                <small>New orders</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="ibox ">
-                            <div class="ibox-title">
-                                <h5>Total en epargne</h5>
-                            </div>
-                            <div class="ibox-content">
-                                <h1 class="no-margins">12 106 120 Fcfa</h1>
-                                <div class="stat-percent font-bold text-navy">44% <i class="fa fa-level-up"></i></div>
-                                <small>New visits</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 ">
-                        <div class="ibox">
-                            <div class="ibox-title">
-                                <h5>Total Créance</h5>
-                            </div>
-                            <div class="ibox-content">
-                                <h1 class="no-margins text-danger">800 600 Fcfa</h1>
-                                <div class="stat-percent font-bold text-danger">123 000 Fcfa <i
-                                        class="fa fa-level-down"></i>
-                                </div>
-                                <small>Dans ce mois</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="ibox ">
-                            <div class="ibox-title">
-                                <h5>Orders</h5>
-                                <div class="float-right">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-xs btn-white active">Aujourd'hui</button>
-                                        <button type="button" class="btn btn-xs btn-white">Ce mois</button>
-                                        <button type="button" class="btn btn-xs btn-white">Cette Année</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ibox-content">
-                                <div class="row">
-                                    <div class="col-lg-9">
-                                        <div class="flot-chart">
-                                            <div class="flot-chart-content" id="flot-dashboard-chart"></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <ul class="stat-list">
-                                            <li>
-                                                <h2 class="no-margins">2,346</h2>
-                                                <small>Total orders in period</small>
-                                                <div class="stat-percent">48% <i class="fa fa-level-up text-navy"></i>
-                                                </div>
-                                                <div class="progress progress-mini">
-                                                    <div style="width: 48%;" class="progress-bar"></div>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <h2 class="no-margins ">4,422</h2>
-                                                <small>Orders in last month</small>
-                                                <div class="stat-percent">60% <i class="fa fa-level-down text-navy"></i>
-                                                </div>
-                                                <div class="progress progress-mini">
-                                                    <div style="width: 60%;" class="progress-bar"></div>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <h2 class="no-margins ">9,180</h2>
-                                                <small>Monthly income from orders</small>
-                                                <div class="stat-percent">22% <i class="fa fa-bolt text-navy"></i></div>
-                                                <div class="progress progress-mini">
-                                                    <div style="width: 22%;" class="progress-bar"></div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="ibox ">
-                            <div class="ibox-title">
-                                <h5>Liste des dernières opérations</h5>
-                                <div class="ibox-tools">
-                                    <a class="collapse-link">
-                                        <i class="fa fa-chevron-up"></i>
-                                    </a>
-                                    <a class="close-link">
-                                        <i class="fa fa-times"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="ibox-content table-responsive">
-                                <table class="table table-hover no-margins">
-                                    <thead>
-                                        <tr>
-                                            <th>Status</th>
-                                            <th>Date</th>
-                                            <th>User</th>
-                                            <th>Value</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><small>En cours...</small></td>
-                                            <td><i class="fa fa-clock-o"></i> 11:20</td>
-                                            <td>Samantha</td>
-                                            <td class="text-navy"> <i class="fa fa-level-up"></i> 24 000 Fcfa </td>
-                                        </tr>
-                                        <tr>
-                                            <td><span class="label label-warning">Canceled</span> </td>
-                                            <td><i class="fa fa-clock-o"></i> 10:40am</td>
-                                            <td>Monica</td>
-                                            <td class="text-navy"> <i class="fa fa-level-up"></i> 66 000 Fcfa </td>
-                                        </tr>
-                                        <tr>
-                                            <td><small>En cours...</small> </td>
-                                            <td><i class="fa fa-clock-o"></i> 01:30</td>
-                                            <td>John</td>
-                                            <td class="text-navy"> <i class="fa fa-level-up"></i> 54 000 Fcfa </td>
-                                        </tr>
-                                        <tr>
-                                            <td><small>En cours...</small> </td>
-                                            <td><i class="fa fa-clock-o"></i> 02:20</td>
-                                            <td>Agnes</td>
-                                            <td class="text-navy"> <i class="fa fa-level-up"></i> 12 000 Fcfa </td>
-                                        </tr>
-                                        <tr>
-                                            <td><small>En cours...</small> </td>
-                                            <td><i class="fa fa-clock-o"></i> 09:40</td>
-                                            <td>Janet</td>
-                                            <td class="text-navy"> <i class="fa fa-level-up"></i> 22 000 Fcfa </td>
-                                        </tr>
-                                        <tr>
-                                            <td><span class="label label-primary">Completed</span> </td>
-                                            <td><i class="fa fa-clock-o"></i> 04:10am</td>
-                                            <td>Amelia</td>
-                                            <td class="text-navy"> <i class="fa fa-level-up"></i> 66 000 Fcfa </td>
-                                        </tr>
-                                        <tr>
-                                            <td><small>En cours...</small> </td>
-                                            <td><i class="fa fa-clock-o"></i> 12:08am</td>
-                                            <td>Damian</td>
-                                            <td class="text-navy"> <i class="fa fa-level-up"></i> 23 000 Fcfa </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="ibox ">
-                            <div class="ibox-title">
-                                <h5>Echéances du Jour</h5>
-                                <div class="ibox-tools">
-                                    <a class="collapse-link">
-                                        <i class="fa fa-chevron-up"></i>
-                                    </a>
-                                    <a class="close-link">
-                                        <i class="fa fa-times"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="ibox-content">
-                                <ul class="todo-list m-t small-list">
-                                    <li>
-                                        <a href="#" class="check-link"><i class="fa fa-check-square"></i> </a>
-                                        <span class="m-l-xs todo-completed">Buy a milk</span>
-
-                                    </li>
-                                    <li>
-                                        <a href="#" class="check-link"><i class="fa fa-square-o"></i> </a>
-                                        <span class="m-l-xs">Go to shop and find some products.</span>
-
-                                    </li>
-                                    <li>
-                                        <a href="#" class="check-link"><i class="fa fa-square-o"></i> </a>
-                                        <span class="m-l-xs">Send documents to Mike</span>
-                                        <small class="label label-primary"><i class="fa fa-clock-o"></i> 1
-                                            mins</small>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="check-link"><i class="fa fa-square-o"></i> </a>
-                                        <span class="m-l-xs">Go to the doctor dr Smith</span>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="check-link"><i class="fa fa-check-square"></i> </a>
-                                        <span class="m-l-xs todo-completed">Plan vacation</span>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="check-link"><i class="fa fa-square-o"></i> </a>
-                                        <span class="m-l-xs">Create new stuff</span>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="check-link"><i class="fa fa-square-o"></i> </a>
-                                        <span class="m-l-xs">Call to Anna for dinner</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div class="footer">
-                <div class="float-right">
-                    10GB of <strong>250GB</strong> Free.
-                </div>
-                <div>
-                    <strong>Copyright</strong> Example Company &copy; 2014-2018
-                </div>
-            </div>
+    <div class="page-title-head d-flex align-items-center">
+        <div class="flex-grow-1">
+            <h4 class="fs-sm text-uppercase fw-bold m-0">{{TITLE_PAGE}}</h4>
         </div>
 
+        <div class="text-end">
+            <ol class="breadcrumb m-0 py-0">
+                <li class="breadcrumb-item"><a href="javascript: void(0);">Inspinia</a></li>
+
+                <li class="breadcrumb-item active">Gradient Topbar</li>
+            </ol>
+        </div>
     </div>
 
-    <!-- Mainly scripts -->
-    <script src="{% static 'dist/js/jquery-3.1.1.min.js' %}"></script>
-    <script src="{% static 'dist/js/popper.min.js' %}"></script>
-    <script src="{% static 'dist/js/bootstrap.js' %}"></script>
-    <script src="{% static 'dist/js/plugins/metisMenu/jquery.metisMenu.js' %}"></script>
-    <script src="{% static 'dist/js/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+    <div class="row row-cols-xxl-4 row-cols-md-2 row-cols-1">
+        <!-- Total Sales Widget -->
+        <div class="col">
+            <div class="card">
+                <div class="card-header d-flex border-dashed justify-content-between align-items-center">
+                    <h5 class="card-title">Total Sales</h5>
+                    <span class="badge badge-soft-success"> Monthly</span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="donut-chart" data-chart="donut" style="min-height: 60px; width: 60px;"></div>
+                        <div class="text-end">
+                            <h3 class="mb-2 fw-normal">$<span data-target="250">0</span>K</h3>
+                            <p class="mb-0 text-muted"><span>Monthly Total Sales</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- end col -->
 
-    <!-- Flot -->
-    <script src="{% static 'dist/js/plugins/flot/jquery.flot.js' %}"></script>
-    <script src="{% static 'dist/js/plugins/flot/jquery.flot.tooltip.min.js' %}"></script>
-    <script src="{% static 'dist/js/plugins/flot/jquery.flot.spline.js' %}"></script>
-    <script src="{% static 'dist/js/plugins/flot/jquery.flot.resize.js' %}"></script>
-    <script src="{% static 'dist/js/plugins/flot/jquery.flot.pie.js' %}"></script>
-    <script src="{% static 'dist/js/plugins/flot/jquery.flot.symbol.js' %}"></script>
-    <script src="{% static 'dist/js/plugins/flot/jquery.flot.time.js' %}"></script>
+        <!-- Total Orders Widget -->
+        <div class="col">
+            <div class="card">
+                <div class="card-header d-flex border-dashed justify-content-between align-items-center">
+                    <h5 class="card-title">Total Orders</h5>
+                    <span class="badge badge-soft-primary"> Monthly</span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="donut-chart" data-chart="donut" style="min-height: 60px; width: 60px;"></div>
+                        <div class="text-end">
+                            <h3 class="mb-2 fw-normal"><span data-target="180">0</span></h3>
+                            <p class="mb-0 text-muted"><span>Monthly Total Orders</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- end col -->
 
-    <!-- Peity -->
-    <script src="{% static 'dist/js/plugins/peity/jquery.peity.min.js' %}"></script>
-    <script src="{% static 'dist/js/demo/peity-demo.js' %}"></script>
+        <!-- New Customers Widget -->
+        <div class="col">
+            <div class="card">
+                <div class="card-header d-flex border-dashed justify-content-between align-items-center">
+                    <h5 class="card-title">New Customers</h5>
+                    <span class="badge badge-soft-info"> Monthly</span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="donut-chart" data-chart="donut" style="min-height: 60px; width: 60px;"></div>
+                        <div class="text-end">
+                            <h3 class="mb-2 fw-normal"><span data-target="50,895">0</span></h3>
+                            <p class="mb-0 text-muted"><span>Monthly New Customers</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- end col -->
 
-    <!-- Custom and plugin javascript -->
-    <script src="{% static 'dist/js/inspinia.js' %}"></script>
-    <script src="{% static 'dist/js/plugins/pace/pace.min.js' %}"></script>
+        <!-- Monthly Revenue Widget -->
+        <div class="col">
+            <div class="card">
+                <div class="card-header d-flex border-dashed justify-content-between align-items-center">
+                    <h5 class="card-title">Revenue</h5>
+                    <span class="badge badge-soft-warning"> Monthly</span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="donut-chart" data-chart="donut" style="min-height: 60px; width: 60px;"></div>
+                        <div class="text-end">
+                            <h3 class="mb-2 fw-normal">$<span data-target="50.33">0</span>K</h3>
+                            <p class="mb-0 text-muted"><span>Monthly Revenue</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- end col -->
+    </div><!-- end row -->
 
-    <!-- jQuery UI -->
-    <script src="{% static 'dist/js/plugins/jquery-ui/jquery-ui.min.js' %}"></script>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header card-tabs d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h4 class="card-title">Orders Statics</h4>
+                    </div>
+                    <ul class="nav nav-tabs nav-justified card-header-tabs nav-bordered">
+                        <li class="nav-item">
+                            <a href="#today-ct" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
+                                <i class="ti ti-home d-md-none d-block"></i>
+                                <span class="d-none d-md-block">Today</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#monthly-ct" data-bs-toggle="tab" aria-expanded="true" class="nav-link active">
+                                <i class="ti ti-user-circle d-md-none d-block"></i>
+                                <span class="d-none d-md-block">Monthly</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#annual-ct" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
+                                <i class="ti ti-settings d-md-none d-block"></i>
+                                <span class="d-none d-md-block">Annual</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row g-0">
+                        <div class="col-xxl-8 border-end border-dashed">
+                            <div id="orders-chart" style="min-height: 405px;"></div>
+                        </div><!-- end col -->
+                        <div class="col-xxl-4">
+                            <div class="p-3 bg-light-subtle border-bottom border-dashed">
+                                <div class="row">
+                                    <div class="col">
+                                        <h4 class="fs-sm mb-1">Would you like the full report?</h4>
+                                        <small class="text-muted fs-xs mb-0">
+                                            All 120 orders have been successfully delivered
+                                        </small>
+                                    </div>
+                                    <div class="col-auto align-self-center">
+                                        <button type="button" class="btn btn-sm btn-default rounded-circle btn-icon"
+                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Download">
+                                            <i class="ti ti-download fs-xl"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row row-cols-xxl-2 row-cols-md-2 row-cols-1 g-1 p-1">
+                                <!-- Total Sales Widget -->
+                                <div class="col">
+                                    <div class="card rounded-0 border border-dashed mb-0">
+                                        <div class="card-body">
+                                            <div class="mb-3 d-flex justify-content-between align-items-center">
+                                                <h5 class="fs-xl mb-0">$24,500</h5>
+                                                <span>18.45% <i class="ti ti-arrow-up text-success"></i></span>
+                                            </div>
+                                            <p class="text-muted mb-2"><span>Total sales in period</span></p>
+                                            <div class="progress progress-sm mb-0">
+                                                <div class="progress-bar bg-secondary" role="progressbar"
+                                                    style="width: 18.45%" aria-valuenow="18.45" aria-valuemin="0"
+                                                    aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- end col -->
 
-    <!-- Jvectormap -->
-    <script src="{% static 'dist/js/plugins/jvectormap/jquery-jvectormap-2.0.2.min.js' %}"></script>
-    <script src="{% static 'dist/js/plugins/jvectormap/jquery-jvectormap-world-mill-en.js' %}"></script>
+                                <!-- Number of Customers Widget -->
+                                <div class="col">
+                                    <div class="card rounded-0 border border-dashed mb-0">
+                                        <div class="card-body">
+                                            <div class="mb-3 d-flex justify-content-between align-items-center">
+                                                <h5 class="fs-xl mb-0">1,240</h5>
+                                                <span>10.35% <i class="ti ti-arrow-down text-danger"></i></span>
+                                            </div>
+                                            <p class="text-muted mb-2"><span>Number of customers</span></p>
+                                            <div class="progress progress-sm mb-0">
+                                                <div class="progress-bar bg-secondary" role="progressbar"
+                                                    style="width: 10.35%" aria-valuenow="10.35" aria-valuemin="0"
+                                                    aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- end col -->
 
-    <!-- EayPIE -->
-    <script src="{% static 'dist/js/plugins/easypiechart/jquery.easypiechart.js' %}"></script>
+                                <!-- Products Sold Widget -->
+                                <div class="col">
+                                    <div class="card rounded-0 border border-dashed mb-0">
+                                        <div class="card-body">
+                                            <div class="mb-3 d-flex justify-content-between align-items-center">
+                                                <h5 class="fs-xl mb-0">3,750</h5>
+                                                <span>22.61% <i class="ti ti-bolt text-primary"></i></span>
+                                            </div>
+                                            <p class="text-muted mb-2 text-truncate"><span>Products sold in the
+                                                    period</span>
+                                            </p>
+                                            <div class="progress progress-sm mb-0">
+                                                <div class="progress-bar bg-secondary" role="progressbar"
+                                                    style="width: 22.61%" aria-valuenow="22.61" aria-valuemin="0"
+                                                    aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- end col -->
 
-    <!-- Sparkline -->
-    <script src="{% static 'dist/js/plugins/sparkline/jquery.sparkline.min.js' %}"></script>
+                                <!-- Average Order Value Widget -->
+                                <div class="col">
+                                    <div class="card rounded-0 border border-dashed mb-0">
+                                        <div class="card-body">
+                                            <div class="mb-3 d-flex justify-content-between align-items-center">
+                                                <h5 class="fs-xl mb-0">$65.49 <small class="fs-6">USD</small>
+                                                </h5>
+                                                <span>5.92% <i class="ti ti-arrow-up text-success"></i></span>
+                                            </div>
+                                            <p class="text-muted mb-2"><span>Average order value</span></p>
+                                            <div class="progress progress-sm mb-0">
+                                                <div class="progress-bar bg-secondary" role="progressbar"
+                                                    style="width: 5.92%" aria-valuenow="5.92" aria-valuemin="0"
+                                                    aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- end col -->
+                            </div><!-- end row -->
 
-    <!-- Sparkline demo data  -->
-    <script src="{% static 'dist/js/demo/sparkline-demo.js' %}"></script>
+                            <div class="text-center my-3">
+                                <a href="chat.html"
+                                    class="link-reset text-decoration-underline fw-semibold link-offset-3">
+                                    View all Reports <i class="ti ti-send-2"></i>
+                                </a>
+                            </div>
 
-    <script>
-        $(document).ready(function() {
-            $('.chart').easyPieChart({
-                barColor: '#f8ac59',
-                //                scaleColor: false,
-                scaleLength: 5,
-                lineWidth: 4,
-                size: 80
-            });
-            $('.chart2').easyPieChart({
-                barColor: '#1c84c6',
-                //                scaleColor: false,
-                scaleLength: 5,
-                lineWidth: 4,
-                size: 80
-            });
-            var data2 = [
-                [gd(2012, 1, 1), 7],
-                [gd(2012, 1, 2), 6],
-                [gd(2012, 1, 3), 4],
-                [gd(2012, 1, 4), 8],
-                [gd(2012, 1, 5), 9],
-                [gd(2012, 1, 6), 7],
-                [gd(2012, 1, 7), 5],
-                [gd(2012, 1, 8), 4],
-                [gd(2012, 1, 9), 7],
-                [gd(2012, 1, 10), 8],
-                [gd(2012, 1, 11), 9],
-                [gd(2012, 1, 12), 6],
-                [gd(2012, 1, 13), 4],
-                [gd(2012, 1, 14), 5],
-                [gd(2012, 1, 15), 11],
-                [gd(2012, 1, 16), 8],
-                [gd(2012, 1, 17), 8],
-                [gd(2012, 1, 18), 11],
-                [gd(2012, 1, 19), 11],
-                [gd(2012, 1, 20), 6],
-                [gd(2012, 1, 21), 6],
-                [gd(2012, 1, 22), 8],
-                [gd(2012, 1, 23), 11],
-                [gd(2012, 1, 24), 13],
-                [gd(2012, 1, 25), 7],
-                [gd(2012, 1, 26), 9],
-                [gd(2012, 1, 27), 9],
-                [gd(2012, 1, 28), 8],
-                [gd(2012, 1, 29), 5],
-                [gd(2012, 1, 30), 8],
-                [gd(2012, 1, 31), 25]
-            ];
-            var data3 = [
-                [gd(2012, 1, 1), 800],
-                [gd(2012, 1, 2), 500],
-                [gd(2012, 1, 3), 600],
-                [gd(2012, 1, 4), 700],
-                [gd(2012, 1, 5), 500],
-                [gd(2012, 1, 6), 456],
-                [gd(2012, 1, 7), 800],
-                [gd(2012, 1, 8), 589],
-                [gd(2012, 1, 9), 467],
-                [gd(2012, 1, 10), 876],
-                [gd(2012, 1, 11), 689],
-                [gd(2012, 1, 12), 700],
-                [gd(2012, 1, 13), 500],
-                [gd(2012, 1, 14), 600],
-                [gd(2012, 1, 15), 700],
-                [gd(2012, 1, 16), 786],
-                [gd(2012, 1, 17), 345],
-                [gd(2012, 1, 18), 888],
-                [gd(2012, 1, 19), 888],
-                [gd(2012, 1, 20), 888],
-                [gd(2012, 1, 21), 987],
-                [gd(2012, 1, 22), 444],
-                [gd(2012, 1, 23), 999],
-                [gd(2012, 1, 24), 567],
-                [gd(2012, 1, 25), 786],
-                [gd(2012, 1, 26), 666],
-                [gd(2012, 1, 27), 888],
-                [gd(2012, 1, 28), 900],
-                [gd(2012, 1, 29), 178],
-                [gd(2012, 1, 30), 555],
-                [gd(2012, 1, 31), 993]
-            ];
-            var dataset = [{
-                label: "Number of orders",
-                data: data3,
-                color: "#1ab394",
-                bars: {
-                    show: true,
-                    align: "center",
-                    barWidth: 24 * 60 * 60 * 600,
-                    lineWidth: 0
-                }
-            }, {
-                label: "Payments",
-                data: data2,
-                yaxis: 2,
-                color: "#1C84C6",
-                lines: {
-                    lineWidth: 1,
-                    show: true,
-                    fill: true,
-                    fillColor: {
-                        colors: [{
-                            opacity: 0.2
-                        }, {
-                            opacity: 0.4
-                        }]
-                    }
-                },
-                splines: {
-                    show: false,
-                    tension: 0.6,
-                    lineWidth: 1,
-                    fill: 0.1
-                },
-            }];
-            var options = {
-                xaxis: {
-                    mode: "time",
-                    tickSize: [3, "day"],
-                    tickLength: 0,
-                    axisLabel: "Date",
-                    axisLabelUseCanvas: true,
-                    axisLabelFontSizePixels: 12,
-                    axisLabelFontFamily: 'Arial',
-                    axisLabelPadding: 10,
-                    color: "#d5d5d5"
-                },
-                yaxes: [{
-                    position: "left",
-                    max: 1070,
-                    color: "#d5d5d5",
-                    axisLabelUseCanvas: true,
-                    axisLabelFontSizePixels: 12,
-                    axisLabelFontFamily: 'Arial',
-                    axisLabelPadding: 3
-                }, {
-                    position: "right",
-                    clolor: "#d5d5d5",
-                    axisLabelUseCanvas: true,
-                    axisLabelFontSizePixels: 12,
-                    axisLabelFontFamily: ' Arial',
-                    axisLabelPadding: 67
-                }],
-                legend: {
-                    noColumns: 1,
-                    labelBoxBorderColor: "#000000",
-                    position: "nw"
-                },
-                grid: {
-                    hoverable: false,
-                    borderWidth: 0
-                }
-            };
+                        </div> <!-- end col-->
+                    </div> <!-- end row-->
+                </div> <!-- end card-body-->
+            </div> <!-- end card-->
+        </div> <!-- end col-->
+    </div> <!-- end row-->
 
-            function gd(year, month, day) {
-                return new Date(year, month - 1, day).getTime();
-            }
-            var previousPoint = null,
-                previousLabel = null;
-            $.plot($("#flot-dashboard-chart"), dataset, options);
-            var mapData = {
-                "US": 298,
-                "SA": 200,
-                "DE": 220,
-                "FR": 540,
-                "CN": 120,
-                "AU": 760,
-                "BR": 550,
-                "IN": 200,
-                "GB": 120,
-            };
-            $('#world-map').vectorMap({
-                map: 'world_mill_en',
-                backgroundColor: "transparent",
-                regionStyle: {
-                    initial: {
-                        fill: '#e4e4e4',
-                        "fill-opacity": 0.9,
-                        stroke: 'none',
-                        "stroke-width": 0,
-                        "stroke-opacity": 0
-                    }
-                },
-                series: {
-                    regions: [{
-                        values: mapData,
-                        scale: ["#1ab394", "#22d6b1"],
-                        normalizeFunction: 'polynomial'
-                    }]
-                },
-            });
-        });
-    </script>
-</body>
-
-</html>
+</div>
+{% endblock %}
