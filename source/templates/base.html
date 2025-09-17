@@ -23,6 +23,14 @@
 
     <!-- App css -->
     <link href="{% static 'dist/css/app.min.css' %}" rel="stylesheet" type="text/css">
+
+
+    <link href="{% static 'dist/plugins/alerty/alerty.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'dist/plugins/toastr/toastr.min.css' %}" rel="stylesheet" type="text/css">
+
+    {% block styles %}
+
+    {% endblock %}
 </head>
 
 <body>
@@ -80,6 +88,8 @@
 
    {% include 'hover.html' %}
 
+   {% include "loader.html" %}
+
     <!-- Vendor js -->
     <script src="{% static 'dist/js/vendors.min.js' %}"></script>
 
@@ -87,16 +97,24 @@
     <script src="{% static 'dist/js/app.js' %}"></script>
 
     <!-- E Charts js -->
-    <script src="{% static 'dist/plugins/echarts.min.js' %}"></script>
+    {% comment %} <script src="{% static 'dist/plugins/echarts.min.js' %}"></script> {% endcomment %}
 
     <!-- JVector Maps-->
-    <script src="{% static 'dist/plugins/jsvectormap.min.js' %}"></script>
+    {% comment %} <script src="{% static 'dist/plugins/jsvectormap.min.js' %}"></script> {% endcomment %}
 
     <!-- Custom table -->
     <script src="{% static 'dist/plugins/custom-table.js' %}"></script>
 
+
+    <script src="{% static 'dist/shamman/general.js' %}"></script>
+    <script src="{% static 'dist/shamman/alerter.js' %}"></script>
+    <script src="{% static 'dist/shamman/traitement.js' %}"></script>
+    <script src="{% static 'dist/shamman/loader.js' %}"></script>
+    
+    <script src="{% static 'dist/plugins/toastr/toastr.min.js' %}"></script>
+    <script src="{% static 'dist/plugins/idle-timer/idle-timer.min.js' %}"></script>
     <!-- Dashboard 2 Page js -->
-    <script src="{% static 'dist/plugins/dashboard-2.js' %}"></script>
+    {% comment %} <script src="{% static 'dist/plugins/dashboard-2.js' %}"></script> {% endcomment %}
 
     {% block scripts %}
 

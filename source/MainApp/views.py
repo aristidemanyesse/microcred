@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from annoying.decorators import render_to
+from django.contrib.auth.decorators import login_required
 from faker import Faker
 
 
-
+@login_required()
 @render_to('MainApp/dashboard.html')
 def dashboard_view(request):
+    print(request.user)
     ctx = {
         'TITLE_PAGE' : "Tableau de bord",
     }

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="auth-box d-flex align-items-center">
+    <div class="container-xxl">
+        <div class="row align-items-center justify-content-center">
+            <div class="col-xl-10">
+                <div class="card rounded-4">
+                    <div class="row justify-content-between g-0">
+                        <div class="col-lg-6">
+                            <div class="card-body">
+                                <div class="auth-brand text-center mb-4">
+                                    <a href="#" class="logo-dark">
+                                        <img src="{% static 'dist/images/logo.jpeg' %}" alt="dark logo" height="50">
+                                    </a>
+                                    <a href="#" class="logo-light">
+                                        <img src="{% static 'dist/images/logo.jpeg' %}" alt="logo" height="50">
+                                    </a>
+                                    <h4 class="fw-bold mt-4">Espace d'authentification</h4>
+                                    <p class="text-muted w-lg-75 mx-auto">Veuillez vous connecter pour accéder à votre
+                                        espace d'administration.</p>
+                                </div>
+
+                                <form method="POST" action="#" id="loginForm">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="userEmail" class="form-label">Identifiant <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="ti ti-mail text-muted fs-xl"></i></span>
+                                            <input type="text" class="form-control" name="username" id="userEmail"
+                                                placeholder="you.example" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="userPassword" class="form-label">Mot de passe <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="ti ti-lock-password text-muted fs-xl"></i></span>
+                                            <input type="password" class="form-control" name="password"
+                                                id="userPassword" placeholder="mot de passe" required>
+                                        </div>
+                                    </div>
+
+                                    <br>
+
+                                    <div class="d-grid">
+                                        <button type="submit" class="ladda-button btn btn-warning fw-semibold py-2"
+                                            data-style="zoom-in">Se connecter</button>
+                                    </div>
+                                </form>
+
+                            <br>
+
+                                <p class="text-center text-muted mt-4 mb-0">
+                                    © <script>
+                                        document.write(new Date().getFullYear())
+                                    </script> Tous droits réservés © par <span class="fw-semibold">RSTD</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 d-none d-lg-block">
+                            <div
+                                class="h-100 position-relative card-side-img rounded-end-4 rounded-end rounded-0 overflow-hidden">
+                                <div
+                                    class="p-4 card-img-overlay rounded-4 rounded-start-0 auth-overlay d-flex align-items-end justify-content-center">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-new-user" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header modal-md bg-warning text-white">
+                <h2 class="modal-title" id="mySmallModalLabel"><i class="ti ti-user-circle"></i> Première connexion</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formNewUser" method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p class="text-center">
+                        Bienvenue sur votre espace d'administration.<br />
+                        Pour plus de sécurité, vous devez changer vos paramètres de
+                        connexion pour que vous soyez le seul à les connaitre !
+                    </p>
+                    <br />
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Nouvel identifiant <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="ti ti-mail text-muted fs-xl"></i></span>
+                            <input type="text" class="form-control" name="username" id="userEmail"
+                                placeholder="you.example" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword" class="form-label">Nouveau mot de passe <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-lock-password text-muted fs-xl"></i></span>
+                            <input type="password" class="form-control" name="password1" id="userPassword"
+                                placeholder="mot de passe" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword2" class="form-label">Confirmer mot de passe <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-lock-password text-muted fs-xl"></i></span>
+                            <input type="password" class="form-control" name="password2" id="userPassword2"
+                                placeholder="mot de passe" required>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer d-flex justify-content-between">
+                   <button type="button" class="btn btn-default dim pull-left" data-dismiss="modal">
+                            <i class="fa fa-close"></i> Annuler
+                        </button>
+                        <button type="submit" class="btn btn-warning dim pull-right"> <i class="fa fa-check"></i> Je suis prêt ! </button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% endblock %}
+
+{% block scripts %}
+<script>
+    {% include 'AuthentificationApp/login.js' %}
+</script>
+{% endblock %}

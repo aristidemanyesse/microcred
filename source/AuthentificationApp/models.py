@@ -13,6 +13,7 @@ class Employe(AbstractUser, BaseModel):
     contact = models.CharField(max_length = 255, null = True, blank=True)
     role    = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True)
     brut    = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    is_new  = models.BooleanField(default=True)
 
     
     def __str__(self):
@@ -20,7 +21,7 @@ class Employe(AbstractUser, BaseModel):
     
     
     def get_full_name(self):
-        return f"{self.user.first_name} {self.user.last_name}"
+        return f"{self.first_name} {self.last_name}"
 
     def is_agent(self):
         return self.role.nom.lower() == 'agent'
