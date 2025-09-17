@@ -10,7 +10,7 @@ class BaseModel(models.Model):
     protected = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return self.libelle if hasattr(self, 'libelle') else str(self.id)
     
     class Meta:
         ordering = ['-created_at']

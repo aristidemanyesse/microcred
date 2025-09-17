@@ -8,6 +8,7 @@ django = "*"
 django-annoying = "*"
 faker = "*"
 djangorestframework-simplejwt = "*"
+python-dateutil = "*"
 
 [dev-packages]
 

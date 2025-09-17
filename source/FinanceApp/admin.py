@@ -25,17 +25,26 @@ class PenaliteAdmin(admin.ModelAdmin):
 class CompteEpargneAdmin(admin.ModelAdmin):
     list_display = ('client', 'solde', 'date_creation')
     search_fields = ('client__id', 'client__nom', 'client__prenoms')
-    
+
+
+@admin.register(Interet)
+class InteretAdmin(admin.ModelAdmin):
+    list_display = ('compte', 'montant', 'description')
+    search_fields = ('compte__id', 'description')
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
     list_display = ('compte', 'type_transaction', 'montant', 'date_transaction', 'commentaire')
     search_fields = ('compte__id', 'type_transaction__libelle', 'commentaire')
     
+@admin.register(ModaliteEcheance)
+class ModaliteEcheanceAdmin(admin.ModelAdmin):  
+    list_display = ('libelle', 'etiquette')
+    search_fields = ('libelle',)
     
 @admin.register(Pret)
 class PretAdmin(admin.ModelAdmin):  
-    list_display = ('client', 'montant', 'taux_interet', 'date_debut', 'duree_mois', 'montant_rembourse', 'statut')
+    list_display = ('client', 'base', 'taux', 'montant', 'modalite', 'nombre_modalite', 'statut')
     search_fields = ('client__id', 'client__nom', 'client__prenoms')
     list_filter = ('statut',)
     

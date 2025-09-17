@@ -1,12 +1,8 @@
 from django.core.management.base import BaseCommand, CommandError
 from faker import Faker
 from AuthentificationApp.models import *
-from ClientApp.models import *
-from ColisApp.models import *
-from LivraisonApp.models import TypeVehicule
-from PointRelaisApp.models import *
-from PurchaseApp.models import Payement
-from ZoneApp.models import Zone
+from MainApp.models import *
+from FinanceApp.models import *
 
 class Command(BaseCommand):
     help = 'Closes the specified poll for voting'
@@ -15,11 +11,62 @@ class Command(BaseCommand):
         
         faker = Faker()
         
-        print("Création des emballage...")
-        for i in range(100):
-            Emballage.objects.create(
-                type   = TypeEmballage.objects.filter().order_by('?').first(),
+        print("Création des clients...")
+        for i in range(80):
+            Client.objects.create(
+                agence       = Agence.objects.filter().order_by('?').first(),
+                type_client  = TypeClient.objects.filter().order_by('?').first(),
+                date_naissance = faker.date_between(start_date="-70y", end_date="-18y"),
+                nom          = faker.last_name(),
+                prenoms      = faker.first_name(),
+                genre        = Genre.objects.filter().order_by('?').first(),
+                adresse      = faker.address(),
+                telephone    = faker.phone_number(),
+                email        = faker.email(),
             )
+            
+            
+        for i in range(100):
+            pret = Pret.objects.create(
+                client          = Client.objects.filter().order_by('?').first(),
+                modalite        = ModaliteEcheance.objects.filter().order_by('?').first(),
+                base            = faker.random_int(min=100000, max=10000000),
+                taux            = faker.random_int(min=1, max=10),
+                nombre_modalite = faker.random_int(min=10, max=30),
+            )
+            for echeance in pret.echeance_set.all().order_by('date_echeance'):
+                echeance.montant_paye = echeance.montant_a_payer if faker.boolean(chance_of_getting_true=70) else faker.random_int(min=100, max=round(echeance.montant_a_payer), step=100)
+                echeance.save()
+                
+                if faker.boolean(chance_of_getting_true=70):
+                    Penalite.objects.create(
+                        echeance = echeance,
+                        montant  = faker.random_int(min=100, max=100000),
+                        description = faker.text(max_nb_chars=50),
+                    )
+                
+            
+
+            compte =CompteEpargne.objects.create(
+                client        = Client.objects.filter().order_by('?').first(),
+                date_creation = faker.date_between(start_date="-5y", end_date="now"),
+            )
+            for i in range(5):
+                Transaction.objects.create(
+                    compte           = compte,
+                    type_transaction = TypeTransaction.objects.filter().order_by('?').first(),
+                    montant          = faker.random_int(min=10000, max=100000),
+                    date_transaction = faker.date_between(start_date="-5y", end_date="now"),
+                    commentaire      = faker.text(max_nb_chars=50),
+                )
+                
+                if faker.boolean(chance_of_getting_true=50):
+                    Interet.objects.create(
+                        compte      = compte,
+                        montant     = (compte.solde() * faker.random_int(min=1, max=10)) / 100,
+                        description = faker.text(max_nb_chars=50),
+                    )   
+            
             
         return
         

@@ -1,5 +1,5 @@
 
-from FinanceApp.models import StatutPret, TypeTransaction
+from FinanceApp.models import ModaliteEcheance, StatutPret, TypeTransaction
 
 
 def initialize():
@@ -18,6 +18,16 @@ def initialize():
             StatutPret.objects.create(libelle='En cours', etiquette = StatutPret.EN_COURS)
             StatutPret.objects.create(libelle='Terminé', etiquette = StatutPret.TERMINE)
             StatutPret.objects.create(libelle='Retard', etiquette = StatutPret.RETARD)
+            
+            
+        print("Création des modalités d'échéance ...")
+        if not ModaliteEcheance.objects.filter().exists():
+            ModaliteEcheance.objects.create(libelle='Hébédomadaire', etiquette = ModaliteEcheance.HEBDOMADAIRE)
+            ModaliteEcheance.objects.create(libelle='Mensuel', etiquette = ModaliteEcheance.MENSUEL)
+            ModaliteEcheance.objects.create(libelle='Bimensuel', etiquette = ModaliteEcheance.BIMENSUEL)
+            ModaliteEcheance.objects.create(libelle='Trimestriel', etiquette = ModaliteEcheance.TRIMESTRIEL)
+            ModaliteEcheance.objects.create(libelle='Semestriel', etiquette = ModaliteEcheance.SEMESTRIEL)
+            ModaliteEcheance.objects.create(libelle='Annuel', etiquette = ModaliteEcheance.ANNUEL)
             
             
     except Exception as e:

@@ -1,36 +1,59 @@
 from django.db import models
-
+from annoying.decorators import signals
 from MainApp.models import Client
+from CoreApp.tools import GenerateTools
+from CoreApp.models import BaseModel
+from datetime import timedelta
+from dateutil.relativedelta import relativedelta
 
 # Create your models here.
-class CompteEpargne(models.Model):
+class CompteEpargne(BaseModel):
+    numero       = models.CharField(max_length=50)
     client        = models.ForeignKey(Client, on_delete=models.CASCADE)
-    solde         = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     date_creation = models.DateField(auto_now_add=True)
     
+    def __str__(self):
+        return f"Epargne N°{self.numero}"
+    
     def deposer(self, montant):
-        self.solde += montant
-        self.save()
-        Transaction.objects.create(compte=self, type_transaction=TypeTransaction.objects.get(nom='Dépôt'), montant=montant)
+        Transaction.objects.create(
+            compte=self,
+            type_transaction=TypeTransaction.objects.get(etiquette = TypeTransaction.DEPOT), 
+            montant=montant
+        )
 
     def retirer(self, montant):
-        if self.solde >= montant:
-            self.solde -= montant
-            self.save()
-            Transaction.objects.create(compte=self, type_transaction=TypeTransaction.objects.get(nom='Retrait'), montant=montant)
+        if self.solde() >= montant:
+            Transaction.objects.create(
+                compte=self,
+                type_transaction=TypeTransaction.objects.get(etiquette = TypeTransaction.RETRAIT),
+                montant=montant
+            )
         else:
             raise ValueError("Solde insuffisant")
         
+    
+    def solde(self):
+        depots = Transaction.objects.filter(compte=self, type_transaction__etiquette= TypeTransaction.DEPOT).aggregate(total=models.Sum('montant'))['total'] or 0
+        retraits = Transaction.objects.filter(compte=self, type_transaction__etiquette = TypeTransaction.RETRAIT).aggregate(total=models.Sum('montant'))['total'] or 0
+        return depots - retraits
         
 
-class TypeTransaction(models.Model):
+class Interet(BaseModel):
+    compte        = models.ForeignKey(CompteEpargne, on_delete=models.CASCADE)
+    montant       = models.DecimalField(max_digits=12, decimal_places=2)
+    description   = models.TextField(null=True, blank=True)
+
+
+class TypeTransaction(BaseModel):
     DEPOT = 1
     RETRAIT = 2
     libelle = models.CharField(max_length=50)  # Dépôt / Retrait
     etiquette = models.CharField(max_length=50)
     
 
-class Transaction(models.Model):
+class Transaction(BaseModel):
+    numero       = models.CharField(max_length=50)
     compte           = models.ForeignKey(CompteEpargne, on_delete=models.CASCADE)
     type_transaction = models.ForeignKey(TypeTransaction, on_delete=models.CASCADE)
     montant          = models.DecimalField(max_digits=12, decimal_places=2)
@@ -39,7 +62,7 @@ class Transaction(models.Model):
 
 
 
-class StatutPret(models.Model):
+class StatutPret(BaseModel):
     ANNULEE = 0
     EN_COURS = 1
     TERMINE = 2
@@ -47,15 +70,30 @@ class StatutPret(models.Model):
     libelle = models.CharField(max_length=50)  # En cours / Terminé / Retard
     etiquette = models.CharField(max_length=50)
     
+    
 
-class Pret(models.Model):
-    client            = models.ForeignKey(Client, on_delete=models.CASCADE)
-    montant           = models.DecimalField(max_digits=12, decimal_places=2)
-    taux_interet      = models.DecimalField(max_digits=5, decimal_places=2)
-    date_debut        = models.DateField()
-    duree_mois        = models.PositiveIntegerField()
-    montant_rembourse = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    statut            = models.ForeignKey(StatutPret, on_delete=models.CASCADE)
+
+class ModaliteEcheance(BaseModel):
+    HEBDOMADAIRE = "1"
+    MENSUEL = "2"
+    BIMENSUEL = "3"
+    TRIMESTRIEL = "4"
+    SEMESTRIEL = "5"
+    ANNUEL = "6"
+    libelle = models.CharField(max_length=50) 
+    etiquette = models.CharField(max_length=50)
+    
+    
+
+class Pret(BaseModel):
+    numero          = models.CharField(max_length=50)
+    client          = models.ForeignKey(Client, on_delete=models.CASCADE)
+    base            = models.DecimalField(max_digits=12, decimal_places=2)
+    taux            = models.DecimalField(max_digits=5, decimal_places=2)
+    montant         = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    modalite        = models.ForeignKey(ModaliteEcheance, on_delete=models.CASCADE)
+    nombre_modalite = models.PositiveIntegerField()
+    statut          = models.ForeignKey(StatutPret, on_delete=models.CASCADE)
     
     def montant_restant(self):
         return self.montant - self.montant_rembourse
@@ -113,8 +151,9 @@ class Pret(models.Model):
                 penalite.save()
 
 
+    
 
-class Echeance(models.Model):
+class Echeance(BaseModel):
     pret            = models.ForeignKey(Pret, on_delete=models.CASCADE)
     date_echeance   = models.DateField()
     montant_a_payer = models.DecimalField(max_digits=12, decimal_places=2)
@@ -126,7 +165,7 @@ class Echeance(models.Model):
         return self.montant_a_payer - self.montant_paye
     
 
-class Penalite(models.Model):
+class Penalite(BaseModel):
     echeance         = models.ForeignKey(Echeance, on_delete=models.CASCADE)
     montant          = models.DecimalField(max_digits=12, decimal_places=2)
     date_application = models.DateField(auto_now_add=True)
@@ -140,3 +179,106 @@ class Penalite(models.Model):
             self.montant -= montant
         self.save()
         return montant
+
+
+
+
+@signals.pre_save(sender=CompteEpargne)
+def sighandler(instance, **kwargs):
+    if instance._state.adding:
+        instance.numero = GenerateTools.epargneId(instance.client.agence)
+
+
+@signals.pre_save(sender=Transaction)
+def sighandler(instance, **kwargs):
+    if instance._state.adding:
+        instance.numero = GenerateTools.transactionId(instance.compte.client.agence)
+
+
+
+@signals.pre_save(sender=Pret)
+def sighandler(instance, **kwargs):
+    if instance._state.adding:
+        instance.numero = GenerateTools.pretId(instance.client.agence)
+        instance.montant = instance.base + (instance.base * instance.taux / 100)
+        instance.statut = StatutPret.objects.get(etiquette = StatutPret.EN_COURS)
+
+
+@signals.post_save(sender=Pret)
+def sighandler(instance, created, **kwargs):
+    if created:
+        date_echeance = instance.created_at.date()
+        montant = instance.montant / instance.nombre_modalite
+        if instance.modalite.etiquette == ModaliteEcheance.HEBDOMADAIRE:
+            i = 0
+            while i < instance.nombre_modalite:
+                i += 1
+                date_echeance += timedelta(days=7)
+                Echeance.objects.create(
+                    pret            = instance,
+                    montant_a_payer = montant,
+                    date_echeance   = date_echeance,
+                    statut          = StatutPret.objects.get(etiquette = StatutPret.EN_COURS),
+                )
+                
+        elif instance.modalite.etiquette == ModaliteEcheance.MENSUEL:
+            i = 0
+            while i < instance.nombre_modalite:
+                i += 1
+                date_echeance += timedelta(days=30)
+                Echeance.objects.create(
+                    pret            = instance,
+                    montant_a_payer = montant,
+                    date_echeance   = date_echeance,
+                    statut          = StatutPret.objects.get(etiquette = StatutPret.EN_COURS),
+                )
+                
+        elif instance.modalite.etiquette == ModaliteEcheance.BIMENSUEL:
+            i = 0
+            while i < instance.nombre_modalite:
+                i += 1
+                date_echeance += timedelta(days=60)
+                Echeance.objects.create(
+                    pret            = instance,
+                    montant_a_payer = montant,
+                    date_echeance   = date_echeance,
+                    statut          = StatutPret.objects.get(etiquette = StatutPret.EN_COURS),
+                )
+                
+        elif instance.modalite.etiquette == ModaliteEcheance.TRIMESTRIEL:
+            i = 0
+            while i < instance.nombre_modalite:
+                i += 1
+                date_echeance += timedelta(days=90)
+                Echeance.objects.create(
+                    pret            = instance,
+                    montant_a_payer = montant,
+                    date_echeance   = date_echeance,
+                    statut          = StatutPret.objects.get(etiquette = StatutPret.EN_COURS),
+                )
+                
+        elif instance.modalite.etiquette == ModaliteEcheance.SEMESTRIEL:
+            i = 0
+            while i < instance.nombre_modalite:
+                i += 1
+                date_echeance += timedelta(days=180)
+                Echeance.objects.create(
+                    pret            = instance,
+                    montant_a_payer = montant,
+                    date_echeance   = date_echeance,
+                    statut          = StatutPret.objects.get(etiquette = StatutPret.EN_COURS),
+                )
+                
+        elif instance.modalite.etiquette == ModaliteEcheance.ANNUEL:
+            i = 0
+            while i < instance.nombre_modalite:
+                i += 1
+                date_echeance += relativedelta(days=360)
+                Echeance.objects.create(
+                    pret            = instance,
+                    montant_a_payer = montant,
+                    date_echeance   = date_echeance,
+                    statut          = StatutPret.objects.get(etiquette = StatutPret.EN_COURS),
+                )
+        else:
+            raise ValueError("Modalité non valide")

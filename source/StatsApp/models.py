@@ -1,9 +1,10 @@
 from django.db import models
 from MainApp.models import Agence, Client
+from CoreApp.models import BaseModel
 
 
 # Create your models here.
-class Rapport(models.Model):
+class Rapport(BaseModel):
     titre           = models.CharField(max_length=200)
     date_generation = models.DateTimeField(auto_now_add=True)
     fichier         = models.FileField(upload_to='rapports/')
