@@ -17,6 +17,7 @@ def dashboard_view(request):
 def clients_view(request):
     faker = Faker("fr_FR")
     ctx = {
+        'TITLE_PAGE' : "Liste des souscripteurs",
         "faker": faker,
     }
     return ctx
@@ -27,6 +28,7 @@ def clients_view(request):
 def client_view(request):
     faker = Faker("fr_FR")
     ctx = {
+        'TITLE_PAGE' : "Fiche client",
         "faker": faker,
     }
     return ctx
@@ -35,28 +37,41 @@ def client_view(request):
 
 @render_to('MainApp/prets.html')
 def prets_view(request):
-    return render(request, 'MainApp/prets.html')
+    ctx = {
+        'TITLE_PAGE' : "Liste des prêts en cours",
+    }
+    return ctx
 
 
 @render_to('MainApp/demandes.html')
 def demandes_view(request):
-    return render(request, 'MainApp/demandes.html')
+    ctx = {
+        'TITLE_PAGE' : "Liste des demandes de prêts",
+    }
+    return ctx
 
 
 @render_to('MainApp/echeances.html')
 def echeances_view(request):
-    return render(request, 'MainApp/echeances.html')
+    ctx = {
+        'TITLE_PAGE' : "Liste des rétards d'échéances",
+    }
+    return ctx
 
 
 @render_to('MainApp/penalites.html')
 def penalites_view(request):
-    return render(request, 'MainApp/penalites.html')
+    ctx = {
+        'TITLE_PAGE' : "Liste des pénalités",
+    }
+    return ctx
 
 
 @render_to('MainApp/pret.html')
 def pret_view(request):
     faker = Faker("fr_FR")
     ctx = {
+        'TITLE_PAGE' : "Fiche prêt",
         "faker": faker,
     }
     return ctx
@@ -66,6 +81,7 @@ def pret_view(request):
 def epargnes_view(request):
     faker = Faker("fr_FR")
     ctx = {
+        'TITLE_PAGE' : "Liste des comptes épargnes",
         "faker": faker,
     }
     return ctx
@@ -75,6 +91,7 @@ def epargnes_view(request):
 def epargne_view(request):
     faker = Faker("fr_FR")
     ctx = {
+        'TITLE_PAGE' : "Fiche compte épargne",
         "faker": faker,
     }
     return ctx
@@ -82,5 +99,7 @@ def epargne_view(request):
 
 @render_to('MainApp/rapports.html')
 def rapports_view(request):
-    ctx = {}
+    ctx = {
+        'TITLE_PAGE' : "Rapports Stats",
+    }
     return ctx

@@ -6,14 +6,6 @@
     <div class="flex-grow-1">
         <h4 class="fs-sm text-uppercase fw-bold m-0">{{TITLE_PAGE}}</h4>
     </div>
-
-    <div class="text-end">
-        <ol class="breadcrumb m-0 py-0">
-            <li class="breadcrumb-item"><a href="javascript: void(0);">Inspinia</a></li>
-
-            <li class="breadcrumb-item active">Gradient Topbar</li>
-        </ol>
-    </div>
 </div>
 
 
@@ -24,18 +16,17 @@
             <div class="card-header border-light justify-content-between">
                 <div class="d-flex gap-2">
                     <div class="app-search">
-                        <input data-table-search type="text" class="form-control" placeholder="Search clients...">
+                        <input data-table-search type="text" class="form-control" placeholder="Rechercher un client...">
                         <i data-lucide="search" class="app-search-icon text-muted"></i>
                     </div>
 
                     <button data-table-delete-selected class="btn btn-danger d-none">Delete</button>
 
-                    <button type="submit" class="btn btn-purple rounded-circle btn-icon"><i
-                            class="ti ti-plus fs-lg"></i></button>
+                    <button data-bs-toggle="modal" data-bs-target="#modal-new-client" class="btn btn-purple"><i class="ti ti-plus fs-lg"></i> Nouveau</button>
                 </div>
 
                 <div class="d-flex align-items-center gap-2">
-                    <span class="me-2 fw-semibold">Filter By:</span>
+                    <span class="me-2 fw-semibold">Filtrer par:</span>
 
                     <!-- Country Filter -->
                     <div class="app-search">
@@ -126,13 +117,7 @@
                             </td>
                             <td>
                                 <div class="d-flex align-items-center justify-content-center gap-1">
-                                    <a href="javascript:void(0);" class=" btn btn-light btn-icon btn-sm rounded-circle">
-                                        <i class="ti ti-eye fs-lg"></i></a>
-                                    <a href="javascript:void(0);" class="btn btn-light btn-icon btn-sm rounded-circle">
-                                        <i class="ti ti-edit fs-lg"></i></a>
-                                    <a href="#" data-table-delete-row
-                                        class="btn btn-light btn-icon btn-sm rounded-circle"> <i
-                                            class="ti ti-trash fs-lg"></i></a>
+                                    <a href="{% url 'MainApp:client' %}" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
                                 </div>
                             </td>
                         </tr>
@@ -168,11 +153,7 @@
                                 <div class="d-flex align-items-center justify-content-center gap-1">
                                     <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                             class="ti ti-eye fs-lg"></i></a>
-                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-edit fs-lg"></i></a>
-                                    <a href="#" data-table-delete-row
-                                        class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-trash fs-lg"></i></a>
+                                   
                                 </div>
                             </td>
                         </tr>
@@ -207,11 +188,7 @@
                                 <div class="d-flex align-items-center justify-content-center gap-1">
                                     <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                             class="ti ti-eye fs-lg"></i></a>
-                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-edit fs-lg"></i></a>
-                                    <a href="#" data-table-delete-row
-                                        class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-trash fs-lg"></i></a>
+                                   
                                 </div>
                             </td>
                         </tr>
@@ -246,11 +223,7 @@
                                 <div class="d-flex align-items-center justify-content-center gap-1">
                                     <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                             class="ti ti-eye fs-lg"></i></a>
-                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-edit fs-lg"></i></a>
-                                    <a href="#" data-table-delete-row
-                                        class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-trash fs-lg"></i></a>
+                                   
                                 </div>
                             </td>
                         </tr>
@@ -285,11 +258,7 @@
                                 <div class="d-flex align-items-center justify-content-center gap-1">
                                     <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                             class="ti ti-eye fs-lg"></i></a>
-                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-edit fs-lg"></i></a>
-                                    <a href="#" data-table-delete-row
-                                        class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-trash fs-lg"></i></a>
+                                   
                                 </div>
                             </td>
                         </tr>
@@ -324,11 +293,7 @@
                                 <div class="d-flex align-items-center justify-content-center gap-1">
                                     <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                             class="ti ti-eye fs-lg"></i></a>
-                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-edit fs-lg"></i></a>
-                                    <a href="#" data-table-delete-row
-                                        class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-trash fs-lg"></i></a>
+                                   
                                 </div>
                             </td>
                         </tr>
@@ -364,11 +329,7 @@
                                 <div class="d-flex align-items-center justify-content-center gap-1">
                                     <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                             class="ti ti-eye fs-lg"></i></a>
-                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-edit fs-lg"></i></a>
-                                    <a href="#" data-table-delete-row
-                                        class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-trash fs-lg"></i></a>
+                                   
                                 </div>
                             </td>
                         </tr>
@@ -403,11 +364,7 @@
                                 <div class="d-flex align-items-center justify-content-center gap-1">
                                     <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                             class="ti ti-eye fs-lg"></i></a>
-                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-edit fs-lg"></i></a>
-                                    <a href="#" data-table-delete-row
-                                        class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-trash fs-lg"></i></a>
+                                   
                                 </div>
                             </td>
                         </tr>
@@ -443,11 +400,7 @@
                                 <div class="d-flex align-items-center justify-content-center gap-1">
                                     <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                             class="ti ti-eye fs-lg"></i></a>
-                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-edit fs-lg"></i></a>
-                                    <a href="#" data-table-delete-row
-                                        class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-trash fs-lg"></i></a>
+                                   
                                 </div>
                             </td>
                         </tr>
@@ -482,11 +435,7 @@
                                 <div class="d-flex align-items-center justify-content-center gap-1">
                                     <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                             class="ti ti-eye fs-lg"></i></a>
-                                    <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-edit fs-lg"></i></a>
-                                    <a href="#" data-table-delete-row
-                                        class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-trash fs-lg"></i></a>
+                                   
                                 </div>
                             </td>
                         </tr>
@@ -504,4 +453,23 @@
         </div>
     </div><!-- end col -->
 </div><!-- end row -->
+
+
+
+<div class="modal fade" id="modal-new-client" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Small modal</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+             <div class="modal-body">
+                Show a second modal and hide this one with the button below.
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal" data-bs-dismiss="modal">Open second modal</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 {% endblock %}

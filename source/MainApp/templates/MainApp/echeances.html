@@ -4,19 +4,9 @@
 {% block content %}
 <div class="container-fluid">
 
-    <div class="page-title-head d-flex align-items-center">
+     <div class="page-title-head d-flex align-items-center">
         <div class="flex-grow-1">
-            <h4 class="fs-sm text-uppercase fw-bold m-0">Projects List</h4>
-        </div>
-
-        <div class="text-end">
-            <ol class="breadcrumb m-0 py-0">
-                <li class="breadcrumb-item"><a href="javascript: void(0);">Inspinia</a></li>
-
-                <li class="breadcrumb-item"><a href="javascript: void(0);">Apps</a></li>
-
-                <li class="breadcrumb-item active">Projects List</li>
-            </ol>
+            <h4 class="fs-sm text-uppercase fw-bold m-0">{{TITLE_PAGE}}</h4>
         </div>
     </div>
 
@@ -33,6 +23,7 @@
         </div>
     </div>
 
+
     <div class="row">
         <div class="col-12">
             <div data-table data-table-rows-per-page="8" class="card">
@@ -41,14 +32,13 @@
                     <div class="d-flex gap-2">
                         <div class="app-search">
                             <input data-table-search type="search" class="form-control"
-                                placeholder="Search project name...">
+                                placeholder="Rechercher un prêt...">
                             <i data-lucide="search" class="app-search-icon text-muted"></i>
                         </div>
-                        <button data-table-delete-selected class="btn btn-danger d-none">Delete</button>
                     </div>
 
                     <div class="d-flex align-items-center gap-2">
-                        <span class="me-2 fw-semibold">Filter By:</span>
+                        <span class="me-2 fw-semibold">Filtrer par:</span>
 
                         <!-- Status Filter -->
                         <div class="app-search">
@@ -89,20 +79,11 @@
                         </div>
 
                     </div>
-
-                    <div class="d-flex gap-1">
-                        <a href="projects.html" class="btn btn-soft-primary btn-icon">
-                            <i data-lucide="layout-grid" class="fs-lg"></i>
-                        </a>
-                        <a href="projects-list.html" class="btn btn-primary btn-icon">
-                            <i data-lucide="list" class="fs-lg"></i>
-                        </a>
-                    </div>
                 </div>
 
                 <div class="table-responsive">
                     <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
-                        <thead class="bg-light align-middle bg-opacity-25 thead-sm">
+                        <thead class="bg-purple align-middle bg-opacity-25 thead-sm">
                             <tr class="text-uppercase fs-xxs">
                                 <th class="ps-3" style="width: 1%;">
                                     <input data-table-select-all
@@ -135,8 +116,8 @@
                                         </div>
                                         <div>
                                             <h5 class="mb-1 d-flex align-items-center">
-                                                <a data-sort="project" href="project-details.html" class="link-reset">AI
-                                                    Analytics
+                                                <a data-sort="project" href="{% url 'MainApp:pret' %}"
+                                                    class="link-reset">AI Analytics
                                                     Dashboard</a>
                                             </h5>
                                             <p class="text-muted mb-0 fs-xxs">Updated 5 minutes ago</p>
