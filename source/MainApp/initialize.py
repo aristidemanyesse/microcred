@@ -21,7 +21,13 @@ def initialize():
         # Creation des agences
         print("Création des agences ...")
         if not Agence.objects.filter().exists():
-            Agence.objects.create(libelle='Agence principale', adresse='Koumassi, rue des sables', ville='Abidjan', code='AP001')
+            Agence.objects.create(
+                libelle='Agence principale',
+                adresse='Koumassi, rue des sables',
+                ville='Abidjan',
+                code='AP001',
+                protected=True
+            )
             
 
     except Exception as e:

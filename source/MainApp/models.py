@@ -1,6 +1,6 @@
 from django.db import models
 from annoying.decorators import signals
-
+from datetime import date, timedelta
 from CoreApp.tools import GenerateTools
 from CoreApp.models import BaseModel 
 # Create your models here.
@@ -26,13 +26,14 @@ class Genre(BaseModel):
     
 
 class Client(BaseModel):
-    numero       = models.CharField(max_length=50)
+    numero         = models.CharField(max_length=50)
     agence         = models.ForeignKey(Agence, on_delete=models.CASCADE)
     type_client    = models.ForeignKey(TypeClient, on_delete=models.CASCADE)
     nom            = models.CharField(max_length=200)
     prenoms        = models.CharField(max_length=200)
     genre          = models.ForeignKey(Genre, null=True, blank=True, on_delete=models.SET_NULL)
     date_naissance = models.DateField(null=True, blank=True)
+    profession     = models.TextField()
     adresse        = models.TextField()
     telephone      = models.CharField(max_length=20)
     email          = models.EmailField(null=True, blank=True)
@@ -40,11 +41,15 @@ class Client(BaseModel):
     def __str__(self):
         return f"{self.prenoms} {self.nom} #{self.numero}"
     
+    def is_actif(self):
+        ladate = date.today() - timedelta(days=360)
+        return self.compteepargne_set.filter(created_at_gte = ladate).exists() or self.pret_set.filter(created_at_gte = ladate).exists()
+    
     def total_epargne(self):
         return sum(compte.solde for compte in self.compteepargne_set.all())
 
     def total_prets_en_cours(self):
-        return sum(pret.montant - pret.montant_rembourse for pret in self.pret_set.all() if pret.statut.nom.lower() == 'en cours')
+        return sum(pret.montant - pret.montant_rembourse for pret in self.pret_set.all() if pret.status.li.lower() == 'en cours')
 
     def total_penalites(self):
         return sum(penalite.montant for pret in self.pret_set.all() for penalite in pret.penalite_set.all())

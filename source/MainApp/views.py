@@ -2,14 +2,26 @@ from django.shortcuts import render
 from annoying.decorators import render_to
 from django.contrib.auth.decorators import login_required
 from faker import Faker
+from datetime import date
+from FinanceApp.models import CompteEpargne, Echeance, Penalite, Pret, StatusPret
+from MainApp.models import Client
 
 
 @login_required()
 @render_to('MainApp/dashboard.html')
 def dashboard_view(request):
-    print(request.user)
+    prets = Pret.objects.filter(status__etiquette = StatusPret.EN_COURS)
+    epargnes = CompteEpargne.objects.filter(status__etiquette = StatusPret.EN_COURS)
+    clients = Client.objects.filter()
+    echeances = Echeance.objects.filter(date_echeance__lte = date.today())
+    penalites = Penalite.objects.filter(created_at__date= date.today())
     ctx = {
         'TITLE_PAGE' : "Tableau de bord",
+        "prets": prets,
+        "epargnes": epargnes,
+        "clients": clients,
+        "echeances": echeances,
+        "penalites": penalites,
     }
     return ctx
 
@@ -17,10 +29,10 @@ def dashboard_view(request):
 
 @render_to('MainApp/clients.html')
 def clients_view(request):
-    faker = Faker("fr_FR")
+    clients = Client.objects.filter(agence=request.user.agence)
     ctx = {
         'TITLE_PAGE' : "Liste des souscripteurs",
-        "faker": faker,
+        "clients": clients,
     }
     return ctx
 
@@ -28,10 +40,10 @@ def clients_view(request):
 
 @render_to('MainApp/client.html')
 def client_view(request):
-    faker = Faker("fr_FR")
+    clients = Client.objects.filter()
     ctx = {
         'TITLE_PAGE' : "Fiche client",
-        "faker": faker,
+        "clients": clients,
     }
     return ctx
 

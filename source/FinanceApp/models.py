@@ -7,30 +7,53 @@ from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 
 # Create your models here.
+
+
+
+class StatusPret(BaseModel):
+    ANNULEE = 0
+    EN_COURS = 1
+    TERMINE = 2
+    RETARD = 3
+    libelle = models.CharField(max_length=50)  # En cours / Terminé / Retard
+    etiquette = models.CharField(max_length=50)
+    
+    
+    
 class CompteEpargne(BaseModel):
-    numero       = models.CharField(max_length=50)
-    client        = models.ForeignKey(Client, on_delete=models.CASCADE)
-    date_creation = models.DateField(auto_now_add=True)
+    numero = models.CharField(max_length=50)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='epargnes')
+    solde_actuel = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    status = models.ForeignKey(StatusPret, on_delete=models.CASCADE)
     
     def __str__(self):
         return f"Epargne N°{self.numero}"
     
     def deposer(self, montant):
         Transaction.objects.create(
-            compte=self,
-            type_transaction=TypeTransaction.objects.get(etiquette = TypeTransaction.DEPOT), 
-            montant=montant
+            compte           = self,
+            client           = self.client,
+            type_transaction = TypeTransaction.objects.get(etiquette = TypeTransaction.DEPOT), 
+            commentaire      = f"Approvisionnement de {montant} Fcfa sur le compte N°{self.numero}",
+            montant          = montant
         )
+        self.solde_actuel = self.solde() + montant
+        self.save()
+        
 
     def retirer(self, montant):
         if self.solde() >= montant:
             Transaction.objects.create(
-                compte=self,
-                type_transaction=TypeTransaction.objects.get(etiquette = TypeTransaction.RETRAIT),
-                montant=montant
+                compte           = self,
+                client           = self.client,
+                type_transaction = TypeTransaction.objects.get(etiquette = TypeTransaction.RETRAIT),
+                commentaire      = f"Retrait de {montant} Fcfa du compte N°{self.numero}",
+                montant          = montant
             )
+            self.solde_actuel = self.solde() - montant
+            self.save()
         else:
-            raise ValueError("Solde insuffisant")
+            raise ValueError("Le solde du compte est insuffisant pour ce retrait.")
         
     
     def solde(self):
@@ -48,28 +71,9 @@ class Interet(BaseModel):
 class TypeTransaction(BaseModel):
     DEPOT = 1
     RETRAIT = 2
+    REMBOURSEMENT = 3
     libelle = models.CharField(max_length=50)  # Dépôt / Retrait
     etiquette = models.CharField(max_length=50)
-    
-
-class Transaction(BaseModel):
-    numero       = models.CharField(max_length=50)
-    compte           = models.ForeignKey(CompteEpargne, on_delete=models.CASCADE)
-    type_transaction = models.ForeignKey(TypeTransaction, on_delete=models.CASCADE)
-    montant          = models.DecimalField(max_digits=12, decimal_places=2)
-    date_transaction = models.DateTimeField(auto_now_add=True)
-    commentaire      = models.TextField(null=True, blank=True)
-
-
-
-class StatutPret(BaseModel):
-    ANNULEE = 0
-    EN_COURS = 1
-    TERMINE = 2
-    RETARD = 3
-    libelle = models.CharField(max_length=50)  # En cours / Terminé / Retard
-    etiquette = models.CharField(max_length=50)
-    
     
 
 
@@ -87,13 +91,13 @@ class ModaliteEcheance(BaseModel):
 
 class Pret(BaseModel):
     numero          = models.CharField(max_length=50)
-    client          = models.ForeignKey(Client, on_delete=models.CASCADE)
+    client          = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='prets')
     base            = models.DecimalField(max_digits=12, decimal_places=2)
     taux            = models.DecimalField(max_digits=5, decimal_places=2)
     montant         = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     modalite        = models.ForeignKey(ModaliteEcheance, on_delete=models.CASCADE)
     nombre_modalite = models.PositiveIntegerField()
-    statut          = models.ForeignKey(StatutPret, on_delete=models.CASCADE)
+    status          = models.ForeignKey(StatusPret, on_delete=models.CASCADE)
     
     def montant_restant(self):
         return self.montant - self.montant_rembourse
@@ -118,23 +122,23 @@ class Pret(BaseModel):
             restant = echeance.montant_a_payer - echeance.montant_paye
             if montant >= restant:
                 echeance.montant_paye = echeance.montant_a_payer
-                echeance.statut = StatutPret.objects.get(nom='OK')
+                echeance.status = StatusPret.objects.get(nom='OK')
                 echeance.save()
                 montant -= restant
             else:
                 echeance.montant_paye += montant
-                echeance.statut = StatutPret.objects.get(nom='Partiellement payé')
+                echeance.status = StatusPret.objects.get(nom='Partiellement payé')
                 echeance.save()
                 montant = 0
         # Mettre à jour montant remboursé du prêt
         self.montant_rembourse = sum(e.montant_paye for e in self.echeance_set.all())
-        # Mise à jour statut du prêt
+        # Mise à jour status du prêt
         if self.montant_rembourse >= self.montant:
-            self.statut = StatutPret.objects.get(nom='Terminé')
-        elif self.echeance_set.filter(statut__nom='En retard').exists():
-            self.statut = StatutPret.objects.get(nom='Retard')
+            self.status = StatusPret.objects.get(nom='Terminé')
+        elif self.echeance_set.filter(status__nom='En retard').exists():
+            self.status = StatusPret.objects.get(nom='Retard')
         else:
-            self.statut = StatutPret.objects.get(nom='En cours')
+            self.status = StatusPret.objects.get(nom='En cours')
         self.save()
 
     def calcul_penalites(self, taux=0.02):
@@ -154,21 +158,35 @@ class Pret(BaseModel):
     
 
 class Echeance(BaseModel):
-    pret            = models.ForeignKey(Pret, on_delete=models.CASCADE)
+    pret            = models.ForeignKey(Pret, on_delete=models.CASCADE, related_name='echeances')
+    level           = models.PositiveIntegerField(default=0)
     date_echeance   = models.DateField()
     montant_a_payer = models.DecimalField(max_digits=12, decimal_places=2)
     montant_paye    = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    statut          = models.ForeignKey(StatutPret, on_delete=models.CASCADE)
+    status          = models.ForeignKey(StatusPret, on_delete=models.CASCADE)
     
     def montant_restant(self):
-        """Retourne le montant restant à payer pour cette échéance (hors pénalités)"""
         return self.montant_a_payer - self.montant_paye
     
+    def regler(self, montant):
+        self.montant_paye = montant if montant <= self.montant_a_payer else self.montant_a_payer
+        if self.montant_paye >= self.montant_a_payer:
+            self.status = StatusPret.objects.get(etiquette = StatusPret.TERMINE)
+        self.save()
+        
+        Transaction.objects.create(
+            echeance         = self,
+            client           = self.pret.client,
+            type_transaction = TypeTransaction.objects.get(etiquette = TypeTransaction.REMBOURSEMENT),
+            commentaire      = f"Remboursement échéance N°{self.level} du prêt N°{self.pret.numero}",
+            montant          = montant
+        )
+        
+        
 
 class Penalite(BaseModel):
     echeance         = models.ForeignKey(Echeance, on_delete=models.CASCADE)
     montant          = models.DecimalField(max_digits=12, decimal_places=2)
-    date_application = models.DateField(auto_now_add=True)
     description      = models.TextField(null=True, blank=True)
     
     def payer_penalite(self, montant):
@@ -182,17 +200,33 @@ class Penalite(BaseModel):
 
 
 
+class Transaction(BaseModel):
+    numero           = models.CharField(max_length=50)
+    client           = models.ForeignKey(Client, on_delete=models.CASCADE)
+    compte           = models.ForeignKey(CompteEpargne, null=True, blank=True, on_delete=models.CASCADE, related_name='transactions')
+    echeance         = models.ForeignKey(Echeance, null=True, blank=True, on_delete=models.CASCADE, related_name='transactions')
+    type_transaction = models.ForeignKey(TypeTransaction, on_delete=models.CASCADE)
+    montant          = models.DecimalField(max_digits=12, decimal_places=2)
+    commentaire      = models.TextField(null=True, blank=True)
+
+
+    
+    
+    
+
 
 @signals.pre_save(sender=CompteEpargne)
 def sighandler(instance, **kwargs):
     if instance._state.adding:
+        instance.status = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
         instance.numero = GenerateTools.epargneId(instance.client.agence)
 
 
 @signals.pre_save(sender=Transaction)
 def sighandler(instance, **kwargs):
     if instance._state.adding:
-        instance.numero = GenerateTools.transactionId(instance.compte.client.agence)
+        code = instance.compte.client.agence if instance.compte else (instance.echeance.pret.client.agence if instance.echeance else None)
+        instance.numero = GenerateTools.transactionId(code)
 
 
 
@@ -201,7 +235,7 @@ def sighandler(instance, **kwargs):
     if instance._state.adding:
         instance.numero = GenerateTools.pretId(instance.client.agence)
         instance.montant = instance.base + (instance.base * instance.taux / 100)
-        instance.statut = StatutPret.objects.get(etiquette = StatutPret.EN_COURS)
+        instance.status = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
 
 
 @signals.post_save(sender=Pret)
@@ -209,76 +243,27 @@ def sighandler(instance, created, **kwargs):
     if created:
         date_echeance = instance.created_at.date()
         montant = instance.montant / instance.nombre_modalite
-        if instance.modalite.etiquette == ModaliteEcheance.HEBDOMADAIRE:
-            i = 0
-            while i < instance.nombre_modalite:
-                i += 1
+        
+        i = 0
+        while i < instance.nombre_modalite:
+            i += 1
+            if instance.modalite.etiquette == ModaliteEcheance.HEBDOMADAIRE:
                 date_echeance += timedelta(days=7)
-                Echeance.objects.create(
-                    pret            = instance,
-                    montant_a_payer = montant,
-                    date_echeance   = date_echeance,
-                    statut          = StatutPret.objects.get(etiquette = StatutPret.EN_COURS),
-                )
-                
-        elif instance.modalite.etiquette == ModaliteEcheance.MENSUEL:
-            i = 0
-            while i < instance.nombre_modalite:
-                i += 1
+            elif instance.modalite.etiquette == ModaliteEcheance.MENSUEL:
                 date_echeance += timedelta(days=30)
-                Echeance.objects.create(
-                    pret            = instance,
-                    montant_a_payer = montant,
-                    date_echeance   = date_echeance,
-                    statut          = StatutPret.objects.get(etiquette = StatutPret.EN_COURS),
-                )
-                
-        elif instance.modalite.etiquette == ModaliteEcheance.BIMENSUEL:
-            i = 0
-            while i < instance.nombre_modalite:
-                i += 1
+            elif instance.modalite.etiquette == ModaliteEcheance.BIMENSUEL:
                 date_echeance += timedelta(days=60)
-                Echeance.objects.create(
-                    pret            = instance,
-                    montant_a_payer = montant,
-                    date_echeance   = date_echeance,
-                    statut          = StatutPret.objects.get(etiquette = StatutPret.EN_COURS),
-                )
-                
-        elif instance.modalite.etiquette == ModaliteEcheance.TRIMESTRIEL:
-            i = 0
-            while i < instance.nombre_modalite:
-                i += 1
+            elif instance.modalite.etiquette == ModaliteEcheance.TRIMESTRIEL:
                 date_echeance += timedelta(days=90)
-                Echeance.objects.create(
-                    pret            = instance,
-                    montant_a_payer = montant,
-                    date_echeance   = date_echeance,
-                    statut          = StatutPret.objects.get(etiquette = StatutPret.EN_COURS),
-                )
-                
-        elif instance.modalite.etiquette == ModaliteEcheance.SEMESTRIEL:
-            i = 0
-            while i < instance.nombre_modalite:
-                i += 1
+            elif instance.modalite.etiquette == ModaliteEcheance.SEMESTRIEL:
                 date_echeance += timedelta(days=180)
-                Echeance.objects.create(
-                    pret            = instance,
-                    montant_a_payer = montant,
-                    date_echeance   = date_echeance,
-                    statut          = StatutPret.objects.get(etiquette = StatutPret.EN_COURS),
-                )
-                
-        elif instance.modalite.etiquette == ModaliteEcheance.ANNUEL:
-            i = 0
-            while i < instance.nombre_modalite:
-                i += 1
+            elif instance.modalite.etiquette == ModaliteEcheance.ANNUEL:
                 date_echeance += relativedelta(days=360)
-                Echeance.objects.create(
-                    pret            = instance,
-                    montant_a_payer = montant,
-                    date_echeance   = date_echeance,
-                    statut          = StatutPret.objects.get(etiquette = StatutPret.EN_COURS),
-                )
-        else:
-            raise ValueError("Modalité non valide")
+
+            Echeance.objects.create(
+                pret            = instance,
+                level           = i,
+                montant_a_payer = montant,
+                date_echeance   = date_echeance,
+                status          = StatusPret.objects.get(etiquette = StatusPret.EN_COURS),
+            )

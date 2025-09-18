@@ -1,5 +1,5 @@
 
-from FinanceApp.models import ModaliteEcheance, StatutPret, TypeTransaction
+from FinanceApp.models import ModaliteEcheance, StatusPret, TypeTransaction
 
 
 def initialize():
@@ -9,15 +9,16 @@ def initialize():
         if not TypeTransaction.objects.filter().exists():
             TypeTransaction.objects.create(libelle='Dépôt', etiquette = TypeTransaction.DEPOT)
             TypeTransaction.objects.create(libelle='Retrait', etiquette = TypeTransaction.RETRAIT)
+            TypeTransaction.objects.create(libelle='Remboursement', etiquette = TypeTransaction.REMBOURSEMENT)
             
         
         # Creation des genres
         print("Création des status de prets ...")
-        if not StatutPret.objects.filter().exists():
-            StatutPret.objects.create(libelle='Annulé', etiquette = StatutPret.ANNULEE)
-            StatutPret.objects.create(libelle='En cours', etiquette = StatutPret.EN_COURS)
-            StatutPret.objects.create(libelle='Terminé', etiquette = StatutPret.TERMINE)
-            StatutPret.objects.create(libelle='Retard', etiquette = StatutPret.RETARD)
+        if not StatusPret.objects.filter().exists():
+            StatusPret.objects.create(libelle='Annulé', etiquette = StatusPret.ANNULEE)
+            StatusPret.objects.create(libelle='En cours', etiquette = StatusPret.EN_COURS)
+            StatusPret.objects.create(libelle='Terminé', etiquette = StatusPret.TERMINE)
+            StatusPret.objects.create(libelle='Retard', etiquette = StatusPret.RETARD)
             
             
         print("Création des modalités d'échéance ...")

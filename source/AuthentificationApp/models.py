@@ -9,6 +9,7 @@ class Role(BaseModel):
 
 
 class Employe(AbstractUser, BaseModel):
+    agence  = models.ForeignKey('MainApp.Agence', on_delete=models.CASCADE, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
     contact = models.CharField(max_length = 255, null = True, blank=True)
     role    = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True)

@@ -182,7 +182,7 @@
                         <img src="{% static 'dist/images/users/default.jpg' %}" width="32" class="rounded-circle me-lg-2 d-flex"
                             alt="user-image">
                         <div class="d-lg-flex align-items-center gap-1 d-none">
-                            <h5 class="my-0">Damian D.</h5>
+                            <h5 class="my-0">{{ request.user.first_name }} {{ request.user.last_name }}</h5>
                             <i class="ti ti-chevron-down align-middle"></i>
                         </div>
                     </a>

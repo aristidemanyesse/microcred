@@ -15,6 +15,7 @@ def logout_view(request):
     return redirect('AuthentificationApp:login')
 
 
+
 @render_to('AuthentificationApp/users.html')
 def users_view(request):
     ctx = {}

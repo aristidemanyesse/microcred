@@ -66,7 +66,7 @@ def first_user(request):
                 user.is_new = False
                 user.save()
                 login(request, user)
-                return JsonResponse({'status': True, })
+                return JsonResponse({'status': True})
     
     return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
 
