@@ -44,7 +44,9 @@ INSTALLED_APPS = [
     "FinanceApp",
     "MainApp",
     "StatsApp",
-    "CoreApp"
+    "CoreApp",
+    
+    "mathfilters"
 ]
 
 MIDDLEWARE = [

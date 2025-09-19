@@ -1,0 +1,488 @@
+{% extends "base.html" %}
+{% load static %}
+{% load mathfilters %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="page-title-head d-flex align-items-center">
+        <div class="flex-grow-1">
+            <h4 class="fs-sm text-uppercase fw-bold m-0">{{TITLE_PAGE}}</h4>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-xxl-12">
+            <div  class="card">
+                <div class="card-header p-0 d-block">
+                    <div class="row g-0 align-items-center">
+                        <div class="col-xl-12 border-end border-dashed">
+
+                            <div class="row align-items-center">
+                                <div class="col-xl-5 border-end">
+                                    <div class=" align-items-center p-4 ">
+                                        <div>
+                                            <h3 class="text-primary d-flex align-items-center gap-2 fw-bold">
+                                                PRET N°{{pret.numero}} <span
+                                                    class="float-end badge badge-label text-bg-{{pret.status.classe}}">{{pret.status}}</span>
+                                            </h3>
+                                            <p class="mb-2 text-muted">créé le {{pret.created_at|date:"d/m/Y à H:i"}}
+                                                
+                                            </p>
+                                            <p class="pe-2 pb-2 h5 text-muted mb-2 lh-base border-bottom">Prêt à
+                                                modalité {{pret.modalite}} pour {{pret.echeances.count}} échéances</p>
+
+                                            <h4 class="d-flex align-items-center justify-content-between gap-2">
+                                                <small>base:</small> <span class="fw-bold">{{pret.base}}</span></h4>
+                                            <h4 class="d-flex align-items-center justify-content-between gap-2">
+                                                <small>Intéret {{pret.taux|floatformat:2}}%:</small> <span
+                                                    class="text-muted fw-bold">{{pret.montant|sub:pret.base}}</span>
+                                            </h4>
+                                            <h4
+                                                class="d-flex align-items-center justify-content-between gap-2 border-bottom">
+                                                <small>Pénalités ({{pret.penalites}}):</small> <span
+                                                    class="text-danger fw-bold">{{pret.penalites_montant}}</span></h4>
+                                            <h4
+                                                class="d-flex justify-content-end gap-2 justify-content-between align-items-center">
+                                                <small>dû:</small> <span
+                                                    class="text-primary fw-bold">{{pret.montant}}</span></h4>
+                                            <h4
+                                                class="d-flex justify-content-end gap-2 justify-content-between align-items-center border-bottom">
+                                                <small>remboursé:</small> <span
+                                                    class="text-warning fw-bold">{{pret.montant|sub:pret.reste_a_payer|floatformat:2}}</span>
+                                            </h4>
+                                            <h2 class="d-flex align-items-center justify-content-between gap-2">
+                                                <small>Reste :</small> <span
+                                                    class="text-success fw-bold">{{pret.reste_a_payer|floatformat:2}}</span>
+                                            </h2>
+                                            <div class="d-flex justify-content-center align-items-center">
+                                                <a href="#" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-new-remboursement" class="btn btn-primary"><i
+                                                        class="ti ti-eye fs-lg"></i> Effectuer un remboursement</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-7">
+                                    <div class="card-body">
+                                        <div class="">
+                                            <div class="d-flex align-items-center gap-2 mb-2">
+                                                <div
+                                                    class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                                    <i class="ti ti-id fs-xl text-secondary"></i>
+                                                </div>
+                                                <p class="mb-0 fs-sm d-flex justify-content-between">
+                                                    <span class="text-dark fw-semibold">{{pret.client.numero}}</span>
+                                                </p>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2 mb-2">
+                                                <div
+                                                    class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                                    <i class="ti ti-user fs-xl text-secondary"></i>
+                                                </div>
+                                                <p class="mb-0 fs-sm fw-semibold">{{pret.client}}</p>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2 mb-2">
+                                                <div
+                                                    class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                                    <i class="ti ti-school fs-xl text-secondary"></i>
+                                                </div>
+                                                <p class="mb-0 fs-sm"> <span
+                                                        class="text-dark ">{{pret.client.type_client}} |
+                                                        {{pret.client.profession}}</span>
+                                                </p>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2 mb-2">
+                                                <div
+                                                    class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                                    <i class="ti ti-map-pin fs-xl text-secondary"></i>
+                                                </div>
+                                                <p class="mb-0 fs-sm"> <span class="text-dark ">{{pret.client.adresse}}
+                                                    </span>
+                                                </p>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2 mb-2">
+                                                <div
+                                                    class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                                    <i class="ti ti-phone fs-xl text-secondary"></i>
+                                                </div>
+                                                <p class="mb-0 fs-sm">Téléphone <a
+                                                        href="tel://{{pret.client.telephone}}"
+                                                        class="text-primary fw-semibold">{{pret.client.telephone}}</a>
+                                                </p>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2 mb-2">
+                                                <div
+                                                    class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                                    <i class="ti ti-mail fs-xl text-secondary"></i>
+                                                </div>
+                                                <p class="mb-0 fs-sm">Email <a href="email://{{pret.client.email}}"
+                                                        class="text-primary fw-semibold">{{pret.client.email}}</a>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            <a href="{% url 'MainApp:client' pret.client.id %}"
+                                                class="btn btn-warning"><i class="ti ti-eye fs-lg"></i> Voir la fiche du
+                                                souscripteur</a>
+                                        </div>
+                                        <!---->
+                                    </div>
+                                </div>
+                            </div>
+                        </div> <!-- end col-->
+                    </div> <!-- end row-->
+                </div>
+
+                <ul class="nav nav-tabs nav-justified nav-bordered nav-bordered-primary mb-3">
+                    <li class="nav-item">
+                        <a href="#home-b2" data-bs-toggle="tab" aria-expanded="false" class="nav-link active">
+                            <i class="ti ti-calendar-dollar fs-lg me-md-1 align-middle"></i>
+                            <span class="d-none d-md-inline-block align-middle">Echéances</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#transactions-b2" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
+                            <i class="ti ti-file-invoice fs-lg me-md-1 align-middle"></i>
+                            <span class="d-none d-md-inline-block align-middle">Transactions</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#profile-b2" data-bs-toggle="tab" aria-expanded="true" class="nav-link ">
+                            <i class="ti ti-dollar-circle fs-lg me-md-1 align-middle"></i>
+                            <span class="d-none d-md-inline-block align-middle">Pénalités</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div data-table data-table-rows-per-page="20" class="tab-pane show active" id="home-b2">
+                        <div
+                            class="card-header border-light d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="d-flex gap-2">
+                                <div class="app-search">
+                                    <input data-table-search type="search" class="form-control"
+                                        placeholder="Rechercher...">
+                                    <i data-lucide="search" class="app-search-icon text-muted"></i>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2">
+                                <div>
+                                    <select data-table-set-rows-per-page="20"
+                                        class="form-select form-control my-1 my-md-0">
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="" >
+                            <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
+                                <thead class="bg-light align-middle bg-opacity-25 thead-sm">
+                                    <tr class="text-uppercase fs-xxs">
+                                        <th>ID</th>
+                                        <th>Status</th>
+                                        <th>Montant dû</th>
+                                        <th>Pénalités</th>
+                                        <th data-table-sort>Réglé</th>
+                                        <th>date de reglement</th>
+                                        <th data-table-sort>Effectué par</th>
+                                        <th class="text-center">Actions</th>
+                                    </tr>
+                                </thead><!-- end table-head -->
+                                <tbody>
+                                    {% for echeance in echeances %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="avatar-md me-3">
+                                                    <span class="avatar-title text-bg-light rounded">
+                                                        <i class="ti ti-file-invoice fs-24 text-success"></i>
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <h5 class="mb-1 d-flex align-items-center">
+                                                        <a data-sort="project" href="#" class="link-reset">Echéance
+                                                            N°{{echeance.level}}</a>
+                                                    </h5>
+                                                    <p class="text-muted mb-0 fs-xxs">
+                                                        {{echeance.date_echeance|date:"d M Y"}}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span
+                                                class="badge badge-label text-bg-{{echeance.status.classe}}">{{echeance.status}}</span>
+                                        </td>
+                                        <td>{{echeance.montant_a_payer}} Fcfa</td>
+                                        <td>
+                                            {% if echeance.penalites.count > 0 %}
+                                            {{echeance.penalites.count}} pénalités <br>
+                                            <span class="text-danger fw-bold">{{echeance.penalites_montant}} Fcfa</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if echeance.montant_paye > 0 %}
+                                            {{echeance.montant_paye}} Fcfa
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{echeance.transactions.first.created_at|date:"d/m/Y à H:i"}}
+                                        </td>
+                                        <td>{{echeance.transactions.first.employe}}</td>
+                                        <td>
+                                            {% if echeance.montant_paye > 0 %}
+                                            <div class="d-flex align-items-center justify-content-center gap-1">
+                                                <a href="invoice-details.html"
+                                                    class="btn btn-light btn-icon btn-sm rounded-circle"><i
+                                                        class="ti ti-file-invoice fs-lg"></i></a>
+                                            </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+
+                                </tbody><!-- end table-body -->
+                            </table><!-- end table -->
+                        </div>
+                        <div class="card-footer border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div data-table-pagination-info="invoices"></div>
+
+                                <div data-table-pagination></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" data-table data-table-rows-per-page="20" id="transactions-b2">
+                        <div
+                            class="card-header border-light d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="d-flex gap-2">
+                                <div class="app-search">
+                                    <input data-table-search type="search" class="form-control"
+                                        placeholder="Rechercher...">
+                                    <i data-lucide="search" class="app-search-icon text-muted"></i>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2">
+                                <div>
+                                    <select data-table-set-rows-per-page="20"
+                                        class="form-select form-control my-1 my-md-0">
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="">
+                            <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
+                                <thead class="bg-light align-middle bg-opacity-25 thead-sm">
+                                    <tr class="text-uppercase fs-xxs">
+                                        <th data-table-sort="project">Prêt | Echéance</th>
+                                        <th class="">Montant</th>
+                                        <th class="">Mode de paiement</th>
+                                        <th>Déclenché le</th>
+                                        <th>Effectué par</th>
+                                        <th class="text-center">Actions</th>
+                                    </tr>
+                                </thead><!-- end table-head -->
+                                <tbody>
+                                    {% for transaction in transactions %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="avatar-md me-3">
+                                                    <span class="avatar-title text-bg-light rounded">
+                                                        <i class="ti ti-file-invoice fs-24 text-primary"></i>
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <h5 class="mb-0 d-flex align-items-center">#{{transaction.numero}}</h5>
+                                                        <p class="text-muted mb-0 fs-xxs">
+                                                        Echéance
+                                                        N°{{transaction.echeance.level}}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <h5 class="fs-base mb-0 fw-medium">{{transaction.montant|floatformat:2}} Fcfa
+                                            </h5>
+                                        </td>
+                                        <td>
+                                            <h5 class="fs-base mb-0 fw-medium">{{transaction.mode.libelle}}</h5>
+                                        </td>
+                                        <td>{{transaction.created_at|date:"d/m/Y à H:i"}}</td>
+                                        <td>{{transaction.employe}}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center justify-content-center gap-1">
+                                                <a href="invoice-details.html"
+                                                    class="btn btn-light btn-icon btn-sm rounded-circle"><i
+                                                        class="ti ti-file-invoice fs-lg"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+
+                                </tbody><!-- end table-body -->
+                            </table><!-- end table -->
+                        </div>
+                        <div class="card-footer border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div data-table-pagination-info="invoices"></div>
+
+                                <div data-table-pagination></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" data-table data-table-rows-per-page="20" id="profile-b2">
+                        <div
+                            class="card-header border-light d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="d-flex gap-2">
+                                <div class="app-search">
+                                    <input data-table-search type="search" class="form-control"
+                                        placeholder="Rechercher...">
+                                    <i data-lucide="search" class="app-search-icon text-muted"></i>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2">
+                                <div>
+                                    <select data-table-set-rows-per-page="20"
+                                        class="form-select form-control my-1 my-md-0">
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="">
+                            <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
+                                <thead class="bg-light align-middle bg-opacity-25 thead-sm">
+                                    <tr class="text-uppercase fs-xxs">
+                                        <th data-table-sort="project">Prêt | Echéance</th>
+                                        <th class="">Montant</th>
+                                        <th>Déclenché le</th>
+                                    </tr>
+                                </thead><!-- end table-head -->
+                                <tbody>
+                                    {% for penalite in penalites %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="avatar-md me-3">
+                                                    <span class="avatar-title text-bg-light rounded">
+                                                        <i class="ti ti-calendar-dollar fs-24 text-primary"></i>
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <h5 class="mb-1 d-flex align-items-center">Echéaance
+                                                        N°{{penalite.echeance.level}}</h5>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <h5 class="fs-base mb-0 fw-medium">{{penalite.montant|floatformat:2}} Fcfa
+                                            </h5>
+                                        </td>
+                                        <td>{{penalite.created_at|date:"d/m/Y à H:i"}}</td>
+                                    </tr>
+                                    {% endfor %}
+
+                                </tbody><!-- end table-body -->
+                            </table><!-- end table -->
+                        </div>
+                        <div class="card-footer border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div data-table-pagination-info="invoices"></div>
+
+                                <div data-table-pagination></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div><!-- end col -->
+    </div><!-- end row -->
+
+</div>
+
+<div class="modal fade" id="modal-new-remboursement" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header modal-md bg-primary text-white">
+                <h2 class="modal-title" id="mySmallModalLabel"> Remboursement</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" id="formNewRemboursement">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <br />
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Montant versé <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
+                            <input type="text" class="form-control" name="montant" id="userEmail" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword" class="form-label">Mode de payement<span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-id text-muted fs-xl"></i></span>
+                            <select class="form-control" name="mode" id="userPassword" required>
+                                {% for mode in modes %}
+                                <option value="{{ mode.id }}">{{ mode.libelle }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword2" class="form-label">Commentaire </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-edit text-muted fs-xl"></i></span>
+                            <textarea class="form-control" name="commentaire" rows="4" placeholder="numero de paiement"
+                                ></textarea>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer d-flex justify-content-between">
+                    <input type="hidden" name="id" value="{{ pret.id }}">
+                    <button type="button" class="btn btn-default dim pull-left" data-dismiss="modal">
+                        <i class="ti ti-close"></i> Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary dim pull-right"> <i class="ti ti-check"></i> Valider
+                    </button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'dist/plugins/apexcharts.min.js' %}"></script>
+<script src="{% static 'dist/plugins/ecommerce-reviews.js' %}"></script>
+<script>
+    {% include 'FinanceApp/pret.js' %}
+</script>
+{% endblock %}

@@ -13,19 +13,6 @@
 
     <div class="row">
         <div class="col-12">
-            <div class="alert alert-warning alert-bordered border-start border-warning d-flex align-items-start gap-2">
-                <i class="ti ti-info-circle fs-xxl"></i>
-                <div>
-                    To enable the gradient topbar, add
-                    <code>data-topbar-color="gradient"</code> to the
-                    <code>&lt;html&gt;</code> tag in your layout.
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12">
             <article class="card border-top-0">
 
                 <!-- Card Body -->
@@ -37,14 +24,17 @@
                                     class="img-fluid img-thumbnail rounded-circle">
                             </div>
                             <div>
-                                <h4 class="text-nowrap fw-bold mb-1"> Damian D. </h4>
-                                <p class="text-muted mb-1">Product Designer</p>
-                                <span class="badge badge-soft-primary fw-medium ms-2 fs-xs ms-auto">Gestionnaire</span>
+                                <h1 class="text-nowrap fw-bold mb-1"> {{client}} </h1>
+                                <h4 class="text-muted mb-1">{{client.numero}}</h4>
+                                <span
+                                    class="badge badge-soft-primary fw-medium ms-2 fs-xs ms-auto">{{client.employe}}</span>
                             </div>
                         </div>
                         <div class="d-flex gap-2">
-                            <button data-bs-toggle="modal" data-bs-target="#modal-new-client" class="btn btn-primary"><i class="ti ti-plus fs-lg"></i> Demander un prêt</button>
-                            <button data-bs-toggle="modal" data-bs-target="#modal-new-client" class="btn btn-purple"><i class="ti ti-plus fs-lg"></i> Nouveau compte épargne</button>                           
+                            <button data-bs-toggle="modal" data-bs-target="#modal-new-client" class="btn btn-primary"><i
+                                    class="ti ti-plus fs-lg"></i> Demander un prêt</button>
+                            <button data-bs-toggle="modal" data-bs-target="#modal-new-client" class="btn btn-purple"><i
+                                    class="ti ti-plus fs-lg"></i> Nouveau compte épargne</button>
                         </div>
                     </div>
                 </div>
@@ -62,143 +52,129 @@
                     <div class="">
                         <div class="d-flex align-items-center gap-2 mb-2">
                             <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
-                                <i class="ti ti-briefcase fs-xl text-secondary"></i>
-                            </div>
-                            <p class="mb-0 fs-sm">UI/UX Designer & Full-Stack Developer</p>
-                        </div>
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
                                 <i class="ti ti-school fs-xl text-secondary"></i>
                             </div>
-                            <p class="mb-0 fs-sm">Studied at <span class="text-dark fw-semibold">Stanford
-                                    University</span>
+                            <p class="mb-0 fs-sm"><span class="text-dark fw-semibold">{{client.type_client}} |
+                                    {{client.profession}}</span>
                             </p>
+                        </div>
+                        {% if client.genre %}
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                <i class="ti ti-gender-bigender fs-xl text-secondary"></i>
+                            </div>
+                            <p class="mb-0 fs-sm">{{client.genre}}</p>
+                        </div>
+                        {% endif %}
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                <i class="ti ti-calendar fs-xl text-secondary"></i>
+                            </div>
+                            <p class="mb-0 fs-sm">Né le <span
+                                    class="text-dark fw-semibold">{{client.date_naissance|date:"d/m/Y"}}</span></p>
                         </div>
                         <div class="d-flex align-items-center gap-2 mb-2">
                             <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
                                 <i class="ti ti-map-pin fs-xl text-secondary"></i>
                             </div>
-                            <p class="mb-0 fs-sm">Lives in <span class="text-dark fw-semibold">San Francisco,
-                                    CA</span></p>
-                        </div>
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
-                                <i class="ti ti-users fs-xl text-secondary"></i>
-                            </div>
-                            <p class="mb-0 fs-sm">Followed by <span class="text-dark fw-semibold">25.3k
-                                    People</span></p>
+                            <p class="mb-0 fs-sm"> <span class="text-dark fw-semibold">{{client.adresse}}</span></p>
                         </div>
                         <div class="d-flex align-items-center gap-2 mb-2">
                             <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
                                 <i class="ti ti-mail fs-xl text-secondary"></i>
                             </div>
-                            <p class="mb-0 fs-sm">Email <a href="mailto:hello@example.com"
-                                    class="text-primary fw-semibold">hello@example.com</a>
+                            <p class="mb-0 fs-sm">Email <a href="mailto:{{client.email}}"
+                                    class="text-primary fw-semibold">{{client.email}}</a>
                             </p>
                         </div>
                         <div class="d-flex align-items-center gap-2 mb-2">
                             <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
-                                <i class="ti ti-link fs-xl text-secondary"></i>
+                                <i class="ti ti-phone fs-xl text-secondary"></i>
                             </div>
-                            <p class="mb-0 fs-sm">Website <a href="https://www.example.dev"
-                                    class="text-primary fw-semibold">www.example.dev</a>
+                            <p class="mb-0 fs-sm">Téléphone <a href="tel://{{client.telephone}}"
+                                    class="text-primary fw-semibold">{{client.telephone}}</a>
                             </p>
                         </div>
-                        <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center gap-2 mb-2">
                             <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
-                                <i class="ti ti-world fs-xl text-secondary"></i>
+                                <i class="ti ti-users fs-xl text-secondary"></i>
                             </div>
-                            <p class="mb-0 fs-sm">Languages <span class="text-dark fw-semibold">English, Hindi,
-                                    Japanese</span>
-                            </p>
+                            <p class="mb-0 fs-sm">Enregistré le <span
+                                    class="text-dark fw-semibold">{{client.created_at|date:"d/m/Y à H:i"}}</span></p>
                         </div>
                     </div>
                     <!---->
                 </div>
 
-                 <div class="card-footer bg-transparent ">
-                        <button data-bs-toggle="modal" data-bs-target="#modal-new-client" class="btn btn-purple"><i class="ti ti-edit fs-lg"></i> Modifie les infos</button>
-                        <button data-bs-toggle="modal" data-bs-target="#modal-new-client" class="btn btn-danger"><i class="ti ti-trash fs-lg"></i> Supprimer le profil</button>
-                        </div>
+                <div class="card-footer bg-transparent d-flex justify-content-end gap-2">
+                    <button data-bs-toggle="modal" data-bs-target="#modal-new-client" class="btn btn-purple"><i
+                            class="ti ti-edit fs-lg"></i> Modifie les infos</button>
+                    <button data-bs-toggle="modal" data-bs-target="#modal-new-client" class="btn btn-danger"><i
+                            class="ti ti-trash fs-lg"></i></button>
+                </div>
             </div> <!-- end card-->
 
         </div> <!-- end col-->
 
         <div class="col-xl-8">
-            <div class="row row-cols-xxl-4 row-cols-md-2 row-cols-1 align-items-center">
+            <div class="row row-cols-xxl-3 row-cols-md-2 row-cols-1 align-items-center">
+                {% for pret in prets %}
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
-                            <a href="javascript:void(0);" data-table-delete-row
+                            <a href="{% url 'FinanceApp:pret' pret.id %}" data-table-delete-row
                                 class="btn btn-light btn-icon btn-sm rounded-circle text-muted float-end mt-n1 fs-md">
                                 <i class="ti ti-eye "></i></a>
-                            <h5 title="Revenue Generated">Revenue</h5>
+                            <h5 title="Revenue Generated">Prêt N°<span class="text-primary">{{pret.numero}}</span></h5>
                             <div class="d-flex align-items-center gap-2 my-3">
                                 <div class="avatar-md flex-shrink-0">
                                     <span class="avatar-title text-bg-primary rounded-circle fs-22">
-                                        <i class="ti ti-credit-card"></i>
+                                        <i class="ti ti-calendar-dollar"></i>
                                     </span>
                                 </div>
-                                <h3 class="mb-0">$25.5k</h3>
-                                <span class="badge badge-soft-primary fw-medium ms-2 fs-xs ms-auto">+1.5%</span>
+                                <h3 class="mb-0">{{pret.base|floatformat:0}} Fcfa</h3>
+                                <span class="badge badge-soft-primary fw-medium ms-2 fs-xs ms-auto">+
+                                    {{pret.taux|floatformat:2}}%</span>
                             </div>
                             <p class="mb-0">
                                 <span class="text-primary"><i class="ti ti-point-filled"></i></span>
-                                <span class="text-nowrap text-muted">Total Revenue</span>
-                                <span class="float-end"><b>$12.5M</b></span>
+                                <span class="text-nowrap text-muted">Reste à payer</span>
+                                <span class="float-end"><b>{{pret.reste_a_payer|floatformat:2}} Fcfa</b></span>
                             </p>
                         </div>
-                       
+
                     </div>
                 </div>
+                {% endfor %}
 
+                {% for epargne in epargnes %}
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
-                            <a href="#!" class="text-muted float-end mt-n1 fs-xl"><i
-                                    class="ti ti-external-link"></i></a>
-                            <h5 title="Number of Messages">Messages</h5>
+                            <a href="{% url 'FinanceApp:epargne' epargne.id %}" data-table-delete-row
+                                class="btn btn-light btn-icon btn-sm rounded-circle text-muted float-end mt-n1 fs-md">
+                                <i class="ti ti-eye "></i></a>
+                            <h5 title="Revenue Generated">Epargne N°<span class="text-purple">{{epargne.numero}}</span>
+                            </h5>
                             <div class="d-flex align-items-center gap-2 my-3">
                                 <div class="avatar-md flex-shrink-0">
-                                    <span class="avatar-title text-bg-secondary rounded-circle fs-22">
-                                        <i class="ti ti-message-circle"></i>
+                                    <span class="avatar-title text-bg-purple rounded-circle fs-22">
+                                        <i class="ti ti-coins"></i>
                                     </span>
                                 </div>
-                                <h3 class="mb-0">69.5k</h3>
-                                <span class="badge badge-soft-secondary fw-medium ms-2 fs-xs ms-auto">+5 New</span>
+                                <h3 class="mb-0">{{epargne.solde_actuel|floatformat:2}} Fcfa</h3>
+                                <span class="badge badge-soft-primary fw-medium ms-2 fs-xs ms-auto">+
+                                    {{epargne.taux|floatformat:2}}%</span>
                             </div>
-                            <p class="mb-0">
-                                <span class="text-secondary"><i class="ti ti-point-filled"></i></span>
-                                <span class="text-nowrap text-muted">Total Messages</span>
-                                <span class="float-end"><b>32.1M</b></span>
+                            <p class="mb-0 d-flex justify-content-end">
+                                <span class="text-nowrap text-muted">Dernière opération le <span
+                                        class="text-purple">{{epargne.update_at|date:"d/m/Y à H:i"}}</span></span>
                             </p>
                         </div>
-                    </div>
-                </div>
 
-                <div class="col">
-                    <div class="card">
-                        <div class="card-body">
-                            <a href="#!" class="text-muted float-end mt-n1 fs-xl"><i
-                                    class="ti ti-external-link"></i></a>
-                            <h5 title="Total Clients">Clients</h5>
-                            <div class="d-flex align-items-center gap-2 my-3">
-                                <div class="avatar-md flex-shrink-0">
-                                    <span class="avatar-title text-bg-secondary rounded-circle fs-22">
-                                        <i class="ti ti-users"></i>
-                                    </span>
-                                </div>
-                                <h3 class="mb-0">184</h3>
-                                <span class="badge badge-soft-secondary fw-medium ms-2 fs-xs ms-auto">+4 New</span>
-                            </div>
-                            <p class="mb-0">
-                                <span class="text-secondary"><i class="ti ti-point-filled"></i></span>
-                                <span class="text-nowrap text-muted">Total Clients</span>
-                                <span class="float-end"><b>9,835</b></span>
-                            </p>
-                        </div>
                     </div>
                 </div>
+                {% endfor %}
 
             </div><!-- end row -->
 
@@ -212,217 +188,49 @@
                         <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
                             <thead class="bg-light align-middle bg-opacity-25 thead-sm">
                                 <tr class="text-uppercase fs-xxs">
-                                    <th class="ps-3" style="width: 1%;">
-                                        <input data-table-select-all
-                                            class="form-check-input form-check-input-light fs-14 mt-0" type="checkbox"
-                                            id="select-all-files" value="option">
-                                    </th>
                                     <th>ID</th>
-                                    <th>Create & End Date</th>
-                                    <th data-table-sort="name">Clients Name</th>
-                                    <th data-table-sort>Purchase</th>
-                                    <th data-table-sort>Amount</th>
-                                    <th data-table-sort data-column="status">Status</th>
+                                    <th>date</th>
+                                    <th data-table-sort>Montant</th>
+                                    <th data-table-sort data-column="status">Compte affilié</th>
+                                    <th data-table-sort>Effectué par</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead><!-- end table-head -->
                             <tbody>
+                                {% for transaction in transactions %}
                                 <tr>
-                                    <td class="ps-3">
-                                        <input
-                                            class="form-check-input form-check-input-light fs-14 file-item-check mt-0"
-                                            type="checkbox" value="option">
-                                    </td>
                                     <td>
                                         <h5 class="m-0">
                                             <span class="ti ti-file-invoice text-success fs-lg"></span>
                                             <a href="invoice-details.html"
-                                                class="link-reset fw-semibold">#INS-0120010</a>
+                                                class="link-reset fw-semibold">#{{transaction.numero}}</a>
                                         </h5>
-                                    </td>
-                                    <td>Feb 2 - Feb 10, 2025</td>
-                                    <td>
-                                        <div class="d-flex justify-content-start align-items-center gap-2">
-                                            <div class="avatar avatar-sm">
-                                                <img src="assets/images/users/user-7.jpg" alt="avatar-7"
-                                                    class="img-fluid rounded-circle">
-                                            </div>
-                                            <div>
-                                                <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name"
-                                                        href="pages-profile.html" class="link-reset">Emily
-                                                        Parker</a>
-                                                </h5>
-                                                <p class="text-muted fs-xs mb-0">emily@startupwave.io</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Inspinia - Extended License</td>
-                                    <td>$999.00 USD</td>
-                                    <td>
-                                        <span class="badge bg-success-subtle text-success badge-label">Paid</span>
+                                        <p class="text-muted fs-xs mb-0">{{transaction.type_transaction}}</p>
                                     </td>
                                     <td>
-                                        <div class="d-flex align-items-center justify-content-center gap-1">
-                                            <a href="invoice-details.html"
-                                                class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                                    class="ti ti-eye fs-lg"></i></a>
-                                            <a href="javascript:void(0);"
-                                                class="btn btn-light btn-icon btn-sm rounded-circle"> <i
-                                                    class="ti ti-edit fs-lg"></i></a>
-                                            <a href="javascript:void(0);" data-table-delete-row
-                                                class="btn btn-light btn-icon btn-sm rounded-circle"> <i
-                                                    class="ti ti-trash fs-lg"></i></a>
-                                        </div>
+                                        {{transaction.created_at|date:"d/m/Y à H:i"}}
                                     </td>
-                                </tr>
+                                    <td>{{transaction.montant}} Fcfa</td>
+                                    <td>
+                                        {% if transaction.epargne %}
+                                        <a href="{% url 'FinanceApp:epargne' transaction.epargne.id %}"
+                                            class="text-purple label">Epargne N°{{transaction.epargne.numero}}</a>
+                                        {% elif transaction.echeance %}
+                                        <a href="{% url 'FinanceApp:pret' transaction.echeance.pret.id %}"
+                                            class="text-primary label">Prêt N°{{transaction.echeance.pret.numero}}</a>
+                                        {% endif %}
+                                    </td>
 
-                                <tr>
-                                    <td class="ps-3">
-                                        <input
-                                            class="form-check-input form-check-input-light fs-14 file-item-check mt-0"
-                                            type="checkbox" value="option">
-                                    </td>
-                                    <td>
-                                        <h5 class="m-0">
-                                            <span class="ti ti-file-invoice text-warning fs-lg"></span>
-                                            <a href="invoice-details.html"
-                                                class="link-reset fw-semibold">#INS-0120009</a>
-                                        </h5>
-                                    </td>
-                                    <td>Feb 5 - Feb 12, 2025</td>
-                                    <td>
-                                        <div class="d-flex justify-content-start align-items-center gap-2">
-                                            <div class="avatar-sm flex-shrink-0">
-                                                <span class="avatar-title text-bg-info fw-bold rounded-circle">
-                                                    MS
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name"
-                                                        href="pages-profile.html" class="link-reset">Michael
-                                                        Scott</a>
-                                                </h5>
-                                                <p class="text-muted fs-xs mb-0">michael@dundermifflin.com</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>CRM Dashboard - Regular License</td>
-                                    <td>$249.00 USD</td>
-                                    <td>
-                                        <span class="badge bg-warning-subtle text-warning badge-label">Pending</span>
-                                    </td>
+                                    <td>{{transaction.employe}}</td>
                                     <td>
                                         <div class="d-flex align-items-center justify-content-center gap-1">
                                             <a href="invoice-details.html"
                                                 class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                                    class="ti ti-eye fs-lg"></i></a>
-                                            <a href="javascript:void(0);"
-                                                class="btn btn-light btn-icon btn-sm rounded-circle"> <i
-                                                    class="ti ti-edit fs-lg"></i></a>
-                                            <a href="javascript:void(0);" data-table-delete-row
-                                                class="btn btn-light btn-icon btn-sm rounded-circle"> <i
-                                                    class="ti ti-trash fs-lg"></i></a>
+                                                    class="ti ti-file-invoice fs-lg"></i></a>
                                         </div>
                                     </td>
                                 </tr>
-
-                                <tr>
-                                    <td class="ps-3">
-                                        <input
-                                            class="form-check-input form-check-input-light fs-14 file-item-check mt-0"
-                                            type="checkbox" value="option">
-                                    </td>
-                                    <td>
-                                        <h5 class="m-0">
-                                            <span class="ti ti-file-invoice text-danger fs-lg"></span>
-                                            <a href="invoice-details.html"
-                                                class="link-reset fw-semibold">#INS-0120008</a>
-                                        </h5>
-                                    </td>
-                                    <td>Jan 10 - Jan 15, 2025</td>
-                                    <td>
-                                        <div class="d-flex justify-content-start align-items-center gap-2">
-                                            <div class="avatar avatar-sm">
-                                                <img src="assets/images/users/user-3.jpg" alt="avatar-3"
-                                                    class="img-fluid rounded-circle">
-                                            </div>
-                                            <div>
-                                                <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name"
-                                                        href="pages-profile.html" class="link-reset">Samantha
-                                                        Reed</a>
-                                                </h5>
-                                                <p class="text-muted fs-xs mb-0">samantha@alphatech.com</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Landing Page - Agency Pack</td>
-                                    <td>$349.00 USD</td>
-                                    <td>
-                                        <span class="badge bg-danger-subtle text-danger badge-label">Overdue</span>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center justify-content-center gap-1">
-                                            <a href="invoice-details.html"
-                                                class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                                    class="ti ti-eye fs-lg"></i></a>
-                                            <a href="javascript:void(0);"
-                                                class="btn btn-light btn-icon btn-sm rounded-circle"> <i
-                                                    class="ti ti-edit fs-lg"></i></a>
-                                            <a href="javascript:void(0);" data-table-delete-row
-                                                class="btn btn-light btn-icon btn-sm rounded-circle"> <i
-                                                    class="ti ti-trash fs-lg"></i></a>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td class="ps-3">
-                                        <input
-                                            class="form-check-input form-check-input-light fs-14 file-item-check mt-0"
-                                            type="checkbox" value="option">
-                                    </td>
-                                    <td>
-                                        <h5 class="m-0">
-                                            <span class="ti ti-file-invoice text-primary fs-lg"></span>
-                                            <a href="invoice-details.html"
-                                                class="link-reset fw-semibold">#INS-0120007</a>
-                                        </h5>
-                                    </td>
-                                    <td>Mar 1 - Mar 5, 2025</td>
-                                    <td>
-                                        <div class="d-flex justify-content-start align-items-center gap-2">
-                                            <div class="avatar avatar-sm">
-                                                <img src="assets/images/users/user-2.jpg" alt="avatar-2"
-                                                    class="img-fluid rounded-circle">
-                                            </div>
-                                            <div>
-                                                <h5 class="text-nowrap fs-base mb-0 lh-base"><a data-sort="name"
-                                                        href="pages-profile.html" class="link-reset">Jonathan
-                                                        Lee</a>
-                                                </h5>
-                                                <p class="text-muted fs-xs mb-0">jonathan@zenflow.io</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Task Manager - SaaS Version</td>
-                                    <td>$799.00 USD</td>
-                                    <td>
-                                        <span class="badge bg-info-subtle text-info badge-label">Draft</span>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center justify-content-center gap-1">
-                                            <a href="invoice-details.html"
-                                                class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                                    class="ti ti-eye fs-lg"></i></a>
-                                            <a href="javascript:void(0);"
-                                                class="btn btn-light btn-icon btn-sm rounded-circle"> <i
-                                                    class="ti ti-edit fs-lg"></i></a>
-                                            <a href="javascript:void(0);" data-table-delete-row
-                                                class="btn btn-light btn-icon btn-sm rounded-circle"> <i
-                                                    class="ti ti-trash fs-lg"></i></a>
-                                        </div>
-                                    </td>
-                                </tr>
+                                {% endfor %}
 
                             </tbody><!-- end table-body -->
                         </table><!-- end table -->
@@ -435,5 +243,205 @@
 
 </div>
 <!-- container -->
+
+<div class="modal fade" id="modal-new-client" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h1 class="modal-title" id="mySmallModalLabel">Nouveau souscripteur</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            {% if client.type_client.id == particulier.id %}
+            <form method="POST" class="formShamman" classname="ClientForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
+                            <label class="form-label">Nom<span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-user text-muted fs-xl"></i></span>
+                                <input type="text" class="form-control" name="nom" placeholder="Nom" required
+                                    value="{{ client.nom }}">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label">Prenoms <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-user text-muted fs-xl"></i></span>
+                                <input type="text" class="form-control" name="prenoms" placeholder="Prenoms" required
+                                    value="{{ client.prenoms }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label class="form-label">Genre <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-gender-bigender text-muted fs-xl"></i></span>
+                                <select name="genre" class="form-select form-control my-1 my-md-0" required>
+                                    {% for genre in genres %}
+                                    <option value="{{ genre.id }}"
+                                        {% if client.genre.id == genre.id %}selected{% endif %}>{{ genre.libelle }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">Date de naissance <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-calendar text-muted fs-xl"></i></span>
+                                <input type="date" class="form-control" name="date_naissance" placeholder="__/__/____"
+                                    required value="{{ client.date_naissance }}">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">Profession<span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-briefcase text-muted fs-xl"></i></span>
+                                <input type="text" class="form-control" name="profession" placeholder="Profession"
+                                    required value="{{ client.profession }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label class="form-label">Adresse<span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-map text-muted fs-xl"></i></span>
+                                <input type="text" class="form-control" name="adresse" placeholder="Lieu d'habitation"
+                                    required value="{{ client.adresse }}">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">Téléphone <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-phone text-muted fs-xl"></i></span>
+                                <input type="text" class="form-control" name="telephone" placeholder="XX XX XX XX XX"
+                                    required value="{{ client.telephone }}">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">Email </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-mail text-muted fs-xl"></i></span>
+                                <input type="email" class="form-control" name="email" placeholder="you@example.com"
+                                    value="{{ client.email }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer d-flex justify-content-between">
+                    <input type="hidden" name="id" value="{{ client.id }}">
+                    <input type="hidden" name="numero" value="{{ client.numero }}">
+                    <input type="hidden" name="agence" value="{{ client.agence.id }}">
+                    <input type="hidden" name="employe" value="{{ client.employe.id }}">
+                    <input type="hidden" name="type_client" value="{{ particulier.id }}">
+                    <button type="button" class="btn btn-default dim pull-left" data-dismiss="modal">
+                        <i class="ti ti-close"></i> Annuler
+                    </button>
+                    <button type="submit" class="btn btn-warning dim pull-right"> <i class="ti ti-check"></i>
+                        Enregistrer le particulier </button>
+                </div>
+            </form>
+
+            {% else %}
+            <form method="POST" class="formShamman" classname="ClientForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
+                            <label class="form-label">Raison sociale<span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-home text-muted fs-xl"></i></span>
+                                <input type="text" class="form-control" name="nom" placeholder="Raison sociale" required
+                                    value="{{ client.nom }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label class="form-label">Date de création <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-calendar text-muted fs-xl"></i></span>
+                                <input type="date" class="form-control" name="date_naissance" placeholder="__/__/____"
+                                    required value="{{ client.date_naissance }}">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">Domaine d'activité <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-briefcase text-muted fs-xl"></i></span>
+                                <input type="text" class="form-control" name="profession"
+                                    placeholder="Domaine d'activité" required value="{{ client.profession }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label class="form-label">Adresse <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-map text-muted fs-xl"></i></span>
+                                <input type="text" class="form-control" name="adresse" placeholder="Lieu d'habitation"
+                                    required value="{{ client.adresse }}">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">Téléphone <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-phone text-muted fs-xl"></i></span>
+                                <input type="text" class="form-control" name="telephone" placeholder="XX XX XX XX XX"
+                                    required value="{{ client.telephone }}">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">Email </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-mail text-muted fs-xl"></i></span>
+                                <input type="email" class="form-control" name="email" placeholder="you@example.com"
+                                    value="{{ client.nom }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer d-flex justify-content-between">
+                    <input type="hidden" name="id" value="{{ client.id }}">
+                    <input type="hidden" name="numero" value="{{ client.numero }}">
+                    <input type="hidden" name="agence" value="{{ client.agence.id }}">
+                    <input type="hidden" name="employe" value="{{ client.employe.id }}">
+                    <input type="hidden" name="type_client" value="{{ entreprise.id }}">
+                    <button type="button" class="btn btn-default dim pull-left" data-dismiss="modal">
+                        <i class="ti ti-close"></i> Annuler
+                    </button>
+                    <button type="submit" class="btn btn-warning dim pull-right"> <i class="ti ti-check"></i>
+                        Enregistrer l'entreprise </button>
+                </div>
+            </form>
+            {% endif %}
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 {% endblock  %}

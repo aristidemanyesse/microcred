@@ -8,21 +8,18 @@
     </div>
 </div>
 
-
-
 <div class="row justify-content-center">
     <div class="col-xxl-12">
-        <div data-table data-table-rows-per-page="8" class="card">
+        <div data-table data-table-rows-per-page="20" class="card">
             <div class="card-header border-light justify-content-between">
                 <div class="d-flex gap-2">
                     <div class="app-search">
-                        <input data-table-search type="text" class="form-control" placeholder="Rechercher un client...">
+                        <input data-table-search type="text" class="form-control" placeholder="Rechercher un souscripteur...">
                         <i data-lucide="search" class="app-search-icon text-muted"></i>
                     </div>
 
-                    <button data-table-delete-selected class="btn btn-danger d-none">Delete</button>
-
-                    <button data-bs-toggle="modal" data-bs-target="#modal-new-client" class="btn btn-purple"><i class="ti ti-plus fs-lg"></i> Nouveau</button>
+                    <button data-bs-toggle="modal" data-bs-target="#modal-new-client" class="btn btn-warning"><i
+                            class="ti ti-plus fs-lg"></i> Nouveau souscripteur</button>
                 </div>
 
                 <div class="d-flex align-items-center gap-2">
@@ -30,27 +27,13 @@
 
                     <!-- Country Filter -->
                     <div class="app-search">
-                        <select data-table-filter="country" class="form-select form-control my-1 my-md-0">
-                            <option value="All">Country</option>
-                            <option value="US">USA</option>
-                            <option value="UK">UK</option>
-                            <option value="AU">Australia</option>
-                            <option value="DE">Germany</option>
-                            <option value="IN">India</option>
+                        <select data-table-filter="Type" class="form-select form-control my-1 my-md-0">
+                            <option value="All">Tous les types</option>
+                            {% for type in types %}
+                            <option value="{{ type.libelle }}">{{ type.libelle }}</option>
+                            {% endfor %}
                         </select>
                         <i data-lucide="globe" class="app-search-icon text-muted"></i>
-                    </div>
-
-                    <!-- Project Type Filter -->
-                    <div class="app-search">
-                        <select data-table-filter="type" class="form-select form-control my-1 my-md-0">
-                            <option value="All">Project Type</option>
-                            <option value="Project">Project</option>
-                            <option value="Contract">Contract</option>
-                            <option value="Retainer">Retainer</option>
-                            <option value="Dashboard">Dashboard</option>
-                        </select>
-                        <i data-lucide="layout" class="app-search-icon text-muted"></i>
                     </div>
 
                     <!-- Records Per Page -->
@@ -69,10 +52,11 @@
                     <thead class="bg-light bg-opacity-25 thead-sm">
                         <tr class="text-uppercase fs-xxs">
                             <th data-table-sort="name">Nom & Prénoms</th>
+                            <th data-table-sort>Type</th>
                             <th data-table-sort>Contacts</th>
                             <th data-table-sort>Enregistré le</th>
-                            <th data-table-sort data-column="type">Type</th>
-                            <th data-table-sort>Job Title</th>
+                            <th data-table-sort data-column="type">Profession</th>
+                            <th data-table-sort>Agence</th>
                             <th data-table-sort>Status</th>
                             <th class="text-center">Actions</th>
                         </tr>
@@ -83,13 +67,19 @@
                             <td>
                                 <div class="d-flex justify-content-start align-items-center gap-2">
                                     <div class="avatar avatar-sm">
-                                        <img src="{% static 'dist/images/clients/default.jpg' %}" alt="avatar-7" class="img-fluid rounded-circle">
+                                        <img src="{% static 'dist/images/clients/default.jpg' %}" alt="avatar-7"
+                                            class="img-fluid rounded-circle">
                                     </div>
                                     <div>
-                                        <h5 class="text-nowrap mb-0 lh-base fs-base"><a data-sort="name" href="{% url 'MainApp:client' %}" class="link-reset">{{ client.nom }} {{ client.prenoms }}</a></h5>
-                                        <p class="text-muted fs-xs mb-0">{{client.type_client}}</p>
+                                        <h5 class="text-nowrap mb-0 lh-base fs-base"><a data-sort="name"
+                                                href="{% url 'MainApp:client' client.id %}"
+                                                class="link-reset">{{ client }}</a></h5>
+                                        <p class="text-muted fs-xs mb-0">{{client.numero}}</p>
                                     </div>
                                 </div>
+                            </td>
+                            <td>
+                                {{client.type_client}}
                             </td>
                             <td>
                                 {{client.telephone}}
@@ -99,12 +89,17 @@
                             <td>{{client.profession}}</td>
                             <td>{{client.agence}}</td>
                             <td>
-                                
-                                <span class="badge bg-success-subtle text-success badge-label">Active</span>
+                                {% if client.is_actif %}
+                                <span class="badge bg-success-subtle text-success badge-label">Actif</span>
+                                {% else %}
+                                <span class="badge bg-danger-subtle text-danger badge-label">Inactif</span>
+                                {% endif %}
                             </td>
                             <td>
                                 <div class="d-flex align-items-center justify-content-center gap-1">
-                                    <a href="{% url 'MainApp:client' %}" class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-eye fs-lg"></i></a>
+                                    <a href="{% url 'MainApp:client' client.id %}"
+                                        class="btn btn-light btn-icon btn-sm rounded-circle"><i
+                                            class="ti ti-eye fs-lg"></i></a>
                                 </div>
                             </td>
                         </tr>
@@ -123,21 +118,219 @@
     </div><!-- end col -->
 </div><!-- end row -->
 
-
-
-<div class="modal fade" id="modal-new-client" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+<div class="modal fade" id="modal-new-client" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="mySmallModalLabel">Small modal</h4>
+            <div class="modal-header bg-warning text-white">
+                <h1 class="modal-title" id="mySmallModalLabel">Nouveau souscripteur</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-             <div class="modal-body">
-                Show a second modal and hide this one with the button below.
+            <div class="modal-body">
+                <ul class="nav nav-tabs nav-justified nav-bordered nav-bordered-warning mb-3">
+                    <li class="nav-item">
+                        <a href="#home-b2" data-bs-toggle="tab" aria-expanded="false" class="nav-link active">
+                            <i class="ti ti-user-circle fs-lg me-md-1 align-middle"></i>
+                            <span class="d-none d-md-inline-block align-middle">Nouveau particulier</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#profile-b2" data-bs-toggle="tab" aria-expanded="true" class="nav-link ">
+                            <i class="ti ti-home fs-lg me-md-1 align-middle"></i>
+                            <span class="d-none d-md-inline-block align-middle">Nouvelle entreprise</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="home-b2">
+                        <form method="POST" class="formShamman" classname="ClientForm">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <div class="row mb-3">
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Nom<span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="ti ti-user text-muted fs-xl"></i></span>
+                                            <input type="text" class="form-control" name="nom"
+                                                placeholder="Nom" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Prenoms <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="ti ti-user text-muted fs-xl"></i></span>
+                                            <input type="text" class="form-control" name="prenoms"
+                                                placeholder="Prenoms" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label class="form-label">Genre <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="ti ti-gender-bigender text-muted fs-xl"></i></span>
+                                            <select name="genre" class="form-select form-control my-1 my-md-0" required>
+                                            {% for genre in genres %}
+                                            <option value="{{ genre.id }}">{{ genre.libelle }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-label">Date de naissance <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="ti ti-calendar text-muted fs-xl"></i></span>
+                                            <input type="date" class="form-control" name="date_naissance"
+                                                placeholder="__/__/____" required>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-label">Profession<span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="ti ti-briefcase text-muted fs-xl"></i></span>
+                                            <input type="text" class="form-control" name="profession"
+                                                placeholder="Profession" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label class="form-label">Adresse<span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="ti ti-map text-muted fs-xl"></i></span>
+                                            <input type="text" class="form-control" name="adresse"
+                                                placeholder="Lieu d'habitation" required>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-label">Téléphone <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="ti ti-phone text-muted fs-xl"></i></span>
+                                            <input type="text" class="form-control" name="telephone"
+                                                placeholder="XX XX XX XX XX" required>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-label">Email </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="ti ti-mail text-muted fs-xl"></i></span>
+                                            <input type="email" class="form-control" name="email"
+                                                placeholder="you@example.com">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="modal-footer d-flex justify-content-between">
+                                <input type="hidden" name="agence" value="{{ request.user.agence.id }}">
+                                <input type="hidden" name="employe" value="{{ request.user.id }}">
+                                <input type="hidden" name="type_client" value="{{ particulier.id }}">
+                                <button type="button" class="btn btn-default dim pull-left" data-dismiss="modal">
+                                    <i class="ti ti-close"></i> Annuler
+                                </button>
+                                <button type="submit" class="btn btn-warning dim pull-right"> <i
+                                        class="ti ti-check"></i> Enregistrer le particulier </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane show" id="profile-b2">
+                        <form method="POST" class="formShamman" classname="ClientForm">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <div class="row mb-3">
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Raison sociale<span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="ti ti-home text-muted fs-xl"></i></span>
+                                            <input type="text" class="form-control" name="nom"
+                                                placeholder="Raison sociale" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label class="form-label">Date de création <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="ti ti-calendar text-muted fs-xl"></i></span>
+                                            <input type="date" class="form-control" name="date_naissance"
+                                                placeholder="__/__/____" required>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-label">Domaine d'activité <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="ti ti-briefcase text-muted fs-xl"></i></span>
+                                            <input type="text" class="form-control" name="profession"
+                                                placeholder="Domaine d'activité" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label class="form-label">Adresse <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="ti ti-map text-muted fs-xl"></i></span>
+                                            <input type="text" class="form-control" name="adresse"
+                                                placeholder="Lieu d'habitation" required>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-label">Téléphone <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="ti ti-phone text-muted fs-xl"></i></span>
+                                            <input type="text" class="form-control" name="telephone"
+                                                placeholder="XX XX XX XX XX" required>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-label">Email </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i
+                                                    class="ti ti-mail text-muted fs-xl"></i></span>
+                                            <input type="email" class="form-control" name="email"
+                                                placeholder="you@example.com">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="modal-footer d-flex justify-content-between">
+                                <input type="hidden" name="agence" value="{{ request.user.agence.id }}">
+                                <input type="hidden" name="type_client" value="{{ entreprise.id }}">
+                                <input type="hidden" name="employe" value="{{ request.user.id }}">
+                                <button type="button" class="btn btn-default dim pull-left" data-dismiss="modal">
+                                    <i class="ti ti-close"></i> Annuler
+                                </button>
+                                <button type="submit" class="btn btn-warning dim pull-right"> <i
+                                        class="ti ti-check"></i> Enregistrer l'entreprise </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal" data-bs-dismiss="modal">Open second modal</button>
-            </div>
+
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->

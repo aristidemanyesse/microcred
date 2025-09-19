@@ -24,6 +24,7 @@ class Command(BaseCommand):
                 adresse      = faker.address(),
                 telephone    = faker.phone_number(),
                 email        = faker.email(),
+                employe      = Employe.objects.filter().order_by('?').first()
             )
             
             
@@ -34,10 +35,11 @@ class Command(BaseCommand):
                 base            = faker.random_int(min=100000, max=10000000),
                 taux            = faker.random_int(min=1, max=10),
                 nombre_modalite = faker.random_int(min=10, max=30),
+                employe         = Employe.objects.filter().order_by('?').first(),
             )
             for echeance in pret.echeances.all().order_by('date_echeance')[:faker.random_int(min=1, max=7)]:
                 montant = echeance.montant_a_payer if faker.boolean(chance_of_getting_true=70) else faker.random_int(min=100, max=round(echeance.montant_a_payer), step=100)
-                echeance.regler(montant)
+                echeance.regler(montant, employe=Employe.objects.filter().order_by('?').first())
                 
                 if faker.boolean(chance_of_getting_true=70):
                     Penalite.objects.create(
@@ -50,12 +52,14 @@ class Command(BaseCommand):
 
             compte =CompteEpargne.objects.create(
                 client = Client.objects.filter().order_by('?').first(),
+                employe = Employe.objects.filter().order_by('?').first(),
+                taux = faker.random_int(min=1, max=10),
             )
             for i in range(5):
-                compte.deposer(montant=faker.random_int(min=10000, max=100000))
+                compte.deposer(montant=faker.random_int(min=10000, max=100000), employe=Employe.objects.filter().order_by('?').first())
                 if faker.boolean(chance_of_getting_true=50):
                     try:
-                        compte.retirer(montant=faker.random_int(min=10000, max=100000))
+                        compte.retirer(montant=faker.random_int(min=10000, max=100000), employe=Employe.objects.filter().order_by('?').first())
                     except ValueError:
                         pass
                     

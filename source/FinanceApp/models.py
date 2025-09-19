@@ -11,44 +11,58 @@ from dateutil.relativedelta import relativedelta
 
 
 class StatusPret(BaseModel):
-    ANNULEE = 0
-    EN_COURS = 1
-    TERMINE = 2
-    RETARD = 3
-    libelle = models.CharField(max_length=50)  # En cours / Terminé / Retard
+    ANNULEE = "-1"
+    EN_ATTENTE = "0"
+    EN_COURS = "1"
+    TERMINE = "2"
+    RETARD = "3"
+    libelle   = models.CharField(max_length=50)  # En cours / Terminé / Retard
+    etiquette = models.CharField(max_length=50)
+    classe    = models.CharField(max_length=50)
+    
+
+
+class ModePayement(BaseModel):
+    ESPECE = 1
+    MOBILE = 3
+    CHEQUE = 3
+    VIREMENT = 4
+    libelle = models.CharField(max_length=50)  # Espèces / Chèque / Virement
     etiquette = models.CharField(max_length=50)
     
-    
-    
 class CompteEpargne(BaseModel):
-    numero = models.CharField(max_length=50)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='epargnes')
+    numero       = models.CharField(max_length=50)
+    client       = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='epargnes')
     solde_actuel = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    status = models.ForeignKey(StatusPret, on_delete=models.CASCADE)
+    taux         = models.DecimalField(max_digits=5, decimal_places=2)
+    status       = models.ForeignKey(StatusPret, on_delete=models.CASCADE)
+    employe      = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='epargnes')
     
     def __str__(self):
         return f"Epargne N°{self.numero}"
     
-    def deposer(self, montant):
+    def deposer(self, montant, employe):
         Transaction.objects.create(
             compte           = self,
             client           = self.client,
             type_transaction = TypeTransaction.objects.get(etiquette = TypeTransaction.DEPOT), 
             commentaire      = f"Approvisionnement de {montant} Fcfa sur le compte N°{self.numero}",
-            montant          = montant
+            montant          = montant,
+            employe          = employe
         )
         self.solde_actuel = self.solde() + montant
         self.save()
         
 
-    def retirer(self, montant):
+    def retirer(self, montant, employe):
         if self.solde() >= montant:
             Transaction.objects.create(
                 compte           = self,
                 client           = self.client,
                 type_transaction = TypeTransaction.objects.get(etiquette = TypeTransaction.RETRAIT),
                 commentaire      = f"Retrait de {montant} Fcfa du compte N°{self.numero}",
-                montant          = montant
+                montant          = montant,
+                employe          = employe
             )
             self.solde_actuel = self.solde() - montant
             self.save()
@@ -63,7 +77,7 @@ class CompteEpargne(BaseModel):
         
 
 class Interet(BaseModel):
-    compte        = models.ForeignKey(CompteEpargne, on_delete=models.CASCADE)
+    compte        = models.ForeignKey(CompteEpargne, on_delete=models.CASCADE, related_name="interets")
     montant       = models.DecimalField(max_digits=12, decimal_places=2)
     description   = models.TextField(null=True, blank=True)
 
@@ -98,9 +112,32 @@ class Pret(BaseModel):
     modalite        = models.ForeignKey(ModaliteEcheance, on_delete=models.CASCADE)
     nombre_modalite = models.PositiveIntegerField()
     status          = models.ForeignKey(StatusPret, on_delete=models.CASCADE)
+    employe         = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='prets')
     
-    def montant_restant(self):
-        return self.montant - self.montant_rembourse
+    
+    def reste_a_payer(self):
+        payes = self.echeances.exclude(status__etiquette = StatusPret.ANNULEE).aggregate(total=models.Sum('montant_paye'))['total'] or 0
+        penalites = sum(p.montant for e in self.echeances.all() for p in e.penalites.all())
+        return self.montant + penalites - payes
+    
+    def echeances_success(self):
+        echeances = self.echeances.filter(status__etiquette = StatusPret.TERMINE)
+        return echeances
+    
+    def progress(self):
+        total = self.echeances.count()
+        if total == 0:
+            return 0
+        success = self.echeances_success().count()
+        return round((success / total) * 100)
+    
+    def penalites(self):
+        datas = self.echeances.exclude(status__etiquette = StatusPret.ANNULEE).aggregate(total=models.Count('penalites'))['total'] or 0
+        return datas
+    
+    def penalites_montant(self):
+        return self.echeances.exclude(status__etiquette = StatusPret.ANNULEE).aggregate(total=models.Sum('penalites__montant'))['total'] or 0
+
 
     def appliquer_paiement(self, montant):
         """Applique un paiement sur le prêt et sur les échéances et pénalités"""
@@ -166,26 +203,35 @@ class Echeance(BaseModel):
     status          = models.ForeignKey(StatusPret, on_delete=models.CASCADE)
     
     def montant_restant(self):
-        return self.montant_a_payer - self.montant_paye
+        return self.montant_a_payer + self.penalites_montant() - self.montant_paye
     
-    def regler(self, montant):
-        self.montant_paye = montant if montant <= self.montant_a_payer else self.montant_a_payer
+    def regler(self, montant, employe, mode, commentaire):
+        if montant > self.montant_restant():
+            raise ValueError("Le montant de remboursement est supérieur au montant restant à payer !")
+        if montant <= 0:
+            raise ValueError("Le montant de remboursement doit être supérieur à 0 !")
+        self.montant_paye += montant
         if self.montant_paye >= self.montant_a_payer:
             self.status = StatusPret.objects.get(etiquette = StatusPret.TERMINE)
         self.save()
-        
+
         Transaction.objects.create(
             echeance         = self,
             client           = self.pret.client,
+            mode             = mode,
             type_transaction = TypeTransaction.objects.get(etiquette = TypeTransaction.REMBOURSEMENT),
-            commentaire      = f"Remboursement échéance N°{self.level} du prêt N°{self.pret.numero}",
-            montant          = montant
+            commentaire      = f"Remboursement échéance N°{self.level} du prêt N°{self.pret.numero} --- {commentaire}",
+            montant          = montant,
+            employe          = employe
         )
+        
+    def penalites_montant(self):
+        return self.penalites.aggregate(total=models.Sum('montant'))['total'] or 0
         
         
 
 class Penalite(BaseModel):
-    echeance         = models.ForeignKey(Echeance, on_delete=models.CASCADE)
+    echeance         = models.ForeignKey(Echeance, on_delete=models.CASCADE, related_name='penalites')
     montant          = models.DecimalField(max_digits=12, decimal_places=2)
     description      = models.TextField(null=True, blank=True)
     
@@ -202,19 +248,19 @@ class Penalite(BaseModel):
 
 class Transaction(BaseModel):
     numero           = models.CharField(max_length=50)
-    client           = models.ForeignKey(Client, on_delete=models.CASCADE)
+    client           = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='transactions')
     compte           = models.ForeignKey(CompteEpargne, null=True, blank=True, on_delete=models.CASCADE, related_name='transactions')
     echeance         = models.ForeignKey(Echeance, null=True, blank=True, on_delete=models.CASCADE, related_name='transactions')
+    mode             = models.ForeignKey(ModePayement, null=True, blank=True, on_delete=models.CASCADE)
     type_transaction = models.ForeignKey(TypeTransaction, on_delete=models.CASCADE)
     montant          = models.DecimalField(max_digits=12, decimal_places=2)
     commentaire      = models.TextField(null=True, blank=True)
+    employe          = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='transactions')
 
 
-    
-    
-    
-
-
+   
+   
+   
 @signals.pre_save(sender=CompteEpargne)
 def sighandler(instance, **kwargs):
     if instance._state.adding:

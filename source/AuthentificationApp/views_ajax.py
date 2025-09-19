@@ -24,7 +24,7 @@ def login_ajax(request):
         password = request.POST.get("password")
         employe = authenticate(request, username=username, password=password)
 
-        if employe is not None:
+        if employe is not None and not employe.is_superuser:
             if employe.is_new:
                 request.session['user_id'] = str(employe.id)
                 return JsonResponse({'status': True, "is_new": employe.is_new, "id": employe.id})
@@ -57,7 +57,7 @@ def first_user(request):
             return JsonResponse({'status': False, 'message': "Le mot de passe doit contenir au moins 8 caractères"})
         else:
             user = Employe.objects.filter(username=username).exclude(id = user_id).first()
-            if user is not None:
+            if user is not None and not user.is_superuser:
                 return JsonResponse({'status': False, 'message': "Cet identifiant est déjà utilisé"})
             else:
                 user = Employe.objects.filter(id = user_id).first()

@@ -5,10 +5,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            from AuthentificationApp.initialize import initialize
+            from MainApp.initialize import initialize
             initialize()
             
-            from MainApp.initialize import initialize
+            from AuthentificationApp.initialize import initialize
             initialize()
             
             from FinanceApp.initialize import initialize

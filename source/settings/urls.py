@@ -27,4 +27,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('AuthentificationApp.urls')),
     path('', include('MainApp.urls')),
+    path('finances/', include('FinanceApp.urls')),
+    path('', include('CoreApp.urls')),
 ]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

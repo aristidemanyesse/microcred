@@ -29,17 +29,19 @@ def initialize():
             
         print("Enregistrement de l'administrateur du site ...")
         if not Employe.objects.filter(is_superuser = False).exists():
-            Employe.objects.create(
-                first_name = 'Aristide',
-                last_name  = 'Manyesse',
+            empl = Employe.objects.create(
+                first_name = 'Jores',
+                last_name  = 'Attiékou',
                 contact    = '0612345678',
                 username   = 'administration',
                 address    = '12 rue de la gare',
                 role       = Role.objects.get(libelle='Superviseur'),
                 agence     = Agence.objects.filter(protected=True).first()
             )
+            empl.set_password('12345678')
+            empl.save()
             
-            Employe.objects.create(
+            empl = Employe.objects.create(
                 first_name = 'Assana',
                 last_name  = 'S.',
                 contact    = '0612345678',
@@ -48,6 +50,8 @@ def initialize():
                 role       = Role.objects.get(libelle='Superviseur'),
                 agence     = Agence.objects.filter(protected=True).first()
             )
+            empl.set_password('12345678')
+            empl.save()
             
             
     except Exception as e:

@@ -9,6 +9,7 @@ django-annoying = "*"
 faker = "*"
 djangorestframework-simplejwt = "*"
 python-dateutil = "*"
+django-mathfilters = "*"
 
 [dev-packages]
 
