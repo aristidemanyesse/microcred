@@ -13,13 +13,13 @@
 
     <div class="row justify-content-center">
         <div class="col-xxl-12">
-            <div  class="card">
+            <div class="card">
                 <div class="card-header p-0 d-block">
                     <div class="row g-0 align-items-center">
                         <div class="col-xl-12 border-end border-dashed">
 
                             <div class="row align-items-center">
-                                <div class="col-xl-5 border-end">
+                                <div class="col-xl-6 border-end">
                                     <div class=" align-items-center p-4 ">
                                         <div>
                                             <h3 class="text-primary d-flex align-items-center gap-2 fw-bold">
@@ -27,7 +27,7 @@
                                                     class="float-end badge badge-label text-bg-{{pret.status.classe}}">{{pret.status}}</span>
                                             </h3>
                                             <p class="mb-2 text-muted">créé le {{pret.created_at|date:"d/m/Y à H:i"}}
-                                                
+
                                             </p>
                                             <p class="pe-2 pb-2 h5 text-muted mb-2 lh-base border-bottom">Prêt à
                                                 modalité {{pret.modalite}} pour {{pret.echeances.count}} échéances</p>
@@ -56,14 +56,19 @@
                                                     class="text-success fw-bold">{{pret.reste_a_payer|floatformat:2}}</span>
                                             </h2>
                                             <div class="d-flex justify-content-center align-items-center">
+                                                {% if pret.status.etiquette != '0' %}
                                                 <a href="#" data-bs-toggle="modal"
                                                     data-bs-target="#modal-new-remboursement" class="btn btn-primary"><i
-                                                        class="ti ti-eye fs-lg"></i> Effectuer un remboursement</a>
+                                                        class="ti ti-coins fs-lg"></i> Effectuer un remboursement</a>
+                                                {% else %}
+                                                <a href="#" class="btn btn-warning" onclick="confirmPret('{{pret.id}}')"><i
+                                                        class="ti ti-coins fs-lg"></i> Valider le prêt du souscripteur</a>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xl-7">
+                                <div class="col-xl-6">
                                     <div class="card-body">
                                         <div class="">
                                             <div class="d-flex align-items-center gap-2 mb-2">
@@ -124,8 +129,11 @@
                                         <br>
                                         <div class="d-flex justify-content-center align-items-center">
                                             <a href="{% url 'MainApp:client' pret.client.id %}"
-                                                class="btn btn-warning"><i class="ti ti-eye fs-lg"></i> Voir la fiche du
-                                                souscripteur</a>
+                                                class="link-reset text-decoration-underline fw-semibold link-offset-3">
+                                                Voir la fiche du
+                                                souscripteur <i class="ti ti-send-2"></i>
+                                            </a>
+
                                         </div>
                                         <!---->
                                     </div>
@@ -134,8 +142,14 @@
                         </div> <!-- end col-->
                     </div> <!-- end row-->
                 </div>
-
+                {% if pret.status.etiquette != '0' %}
                 <ul class="nav nav-tabs nav-justified nav-bordered nav-bordered-primary mb-3">
+                    <li class="nav-item">
+                        <a href="#transactions-b2" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
+                            <i class="ti ti-file-invoice fs-lg me-md-1 align-middle"></i>
+                            <span class="d-none d-md-inline-block align-middle">Garanties</span>
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a href="#home-b2" data-bs-toggle="tab" aria-expanded="false" class="nav-link active">
                             <i class="ti ti-calendar-dollar fs-lg me-md-1 align-middle"></i>
@@ -180,7 +194,7 @@
                             </div>
                         </div>
 
-                        <div class="" >
+                        <div class="">
                             <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
                                 <thead class="bg-light align-middle bg-opacity-25 thead-sm">
                                     <tr class="text-uppercase fs-xxs">
@@ -304,15 +318,17 @@
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <h5 class="mb-0 d-flex align-items-center">#{{transaction.numero}}</h5>
-                                                        <p class="text-muted mb-0 fs-xxs">
+                                                    <h5 class="mb-0 d-flex align-items-center">#{{transaction.numero}}
+                                                    </h5>
+                                                    <p class="text-muted mb-0 fs-xxs">
                                                         Echéance
                                                         N°{{transaction.echeance.level}}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <h5 class="fs-base mb-0 fw-medium">{{transaction.montant|floatformat:2}} Fcfa
+                                            <h5 class="fs-base mb-0 fw-medium">{{transaction.montant|floatformat:2}}
+                                                Fcfa
                                             </h5>
                                         </td>
                                         <td>
@@ -410,13 +426,14 @@
                         </div>
                     </div>
                 </div>
-
+                {% endif %}
             </div>
 
         </div><!-- end col -->
     </div><!-- end row -->
 
 </div>
+
 
 <div class="modal fade" id="modal-new-remboursement" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
     aria-hidden="true">
@@ -434,7 +451,8 @@
                         <label for="userEmail" class="form-label">Montant versé <span
                                 class="text-danger">*</span></label>
                         <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
                             <input type="text" class="form-control" name="montant" id="userEmail" required>
                         </div>
                     </div>
@@ -443,8 +461,7 @@
                         <label for="userPassword" class="form-label">Mode de payement<span
                                 class="text-danger">*</span></label>
                         <div class="input-group">
-                            <span class="input-group-text bg-light"><i
-                                    class="ti ti-id text-muted fs-xl"></i></span>
+                            <span class="input-group-text bg-light"><i class="ti ti-id text-muted fs-xl"></i></span>
                             <select class="form-control" name="mode" id="userPassword" required>
                                 {% for mode in modes %}
                                 <option value="{{ mode.id }}">{{ mode.libelle }}</option>
@@ -456,10 +473,9 @@
                     <div class="mb-3">
                         <label for="userPassword2" class="form-label">Commentaire </label>
                         <div class="input-group">
-                            <span class="input-group-text bg-light"><i
-                                    class="ti ti-edit text-muted fs-xl"></i></span>
-                            <textarea class="form-control" name="commentaire" rows="4" placeholder="numero de paiement"
-                                ></textarea>
+                            <span class="input-group-text bg-light"><i class="ti ti-edit text-muted fs-xl"></i></span>
+                            <textarea class="form-control" name="commentaire" rows="4"
+                                placeholder="numero de paiement"></textarea>
                         </div>
                     </div>
                 </div>

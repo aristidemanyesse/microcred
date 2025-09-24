@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from faker import Faker
 from datetime import date, timedelta
 from FinanceApp.models import CompteEpargne, Echeance, Interet, ModePayement, Penalite, Pret, StatusPret, Transaction
-
+from django.core.paginator import Paginator
 
 
 @render_to('FinanceApp/prets.html')
@@ -22,17 +22,24 @@ def prets_view(request):
 
 @render_to('FinanceApp/demandes.html')
 def demandes_view(request):
-    prets = Pret.objects.filter(status__etiquette = StatusPret.EN_COURS)
+    prets = Pret.objects.filter(status__etiquette = StatusPret.EN_ATTENTE)
+    paginator = Paginator(prets, 20)
+    
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    
     ctx = {
         'TITLE_PAGE' : "Liste des demandes de prêts",
-        "prets": prets,
+        "prets": page_obj,
+        "page_obj": page_obj,
     }
     return ctx
 
 
 @render_to('FinanceApp/echeances.html')
 def echeances_view(request):
-    echeances = Echeance.objects.filter(status__etiquette = StatusPret.EN_COURS)
+    today = date.today()
+    echeances = Echeance.objects.filter(date_echeance__range = [today - timedelta(days=3), today + timedelta(days=5)]).exclude(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE]).order_by("-date_echeance")
     ctx = {
         'TITLE_PAGE' : "Liste des rétards d'échéances",
         "echeances": echeances,
@@ -80,10 +87,13 @@ def epargne_view(request, pk):
     try:
         epargne = CompteEpargne.objects.get(pk=pk)
         transactions = epargne.transactions.filter().order_by("-created_at")
-        interets = epargne.interets.filter(compte=epargne).order_by("-created_at")
+        interets = epargne.interets.filter().order_by("-created_at")
         ctx = {
             'TITLE_PAGE' : "Fiche compte épargne",
             "epargne": epargne,
+            "transactions": transactions,
+            "interets": interets,
+            "modes": ModePayement.objects.all(),
         }
         return ctx
     except Exception as e:

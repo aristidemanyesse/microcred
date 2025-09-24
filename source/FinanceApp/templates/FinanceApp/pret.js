@@ -31,4 +31,48 @@ $(function() {
             return false;
         });
 
+
+        confirmPret = function(pretId) {
+            Swal.fire({
+                title: "Êtes-vous sûr de vouloir valider ce prêt ?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Oui, valider le prêt",
+                cancelButtonText: "Non, annuler",
+                }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                        var token = $(".footer").find("input[name=csrfmiddlewaretoken]").val()
+                        $.ajax({
+                            url: "{% url 'FinanceApp:confirm_pret' %}",     
+                            type: "POST",
+                            data: {
+                                pret_id: pretId,
+                                csrfmiddlewaretoken:token
+                            },
+                            success: function(data) {
+                                if (data.status) {
+                                    Swal.fire({
+                                        title: "Le prêt a été validé avec succès !",
+                                        icon: "success",
+                                        showConfirmButton: true,
+                                        showDenyButton: false,
+                                        confirmButtonText: "Ok, c'est compris !",
+                                        }).then((result) => {
+                                            /* Read more about isConfirmed, isDenied below */
+                                            if (result.isConfirmed) {
+                                                window.location.reload()
+                                            } 
+                                    });
+                                } else {
+                                    Alerter.error('Erreur !', data.message);
+                                }
+                            }
+                        })
+                    } else if (result.isDenied) {
+                        Swal.fire("Annulation", "Vous avez annulé la validation du prêt", "error");
+                    }
+                });
+        }   
+
     })

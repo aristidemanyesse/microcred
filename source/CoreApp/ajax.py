@@ -11,6 +11,7 @@ from django.utils.translation import gettext as _
 
 import CoreApp.tools as tools
 from MainApp.forms import *
+from FinanceApp.forms import *
 
 # Create your views here.
 @login_required

@@ -73,21 +73,23 @@
     </div> <!-- end row-->
 
     <ul class="pagination pagination-rounded pagination-boxed justify-content-center">
+        {% if page_obj.has_previous %}
         <li class="page-item">
-            <a class="page-link" href="javascript: void(0);" aria-label="Previous">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
                 <span aria-hidden="true">«</span>
             </a>
         </li>
-        <li class="page-item active"><a class="page-link" href="javascript: void(0);">1</a></li>
-        <li class="page-item"><a class="page-link" href="javascript: void(0);">2</a></li>
-        <li class="page-item"><a class="page-link" href="javascript: void(0);">3</a></li>
-        <li class="page-item"><a class="page-link" href="javascript: void(0);">4</a></li>
-        <li class="page-item"><a class="page-link" href="javascript: void(0);">5</a></li>
+        <li class="page-item active"><a class="page-link" href="?page=1">1</a></li>
+        {% endif %}
+
+
+        {% if page_obj.has_next %}
         <li class="page-item">
-            <a class="page-link" href="javascript: void(0);" aria-label="Next">
+            <a class="page-link" href="{{ page_obj.paginator.num_pages }}" aria-label="Next">
                 <span aria-hidden="true">»</span>
             </a>
         </li>
+        {% endif %}
     </ul>
 
 </div>

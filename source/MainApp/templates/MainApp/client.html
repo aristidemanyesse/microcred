@@ -31,10 +31,10 @@
                             </div>
                         </div>
                         <div class="d-flex gap-2">
-                            <button data-bs-toggle="modal" data-bs-target="#modal-new-client" class="btn btn-primary"><i
-                                    class="ti ti-plus fs-lg"></i> Demander un prêt</button>
-                            <button data-bs-toggle="modal" data-bs-target="#modal-new-client" class="btn btn-purple"><i
-                                    class="ti ti-plus fs-lg"></i> Nouveau compte épargne</button>
+                            <button data-bs-toggle="modal" data-bs-target="#modal-new-pret" class="btn btn-primary"><i
+                                    class="ti ti-calendar-dollar fs-lg"></i> Demander un prêt</button>
+                            <button data-bs-toggle="modal" data-bs-target="#modal-new-epargne" class="btn btn-purple"><i
+                                    class="ti ti-coins fs-lg"></i> Nouveau compte épargne</button>
                         </div>
                     </div>
                 </div>
@@ -110,70 +110,75 @@
                     <button data-bs-toggle="modal" data-bs-target="#modal-new-client" class="btn btn-purple"><i
                             class="ti ti-edit fs-lg"></i> Modifie les infos</button>
                     <button data-bs-toggle="modal" data-bs-target="#modal-new-client" class="btn btn-danger"><i
-                            class="ti ti-trash fs-lg"></i></button>
+                            class="ti ti-ban fs-lg"></i></button>
                 </div>
             </div> <!-- end card-->
 
         </div> <!-- end col-->
 
         <div class="col-xl-8">
-            <div class="row row-cols-xxl-3 row-cols-md-2 row-cols-1 align-items-center">
+            <div class="row align-items-center">
                 {% for pret in prets %}
-                <div class="col">
-                    <div class="card">
-                        <div class="card-body">
-                            <a href="{% url 'FinanceApp:pret' pret.id %}" data-table-delete-row
-                                class="btn btn-light btn-icon btn-sm rounded-circle text-muted float-end mt-n1 fs-md">
-                                <i class="ti ti-eye "></i></a>
-                            <h5 title="Revenue Generated">Prêt N°<span class="text-primary">{{pret.numero}}</span></h5>
-                            <div class="d-flex align-items-center gap-2 my-3">
-                                <div class="avatar-md flex-shrink-0">
-                                    <span class="avatar-title text-bg-primary rounded-circle fs-22">
-                                        <i class="ti ti-calendar-dollar"></i>
-                                    </span>
+                    <div class="col-sm-6 col-xl-4">
+                        <div class="card ">
+                            <div class="card-body">
+                                <a href="{% url 'FinanceApp:pret' pret.id %}" data-table-delete-row
+                                    class="btn btn-light btn-icon btn-sm rounded-circle text-muted float-end mt-n1 fs-md">
+                                    <i class="ti ti-eye "></i></a>
+                                <h5 title="Revenue Generated">
+                                    <span class="{% if pret.status.etiquette == '0' %}text-warning{% else %}text-primary{% endif %}">{{pret.numero}}</span>
+                                    <span class="badge badge-label text-bg-{{pret.status.classe}}">{{pret.status}}</span>
+                                </h5>
+                                <div class="d-flex align-items-center gap-2 my-3">
+                                    <div class="avatar-md flex-shrink-0">
+                                        <span class="avatar-title {% if pret.status.etiquette == '0' %}text-bg-warning{% else %}text-bg-primary{% endif %} rounded-circle fs-22">
+                                            <i class="ti ti-calendar-dollar"></i>
+                                        </span>
+                                    </div>
+                                    <h3 class="mb-0">{{pret.base|floatformat:0}} Fcfa</h3>
+                                    <span class="badge {% if pret.status.etiquette == '0' %}badge-soft-warning{% else %}badge-soft-primary{% endif %} fw-medium ms-2 fs-xs ms-auto">+
+                                        {{pret.taux|floatformat:2}}%</span>
                                 </div>
-                                <h3 class="mb-0">{{pret.base|floatformat:0}} Fcfa</h3>
-                                <span class="badge badge-soft-primary fw-medium ms-2 fs-xs ms-auto">+
-                                    {{pret.taux|floatformat:2}}%</span>
+                                <p class="mb-0">
+                                    <span class="{% if pret.status.etiquette == '0' %}text-warning{% else %}text-primary{% endif %}"><i class="ti ti-point-filled"></i></span>
+                                    {% if pret.status.etiquette != '0' %}
+                                    <span class="text-nowrap text-muted">Reste à payer</span>
+                                    <span class="float-end"><b>{{pret.reste_a_payer|floatformat:2}} Fcfa</b></span>
+                                    {% endif %}
+                                </p>
                             </div>
-                            <p class="mb-0">
-                                <span class="text-primary"><i class="ti ti-point-filled"></i></span>
-                                <span class="text-nowrap text-muted">Reste à payer</span>
-                                <span class="float-end"><b>{{pret.reste_a_payer|floatformat:2}} Fcfa</b></span>
-                            </p>
-                        </div>
 
+                        </div>
                     </div>
-                </div>
                 {% endfor %}
 
                 {% for epargne in epargnes %}
-                <div class="col">
-                    <div class="card">
-                        <div class="card-body">
-                            <a href="{% url 'FinanceApp:epargne' epargne.id %}" data-table-delete-row
-                                class="btn btn-light btn-icon btn-sm rounded-circle text-muted float-end mt-n1 fs-md">
-                                <i class="ti ti-eye "></i></a>
-                            <h5 title="Revenue Generated">Epargne N°<span class="text-purple">{{epargne.numero}}</span>
-                            </h5>
-                            <div class="d-flex align-items-center gap-2 my-3">
-                                <div class="avatar-md flex-shrink-0">
-                                    <span class="avatar-title text-bg-purple rounded-circle fs-22">
-                                        <i class="ti ti-coins"></i>
-                                    </span>
+                    <div class="col-sm-6 col-xl-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="{% url 'FinanceApp:epargne' epargne.id %}" data-table-delete-row
+                                    class="btn btn-light btn-icon btn-sm rounded-circle text-muted float-end mt-n1 fs-md">
+                                    <i class="ti ti-eye "></i></a>
+                                <h5 title="Revenue Generated"><span class="text-purple">{{epargne.numero}}</span>
+                                </h5>
+                                <div class="d-flex align-items-center gap-2 my-3">
+                                    <div class="avatar-md flex-shrink-0">
+                                        <span class="avatar-title text-bg-purple rounded-circle fs-22">
+                                            <i class="ti ti-coins"></i>
+                                        </span>
+                                    </div>
+                                    <h3 class="mb-0">{{epargne.solde_actuel|floatformat:2}} Fcfa</h3>
+                                    <span class="badge badge-soft-primary fw-medium ms-2 fs-xs ms-auto">+
+                                        {{epargne.taux|floatformat:2}}%</span>
                                 </div>
-                                <h3 class="mb-0">{{epargne.solde_actuel|floatformat:2}} Fcfa</h3>
-                                <span class="badge badge-soft-primary fw-medium ms-2 fs-xs ms-auto">+
-                                    {{epargne.taux|floatformat:2}}%</span>
+                                <p class="mb-0 d-flex justify-content-end">
+                                    <span class="text-nowrap text-muted">Dernière opération le <span
+                                            class="text-purple">{{epargne.update_at|date:"d/m/Y à H:i"}}</span></span>
+                                </p>
                             </div>
-                            <p class="mb-0 d-flex justify-content-end">
-                                <span class="text-nowrap text-muted">Dernière opération le <span
-                                        class="text-purple">{{epargne.update_at|date:"d/m/Y à H:i"}}</span></span>
-                            </p>
-                        </div>
 
+                        </div>
                     </div>
-                </div>
                 {% endfor %}
 
             </div><!-- end row -->
@@ -444,4 +449,146 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div class="modal fade" id="modal-new-pret" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h1 class="modal-title" id="mySmallModalLabel">Demande de prêt</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form method="POST" class="formShamman" classname="PretForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
+                            <label class="form-label">Montant demandé<span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-coins text-muted fs-xl"></i></span>
+                                <input type="text" class="form-control" name="base" placeholder="Montant demandé"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label">Interval d'échéances <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-calendar text-muted fs-xl"></i></span>
+                                <select name="modalite" class="form-select form-control my-1 my-md-0" required>
+                                    {% for modalite in modalites %}
+                                    <option value="{{ modalite.id }}">{{ modalite.libelle }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label class="form-label">Nombre d'échéances <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-number text-muted fs-xl"></i></span>
+                                <input type="number" class="form-control" name="nombre_modalite"
+                                    placeholder="__/__/____" required>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">Taux d'intéret <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-percentage text-muted fs-xl"></i></span>
+                                <input type="number" class="form-control" name="taux" step="0.01"
+                                    placeholder="__/__/____" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="">
+                        <label class="form-label">Ajouter une note </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="ti ti-edit text-muted fs-xl"></i></span>
+                            <textarea class="form-control" name="commentaire" rows="4" placeholder="note"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer d-flex justify-content-between">
+                    <input type="hidden" name="client" value="{{ client.id }}">
+                    <input type="hidden" name="employe" value="{{ client.employe.id }}">
+                    <button type="button" class="btn btn-default dim pull-left" data-dismiss="modal">
+                        <i class="ti ti-close"></i> Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary dim pull-right"> <i class="ti ti-check"></i>
+                        Faire la demande </button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<div class="modal fade" id="modal-new-epargne" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-purple text-white">
+                <h1 class="modal-title" id="mySmallModalLabel">Compte épargne</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form method="POST" class="formShamman" classname="CompteEpargneForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Modalité d'intérêts <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-calendar text-muted fs-xl"></i></span>
+                            <select name="modalite" class="form-select form-control my-1 my-md-0" required>
+                                {% for modalite in modalites %}
+                                <option value="{{ modalite.id }}">{{ modalite.libelle }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Taux d'intéret <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-percentage text-muted fs-xl"></i></span>
+                            <input type="number" class="form-control" name="taux" step="0.01" placeholder="__/__/____"
+                                required>
+                        </div>
+                    </div>
+
+                    <div class=" mb-3">
+                        <div class="">
+                            <label class="form-label">Ajouter une note </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-edit text-muted fs-xl"></i></span>
+                                <textarea class="form-control" name="commentaire" rows="4"
+                                    placeholder="note"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer d-flex justify-content-between">
+                    <input type="hidden" name="client" value="{{ client.id }}">
+                    <input type="hidden" name="employe" value="{{ client.employe.id }}">
+                    <button type="button" class="btn btn-default dim pull-left" data-dismiss="modal">
+                        <i class="ti ti-close"></i> Annuler
+                    </button>
+                    <button type="submit" class="btn btn-purple dim pull-right"> <i class="ti ti-check"></i>
+                        Ouvrir le compte </button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 {% endblock  %}

@@ -12,22 +12,22 @@
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-xxl-10">
+        <div class="col-xxl-12">
             <div data-table data-table-rows-per-page="5" class="card">
                 <div class="card-header p-0 d-block">
                     <div class="row g-0">
-                        <div class="col-xl-8 border-end border-dashed">
+                        <div class="col-xl-12 border-end border-dashed">
 
                             <div class="row  g-0">
                                 <div class="col-xl-6 border-end">
-                                    <div class="d-flex  gap-4 p-4 ">
+                                    <div class=" gap-4 p-4 ">
                                         <div>
                                             <h3 class="text-purple d-flex align-items-center gap-2  fw-bold">
-                                                COMPTE N°{{epargne.numero}}
+                                                COMPTE N°{{epargne.numero}} <span
+                                                    class="float-end badge badge-label text-bg-{{epargne.status.classe}}">{{epargne.status}}</span>
                                             </h3>
                                             <p class="mb-2 text-muted">créé le {{epargne.created_at|date:"d/m/Y à H:i"}}
-                                                <span
-                                                    class="float-end badge badge-label text-bg-{{epargne.status.classe}}">{{epargne.status}}</span>
+                                                
                                             </p>
                                             <p class="pe-2 pb-2 h5 text-muted mb-2 lh-base border-bottom">Compte épargne
                                                 au taux {{epargne.modalite}} de {{epargne.taux}}%</p>
@@ -37,6 +37,18 @@
                                                     class="text-success fw-bold">{{epargne.solde_actuel|floatformat:2}}
                                                     Fcfa</span>
                                             </h1>
+
+                                            <div class="d-flex justify-content-around align-items-center mt-5">
+                                                
+                                                <button data-bs-toggle="modal"
+                                                    data-bs-target="#modal-new-depot" class="btn btn-success"><i
+                                                        class="ti ti-coins fs-lg "></i> Faire un dépôt</button>
+                                               
+                                                <button data-bs-toggle="modal"
+                                                    data-bs-target="#modal-new-retrait" class="btn btn-danger"><i
+                                                        class="ti ti-coins fs-lg"></i> Faire un retrait</button>
+                                               
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -101,20 +113,17 @@
                                         </div>
                                         <br>
                                         <div class="d-flex justify-content-center align-items-center">
-                                            <a href="{% url 'MainApp:client' epargne.client.id %}"
-                                                class="btn btn-warning"><i class="ti ti-eye fs-lg"></i> Voir la fiche du
-                                                souscripteur</a>
+                                             <a href="{% url 'MainApp:client' epargne.client.id %}"
+                                                class="link-reset text-decoration-underline fw-semibold link-offset-3">
+                                                Voir la fiche du
+                                                souscripteur <i class="ti ti-send-2"></i>
+                                            </a>
                                         </div>
                                         <!---->
                                     </div>
                                 </div>
                             </div>
                         </div> <!-- end col-->
-                        <div class="col-xl-4">
-                            <div class="pe-3 ps-1">
-                                <div id="reviews-30days-chart"></div>
-                            </div>
-                        </div>
                     </div> <!-- end row-->
                 </div>
 
@@ -162,11 +171,8 @@
                                 <thead class="bg-light align-middle bg-opacity-25 thead-sm">
                                     <tr class="text-uppercase fs-xxs">
                                         <th>ID</th>
-                                        <th>Status</th>
-                                        <th>Montant dû</th>
-                                        <th>Pénalités</th>
-                                        <th data-table-sort>Réglé</th>
-                                        <th>date de reglement</th>
+                                        <th>Type</th>
+                                        <th>Montant</th>
                                         <th data-table-sort>Effectué par</th>
                                         <th class="text-center">Actions</th>
                                     </tr>
@@ -183,36 +189,21 @@
                                                 </div>
                                                 <div>
                                                     <h5 class="mb-1 d-flex align-items-center">
-                                                        <a data-sort="project" href="#" class="link-reset">Echéance
-                                                            N°{{transaction.level}}</a>
+                                                        <a data-sort="project" href="#" class="link-reset">#{{transaction.numero}}</a>
                                                     </h5>
                                                     <p class="text-muted mb-0 fs-xxs">
-                                                        {{transaction.date_transaction|date:"d M Y"}}</p>
+                                                        {{transaction.created_at|date:"d M Y à H:i:s"}}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
                                             <span
-                                                class="badge badge-label text-bg-{{transaction.status.classe}}">{{transaction.status}}</span>
+                                                class="badge badge-label text-bg-{% if transaction.type_transaction.etiquette == '1' %}success{% else %}danger{% endif %}">{{transaction.type_transaction}}</span>
                                         </td>
-                                        <td>{{transaction.montant_a_payer}} Fcfa</td>
+                                        <td>{{transaction.montant}} Fcfa</td>
+                                        <td>{{transaction.employe}}</td>
                                         <td>
-                                            {% if transaction.penalites.count > 0 %}
-                                            {{transaction.penalites.count}} pénalités <br>
-                                            <span class="text-danger fw-bold">{{transaction.penalites_montant}} Fcfa</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            {% if transaction.montant_paye > 0 %}
-                                            {{transaction.montant_paye}} Fcfa
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            {{transaction.transactions.first.created_at|date:"d/m/Y à H:i"}}
-                                        </td>
-                                        <td>{{transaction.transactions.first.employe}}</td>
-                                        <td>
-                                            {% if transaction.montant_paye > 0 %}
+                                            {% if transaction.montant > 0 %}
                                             <div class="d-flex align-items-center justify-content-center gap-1">
                                                 <a href="invoice-details.html"
                                                     class="btn btn-light btn-icon btn-sm rounded-circle"><i
@@ -310,10 +301,133 @@
 
 </div>
 
+
+
+<div class="modal fade" id="modal-new-depot" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header modal-md bg-success text-white">
+                <h2 class="modal-title" id="mySmallModalLabel"> Dépot</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" id="formDepot">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <br />
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Montant à verser <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
+                            <input type="text" class="form-control" name="montant" id="userEmail" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword" class="form-label">Mode de payement<span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="ti ti-id text-muted fs-xl"></i></span>
+                            <select class="form-control" name="mode" id="userPassword" required>
+                                {% for mode in modes %}
+                                <option value="{{ mode.id }}">{{ mode.libelle }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword2" class="form-label">Commentaire </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="ti ti-edit text-muted fs-xl"></i></span>
+                            <textarea class="form-control" name="commentaire" rows="4"
+                                placeholder="numero de paiement"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer d-flex justify-content-between">
+                    <input type="hidden" name="id" value="{{ epargne.id }}">
+                    <button type="button" class="btn btn-default dim pull-left" data-dismiss="modal">
+                        <i class="ti ti-close"></i> Annuler
+                    </button>
+                    <button type="submit" class="btn btn-success dim pull-right"> <i class="ti ti-check"></i> Valider
+                    </button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+
+<div class="modal fade" id="modal-new-retrait" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header modal-md bg-danger text-white">
+                <h2 class="modal-title" id="mySmallModalLabel"> Retrait</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" id="formRetrait">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <br />
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Montant à verser <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
+                            <input type="text" class="form-control" name="montant" id="userEmail" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword" class="form-label">Mode de payement<span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="ti ti-id text-muted fs-xl"></i></span>
+                            <select class="form-control" name="mode" id="userPassword" required>
+                                {% for mode in modes %}
+                                <option value="{{ mode.id }}">{{ mode.libelle }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword2" class="form-label">Commentaire </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="ti ti-edit text-muted fs-xl"></i></span>
+                            <textarea class="form-control" name="commentaire" rows="4"
+                                placeholder="numero de paiement"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer d-flex justify-content-between">
+                    <input type="hidden" name="id" value="{{ epargne.id }}">
+                    <button type="button" class="btn btn-default dim pull-left" data-dismiss="modal">
+                        <i class="ti ti-close"></i> Annuler
+                    </button>
+                    <button type="submit" class="btn btn-danger dim pull-right"> <i class="ti ti-check"></i> Valider
+                    </button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 {% endblock %}
+
 
 {% block scripts %}
 <script src="{% static 'dist/plugins/apexcharts.min.js' %}"></script>
 <script src="{% static 'dist/plugins/ecommerce-reviews.js' %}"></script>
-
+<script>
+    {% include 'FinanceApp/epargne.js' %}
+</script>
 {% endblock %}

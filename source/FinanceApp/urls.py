@@ -13,4 +13,7 @@ urlpatterns = [
     path('epargne/<uuid:pk>/', views.epargne_view, name='epargne'),
     
     path('remboursement/', ajax.new_remboursement, name='new_remboursement'),
+    path('confirm_pret/', ajax.confirm_pret, name='confirm_pret'),
+    path('new_depot/', ajax.new_depot, name='new_depot'),
+    path('new_retrait/', ajax.new_retrait, name='new_retrait'),
 ]

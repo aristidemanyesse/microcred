@@ -3,7 +3,7 @@ from annoying.decorators import render_to
 from django.contrib.auth.decorators import login_required
 from faker import Faker
 from datetime import date, timedelta
-from FinanceApp.models import CompteEpargne, Echeance, Interet, ModePayement, Penalite, Pret, StatusPret
+from FinanceApp.models import CompteEpargne, Echeance, Interet, ModaliteEcheance, ModePayement, Penalite, Pret, StatusPret
 from MainApp.models import Client, Genre, TypeClient
 
 
@@ -47,7 +47,7 @@ def client_view(request, pk):
     try:
         client = Client.objects.get(pk=pk)
         epargnes = CompteEpargne.objects.filter(client=client, status__etiquette = StatusPret.EN_COURS)
-        prets = Pret.objects.filter(client=client, status__etiquette = StatusPret.EN_COURS)
+        prets = Pret.objects.filter(client=client, status__etiquette__in = [StatusPret.EN_COURS, StatusPret.EN_ATTENTE])
         transactions = client.transactions.filter().order_by("-created_at")[:5]
         
         ctx = {
@@ -59,6 +59,7 @@ def client_view(request, pk):
             "epargnes": epargnes,
             "prets": prets,
             "transactions": transactions,
+            "modalites": ModaliteEcheance.objects.all(),
         }
         return ctx
     except Exception as e:

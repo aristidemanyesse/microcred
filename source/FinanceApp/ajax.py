@@ -1,5 +1,6 @@
 from django.http import JsonResponse
-from FinanceApp.models import ModePayement, Pret, StatusPret
+from FinanceApp.models import CompteEpargne, ModePayement, Pret, StatusPret
+from AuthentificationApp.models import Employe
 
     
     
@@ -24,6 +25,10 @@ def new_remboursement(request):
                 while montant > 0:
                     echeance = pret.echeances.filter(status__etiquette = StatusPret.EN_COURS).order_by("level").first()
                     paye = echeance.montant_restant()
+                    if paye <= 0:
+                        echeance.status = StatusPret.objects.get(etiquette = StatusPret.TERMINE)
+                        echeance.save()
+                        continue
                     paye = paye if paye <= montant else montant
                     echeance.regler(paye, request.user, ModePayement.objects.get(pk=mode), commentaire)
                     montant -= paye
@@ -32,7 +37,59 @@ def new_remboursement(request):
             
         except Exception as e:
             print("--------------------", e)
-            return JsonResponse({"status": False, "message": "Une erreur s'est produite lors de l'opération, veuillez recommencer !"})
+            return JsonResponse({"status": False, "message": str(e)})
                 
 
 
+def confirm_pret(request):
+    if request.method == "POST":
+        try:
+            datas = request.POST
+            pret = Pret.objects.get(pk=datas["pret_id"])
+            pret.status = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
+            pret.confirmateur = Employe.objects.get(pk=request.user.id) 
+            pret.save()
+            return JsonResponse({"status": True, "message": "Prêt validé avec succès !"})
+        except Exception as e:
+            print("--------------------", e)
+            return JsonResponse({"status": False, "message": str(e)})
+        
+        
+
+def new_depot(request):
+    if request.method == "POST":
+        try:
+            datas = request.POST
+            epargne = CompteEpargne.objects.get(pk=datas["id"])
+            mode = ModePayement.objects.get(pk=datas["mode"])
+            commentaire = datas["commentaire"]
+            montant = int(datas["montant"])
+            
+            if montant > 0:
+                epargne.deposer(montant, request.user, mode, commentaire)
+                return JsonResponse({"status": True, "message": "Dépot effectué avec succès !"})
+            else:
+                return JsonResponse({"status": False, "message": "Le montant de dépot doit être supérieur à 0."})
+        except Exception as e:
+            print("--------------------", e)
+            return JsonResponse({"status": False, "message": str(e)})
+        
+        
+        
+def new_retrait(request):
+    if request.method == "POST":
+        try:
+            datas = request.POST
+            epargne = CompteEpargne.objects.get(pk=datas["id"])
+            mode = ModePayement.objects.get(pk=datas["mode"])
+            commentaire = datas["commentaire"]
+            montant = int(datas["montant"])
+            
+            if epargne.solde_actuel >= montant:
+                epargne.retirer(montant, request.user, mode, commentaire)
+                return JsonResponse({"status": True, "message": "Retrait effectué avec succès !"})
+            else:
+                return JsonResponse({"status": False, "message": "Le solde du compte est insuffisant pour ce retrait."})
+        except Exception as e:
+            print("--------------------", e)
+            return JsonResponse({"status": False, "message": str(e)})
