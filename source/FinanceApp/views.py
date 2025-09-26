@@ -10,6 +10,7 @@ from FinanceApp.models import CompteEpargne, Echeance, Interet, ModePayement, Pe
 from django.core.paginator import Paginator
 
 
+
 @render_to('FinanceApp/prets.html')
 def prets_view(request):
     prets = Pret.objects.filter(status__etiquette = StatusPret.EN_COURS)
@@ -57,7 +58,7 @@ def pret_view(request, pk):
         transactions = Transaction.objects.filter(echeance__pret=pret).order_by("-created_at")
         modes = ModePayement.objects.all()
         ctx = {
-            'TITLE_PAGE'  : "Fiche prêt",
+            'TITLE_PAGE'  : "Fiche de prêt",
             "pret"        : pret,
             "echeances"   : echeances,
             "penalites"   : penalites,

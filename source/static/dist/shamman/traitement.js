@@ -62,15 +62,39 @@
 
 
         change_active = function(model, id){
-            url = "/core/ajax/change_active/";
-            var token = $("div.footer").find("input[name=csrfmiddlewaretoken]").val()
-            $.post(url, {model:model, id:id, csrfmiddlewaretoken:token}, (data)=>{
-                if (data.status) {
-                    Alerter.success('Mise à jour !', "Modification effectuée avec succès !");
-                }else{
-                    Alerter.error('Erreur !', data.message);
+            Swal.fire({
+                title: "Voulez-vous vraiment changer le statut de cet element ?",
+                icon: "warning",
+                showConfirmButton: true,
+                showDenyButton: true,
+                denyButtonText: "Non",
+                confirmButtonText: "Oui, changer !",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: "Entrez votre mot de passe pour confirmer l'opération !",
+                        input: "password",
+                        inputAttributes: {
+                            autocapitalize: "off"
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: "Valider",
+                        showLoaderOnConfirm: true,
+                        preConfirm: async (password) => {
+                            url = "/core/ajax/change_active/";
+                            var token = $(".footer").find("input[name=csrfmiddlewaretoken]").val()
+                            $.post(url, {model:model, id:id, password:password, csrfmiddlewaretoken:token}, (data)=>{
+                                if (data.status) {
+                                    window.location.reload()
+                                }else{
+                                    Alerter.error('Erreur !', data.message);
+                                }
+                            },"json");
+                        },
+                        allowOutsideClick: () => !Swal.isLoading()
+                    })
                 }
-            },"json");
+            });
         }
 
 
@@ -97,28 +121,79 @@
 
         delete_password = function(model, id){
             url = "/core/ajax/supprimer/";
-            var token = $("div.footer").find("input[name=csrfmiddlewaretoken]").val()
-            alerty.confirm("Voulez-vous vraiment supprimer cet element ?", {
-                title: "Suppression",
-                cancelLabel : "Non",
-                okLabel : "OUI, supprimer",
-            }, function(){
-                alerty.prompt("Entrer votre mot de passe pour confirmer l'opération !", {
-                    title: 'Récupération du mot de passe !',
-                    inputType : "password",
-                    cancelLabel : "Annuler",
-                    okLabel : "Valider"
-                }, function(password){
-                    Loader.start();
-                    $.post(url, {model:model, id:id, password:password, csrfmiddlewaretoken:token}, (data)=>{
-                        if (data.status) {
-                            window.location.reload()
-                        }else{
-                            Alerter.error('Erreur !', data.message);
-                        }
-                    },"json");
-                })
-            })
+            Swal.fire({
+                title: "Vous êtes sur le point de faire une suppression. Voulez-vous continuer ?",
+                icon: "warning",
+                showConfirmButton: true,
+                showDenyButton: true,
+                denyButtonText: "Non",
+                confirmButtonText: "Oui, supprimer !",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: "Entrez votre mot de passe pour confirmer l'opération !",
+                        input: "password",
+                        inputAttributes: {
+                            autocapitalize: "off"
+                        },
+                        showCancelButton: true,
+                        confirmButtonText: "Valider",
+                        showLoaderOnConfirm: true,
+                        preConfirm: async (password) => {
+                            url = "/core/ajax/supprimer/";
+                            var token = $(".footer").find("input[name=csrfmiddlewaretoken]").val()
+                            $.post(url, {model:model, id:id, password:password, csrfmiddlewaretoken:token}, (data)=>{
+                                if (data.status) {
+                                    window.location.reload()
+                                }else{
+                                    Alerter.error('Erreur !', data.message);
+                                }
+                            },"json");
+                        },
+                        allowOutsideClick: () => !Swal.isLoading()
+                    })
+                }
+            });
         }
+
+
+        refresh_password = function(id) {
+            Swal.fire({
+                title: "Voulez-vous vraiment reinitialiser les accès de cet utilisateur ?",
+                icon: "warning",
+                showConfirmButton: true,
+                showDenyButton: true,
+                denyButtonText: "Non",
+                confirmButtonText: "Oui, changer !",
+                }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: "Entrez votre mot de passe pour confirmer l'opération !",
+                            input: "password",
+                            inputAttributes: {
+                                autocapitalize: "off"
+                            },
+                            showCancelButton: true,
+                            confirmButtonText: "Valider",
+                            showLoaderOnConfirm: true,
+                            preConfirm: async (password) => {
+                                url = "/core/ajax/refresh_password/";
+                                var token = $(".footer").find("input[name=csrfmiddlewaretoken]").val()
+                                $.post(url, {id:id, password:password, csrfmiddlewaretoken:token}, (data)=>{
+                                    if (data.status) {
+                                        window.location.reload()
+                                    }else{
+                                        Alerter.error('Erreur !', data.message);
+                                    }
+                                },"json");
+                            },
+                            allowOutsideClick: () => !Swal.isLoading()
+                        })
+                    } 
+            });
+        }
+
+
         
     })

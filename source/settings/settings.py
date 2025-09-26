@@ -144,3 +144,6 @@ AUTH_USER_MODEL = 'AuthentificationApp.Employe'
 LOGIN_URL = 'AuthentificationApp:login'
 LOGIN_REDIRECT_URL = 'MainApp:dashboard'
 LOGOUT_REDIRECT_URL = 'AuthentificationApp:logout'
+
+USE_THOUSAND_SEPARATOR = True
+USE_TZ = True

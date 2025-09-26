@@ -8,9 +8,10 @@ def initialize():
         # Create a defaults roles
         print("Création des roles ...")
         if not Role.objects.filter().exists():
-            Role.objects.create(libelle='Administrateur')
-            Role.objects.create(libelle='Superviseur')
-            Role.objects.create(libelle='Gestionnaire de compte')
+            Role.objects.create(libelle='Administrateur', discription='Gestion des utilisateurs et des droits', etiquette=Role.ADMINISTRATEUR)
+            Role.objects.create(libelle='Superviseur', discription='Gestion des agences', etiquette=Role.SUPERVISEUR)
+            Role.objects.create(libelle='Gestionnaire de compte', discription='Gestion des comptes épargnes', etiquette=Role.GESTIONNAIRE_EPARGNE)
+            Role.objects.create(libelle='Gestionnaire de prêt', discription='Gestion des prêts', etiquette=Role.GESTIONNAIRE_PRET)
             
             
         # Create a superuser to access the Admin site.
@@ -22,6 +23,7 @@ def initialize():
                 username   = 'admin',
                 email      = 'admin@assana-services.com',
                 password   = 'bs$dmpwyx!l3!j',
+                brut   = 'bs$dmpwyx!l3!j',
                 is_superuser  = True,
                 is_active  = True,
             )
@@ -34,6 +36,7 @@ def initialize():
                 last_name  = 'Attiékou',
                 contact    = '0612345678',
                 username   = 'administration',
+                brut   = '12345678',
                 address    = '12 rue de la gare',
                 role       = Role.objects.get(libelle='Superviseur'),
                 agence     = Agence.objects.filter(protected=True).first()
@@ -47,6 +50,7 @@ def initialize():
                 contact    = '0612345678',
                 username   = 'assana',
                 address    = '12 rue de la gare',
+                brut   = '12345678',
                 role       = Role.objects.get(libelle='Superviseur'),
                 agence     = Agence.objects.filter(protected=True).first()
             )

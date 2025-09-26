@@ -3,25 +3,87 @@ from annoying.decorators import render_to
 from django.contrib.auth.decorators import login_required
 from faker import Faker
 from datetime import date, timedelta
-from FinanceApp.models import CompteEpargne, Echeance, Interet, ModaliteEcheance, ModePayement, Penalite, Pret, StatusPret
+from FinanceApp.models import CompteEpargne, Echeance, Interet, ModaliteEcheance, ModePayement, Penalite, Pret, StatusPret, Transaction, TypeTransaction
 from MainApp.models import Client, Genre, TypeClient
+from django.db.models import Count, Sum, Case, When, DecimalField
+from django.utils.timezone import now
+
 
 
 @login_required()
 @render_to('MainApp/dashboard.html')
 def dashboard_view(request):
+    today = now().date()
+    start_month = today.replace(day=1)
+    
+    
     prets = Pret.objects.filter(status__etiquette = StatusPret.EN_COURS)
     epargnes = CompteEpargne.objects.filter(status__etiquette = StatusPret.EN_COURS)
+    comptes_mois = CompteEpargne.objects.filter(status__etiquette = StatusPret.EN_COURS, created_at__date__year=start_month.year, created_at__date__month=start_month.month).count()
     clients = Client.objects.filter()
-    echeances = Echeance.objects.filter(date_echeance__lte = date.today())
-    penalites = Penalite.objects.filter(created_at__date= date.today())
+    
+    echeances = (Echeance.objects
+        .filter(date_echeance__lte=today, status__etiquette = StatusPret.RETARD)
+        .aggregate(
+            nombre=Count("id"),
+            montant_total=Sum("montant_a_payer")
+        )
+    )
+    
+
+    penalites = (Penalite.objects
+        .filter(created_at__date__gte=start_month, created_at__date__lte=today)
+        .aggregate(
+            nombre=Count("id"),
+            montant_total=Sum("montant")
+        )
+    )
+    
+    stats = (Transaction.objects
+        .filter(created_at__date__gte=start_month, created_at__date__lte=today)
+        .aggregate(
+            # Remboursements
+            remboursements_total=Sum(
+                Case(
+                    When(type_transaction__etiquette=TypeTransaction.REMBOURSEMENT, then="montant"),
+                    output_field=DecimalField(),
+                )
+            ),
+
+            # Dépôts
+            depots_total=Sum(
+                Case(
+                    When(type_transaction__etiquette=TypeTransaction.DEPOT, then="montant"),
+                    output_field=DecimalField(),
+                )
+            ),
+
+            # Retraits
+            retraits_total=Sum(
+                Case(
+                    When(type_transaction__etiquette=TypeTransaction.RETRAIT, then="montant"),
+                    output_field=DecimalField(),
+                )
+            ),
+        )
+    )
+
+
     ctx = {
         'TITLE_PAGE' : "Tableau de bord",
         "prets": prets,
         "epargnes": epargnes,
+
         "clients": clients,
-        "echeances": echeances,
-        "penalites": penalites,
+        "echeances_count": echeances["nombre"] or 0,
+        "echeances_montant": echeances["montant_total"] or 0,
+        
+        "penalites_count": penalites["nombre"],
+        "penalites_montant": penalites["montant_total"],
+        
+        "remboursements_montant": stats["remboursements_total"],
+        "depots_montant": stats["depots_total"],
+        "retraits_montant": stats["retraits_total"],
     }
     return ctx
 

@@ -1,8 +1,16 @@
+from datetime import timedelta
 from django.http import JsonResponse
-from FinanceApp.models import CompteEpargne, ModePayement, Pret, StatusPret
+from FinanceApp.models import CompteEpargne, Echeance, ModePayement, Pret, StatusPret, Transaction, TypeTransaction
 from AuthentificationApp.models import Employe
+from django.db.models import Sum
+from rest_framework.decorators import api_view
+from django.http import JsonResponse
+from django.db.models import Sum, Case, When, DecimalField
+from django.db.models.functions import TruncMonth
+from django.utils.timezone import now
+from dateutil.relativedelta import relativedelta
+import calendar
 
-    
     
 def new_remboursement(request):
     if request.method == "POST":
@@ -93,3 +101,63 @@ def new_retrait(request):
         except Exception as e:
             print("--------------------", e)
             return JsonResponse({"status": False, "message": str(e)})
+        
+        
+        
+@api_view(['GET'])
+def stats_finance(request):
+    today = now().date()
+    start_date = (today.replace(day=1) - relativedelta(months=11))
+    print(today, start_date)
+
+    # Récupération groupée
+    qs = (Transaction.objects
+          .filter(created_at__gte=start_date, created_at__lte=today + timedelta(days=1))
+          .annotate(month=TruncMonth("created_at"))
+          .values("month")
+          .annotate(
+              depots=Sum(
+                  Case(
+                      When(type_transaction__etiquette=TypeTransaction.DEPOT, then="montant"),
+                      default=0,
+                      output_field=DecimalField(),
+                  )
+              ),
+              retraits=Sum(
+                  Case(
+                      When(type_transaction__etiquette=TypeTransaction.RETRAIT, then="montant"),
+                      default=0,
+                      output_field=DecimalField(),
+                  )
+              ),
+              remboursements=Sum(
+                  Case(
+                      When(type_transaction__etiquette=TypeTransaction.REMBOURSEMENT, then="montant"),
+                      default=0,
+                      output_field=DecimalField(),
+                  )
+              ),
+          )
+          .order_by("month")
+    )
+    print(qs)
+
+    # Indexer les résultats par mois pour lookup rapide
+    results_map = {row["month"].strftime("%Y-%m"): row for row in qs}
+
+    # Générer 12 mois consécutifs
+    results = []
+    for i in range(12):
+        month_date = (start_date + relativedelta(months=i))
+        key = month_date.strftime("%Y-%m")
+        label = month_date.strftime("%b %Y")  # ex: "Sep 2025"
+
+        row = results_map.get(key, None)
+        results.append({
+            "mois": label,
+            "depots": float(row["depots"] if row else 0),
+            "retraits": float(row["retraits"] if row else 0),
+            "remboursements": float(row["remboursements"] if row else 0),
+        })
+
+    return JsonResponse(results, safe=False)

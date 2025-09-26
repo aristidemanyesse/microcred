@@ -7,11 +7,13 @@ import json, uuid
 from django.urls import reverse
 from settings import settings as parametres
 from django.utils.translation import gettext as _
-
-
+from datetime import datetime
+from faker import Faker
 import CoreApp.tools as tools
 from MainApp.forms import *
 from FinanceApp.forms import *
+from AuthentificationApp.forms import *
+from FinanceApp.models import StatusPret
 
 # Create your views here.
 @login_required
@@ -19,6 +21,7 @@ def save(request):
     if request.method == "POST":
         datas = request.POST
         datas._mutable = True
+        print(datas)
         for key in datas:
             if datas[key] == "on": datas[key]=True
 
@@ -30,17 +33,24 @@ def save(request):
                 MyModel = tools.form_to_model(modelform)
                 content_type = ContentType.objects.get(model= MyModel.lower())
                 MyModel = content_type.model_class()
+                if modelform in ["EmployeForm"] and "id" not in datas:
+                    faker = Faker()
+                    psd = faker.password(length=8, special_chars=False, digits=True, upper_case=False, lower_case=True)
+                    datas["username"] = faker.user_name()
+                    datas["password"] = psd
+                    datas["brut"] = psd
+                    datas["date_joined"] = datetime.now()
+                    
                 if "id" in datas and datas["id"] != "":
                     obj = MyModel.objects.get(pk=datas["id"])
                     form = MyForm(datas, request.FILES, instance = obj)
-                    # if modelform in ["EmployeForm", "LivreurForm", "ClientForm"]:
-                    #     obj.user.first_name = obj.user.first_name if "first_name" not in datas else datas["first_name"]
-                    #     obj.user.last_name = obj.user.last_name if "last_name" not in datas else datas["last_name"]
-                    #     obj.user.save()
                         
                 else:
                     datas["id"] = str(uuid.uuid4())
                     form = MyForm(datas, request.FILES)
+                    
+                    
+                
 
                 if form.is_valid():
                     if 'image' in request.FILES and request.FILES["image"] != "":
@@ -102,7 +112,6 @@ def mise_a_jour(request):
 def supprimer(request):
     if request.method == "POST":
         datas = request.POST
-
         try:
             modelform = datas["model"]
             content_type = ContentType.objects.get(model= modelform.lower())
@@ -112,13 +121,13 @@ def supprimer(request):
                 return JsonResponse({"status":False, "message": _("Le mot de passe est incorrect !")})
 
             obj = MyModel.objects.get(pk=datas["id"])
-            if obj.proteger:
+            if obj.protected:
                 return JsonResponse({"status":False, "message": _("Vous ne pouvez pas supprimer cet element, il est protégé !")})
 
             if hasattr(obj, "etat"):
-                obj.etat = Etat.objects.get(etiquette = Etat.ANNULE)
+                obj.status = StatusPret.objects.get(etiquette = StatusPret.ANNULE)
             else:
-                obj.supprimer = True
+                obj.deleted = True
             obj.save()
             return JsonResponse({"status":True, "message": _("Suppression effectuée avec succes !")})
 
@@ -137,11 +146,14 @@ def change_active(request):
             modelform = datas["model"]
             content_type = ContentType.objects.get(model= modelform.lower())
             MyModel = content_type.model_class()
+            
+            if "password" in datas and not request.user.check_password(datas["password"]):
+                return JsonResponse({"status":False, "message": _("Le mot de passe est incorrect !")})
 
             obj = MyModel.objects.get(pk=datas["id"])
             if datas["model"] == "Employe":
-                obj.user.is_active = not obj.user.is_active
-                obj.user.save()
+                obj.is_active = not obj.is_active
+                obj.save()
             else:
                 obj.active = not obj.active
                 obj.save()
@@ -154,36 +166,23 @@ def change_active(request):
 
 
 
-def filter_date(request):
+def refresh_password(request):
     if request.method == "POST":
-        datas = request.POST
-        request.session["date1"] = datas["debut"]
-        request.session["date2"] = datas["fin"]
-        return JsonResponse(dict(request.session))
-
-
-
-def session(request):
-    if request.method == "POST":
-        datas = request.POST
-        request.session[datas["name"]] = datas["value"]
-        return JsonResponse(dict(request.session))
-
-
-
-def delete_session(request):
-    if request.method == "POST":
-        datas = request.POST
-        if datas["name"] in request.session:
-            del request.session[datas["name"]]
-        return JsonResponse(dict(request.session))
-    
-
-
-
-def change_language(request):
-    if request.method == "POST":
-        datas = request.POST
-        request.session["language"] = datas["lang"]
-
-    return HttpResponse("")
+        try:
+            datas = request.POST
+            faker = Faker()
+            psd = faker.password(length=8, special_chars=False, digits=True, upper_case=False, lower_case=True)
+            
+            if "password" in datas and not request.user.check_password(datas["password"]):
+                return JsonResponse({"status":False, "message": _("Le mot de passe est incorrect !")})
+            
+            employe = Employe.objects.get(pk=datas["id"])
+            employe.brut = psd
+            employe.is_new = True
+            employe.username = faker.user_name()
+            employe.set_password(psd)
+            employe.save()
+            return JsonResponse({"status": True})
+        except Exception as e:
+            print("Erreur refresh_password : ", e)
+            return JsonResponse({"status": False, "message": _("Une erreur s'est produite lors de l'opération, veuillez recommencer !")})

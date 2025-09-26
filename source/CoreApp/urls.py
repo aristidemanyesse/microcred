@@ -20,9 +20,6 @@ urlpatterns = [
     path('core/ajax/mise_a_jour/', ajax.mise_a_jour, name="mise_a_jour"),
     path('core/ajax/supprimer/', ajax.supprimer, name="supprimer"),
     path('core/ajax/change_active/', ajax.change_active, name="change_active"),
-    path('core/ajax/filter_date/', ajax.filter_date, name="filter_date"),
-    path('core/ajax/session/', ajax.session, name="session"),
-    path('core/ajax/delete_session/', ajax.delete_session, name="delete_session"),
-    path('core/ajax/change_language/', ajax.change_language, name="change_language"),
+    path('core/ajax/refresh_password/', ajax.refresh_password, name="refresh_password"),
 
 ]

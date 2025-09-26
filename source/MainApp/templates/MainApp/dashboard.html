@@ -142,10 +142,9 @@
                                     <div class="card rounded-0 border border-dashed mb-0">
                                         <div class="card-body">
                                             <div class="mb-3 d-flex justify-content-between align-items-center">
-                                                <h5 class="fs-xl mb-0">$24,500</h5>
-                                                <span>18.45% <i class="ti ti-arrow-up text-success"></i></span>
+                                                <h5 class="fs-xl mb-0">{{remboursements_montant|floatformat:2}} <small>Fcfa</small></h5>
                                             </div>
-                                            <p class="text-muted mb-2"><span>Prêts remboursés</span></p>
+                                            <p class="text-muted mb-2"><span>remboursés</span></p>
                                             <div class="progress progress-sm mb-0">
                                                 <div class="progress-bar bg-secondary" role="progressbar"
                                                     style="width: 18.45%" aria-valuenow="18.45" aria-valuemin="0"
@@ -160,10 +159,10 @@
                                     <div class="card rounded-0 border border-dashed mb-0">
                                         <div class="card-body">
                                             <div class="mb-3 d-flex justify-content-between align-items-center">
-                                                <h5 class="fs-xl mb-0">1,240</h5>
-                                                <span>10.35% <i class="ti ti-arrow-down text-danger"></i></span>
+                                                <h5 class="fs-xl mb-0">{{echeances_montant|floatformat:2}} <small>Fcfa</small></h5>
+                                                <span>{{echeances_count}}</span>
                                             </div>
-                                            <p class="text-muted mb-2"><span>Nouveaux clients</span></p>
+                                            <p class="text-muted mb-2"><span>Retards d'échéances</span></p>
                                             <div class="progress progress-sm mb-0">
                                                 <div class="progress-bar bg-secondary" role="progressbar"
                                                     style="width: 10.35%" aria-valuenow="10.35" aria-valuemin="0"
@@ -173,13 +172,33 @@
                                     </div>
                                 </div><!-- end col -->
 
+
+                                <!-- Average Order Value Widget -->
+                                <div class="col">
+                                    <div class="card rounded-0 border border-dashed mb-0">
+                                        <div class="card-body">
+                                            <div class="mb-3 d-flex justify-content-between align-items-center">
+                                                <h5 class="fs-xl mb-0">{{penalites_montant|floatformat:2}} <small>Fcfa</small></h5>
+                                                </h5>
+                                                <span>{{penalites_count}}</span>
+                                            </div>
+                                            <p class="text-muted mb-2"><span>Pénalités ce mois</span></p>
+                                            <div class="progress progress-sm mb-0">
+                                                <div class="progress-bar bg-secondary" role="progressbar"
+                                                    style="width: 5.92%" aria-valuenow="5.92" aria-valuemin="0"
+                                                    aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- end col -->
+
+
                                 <!-- Products Sold Widget -->
                                 <div class="col">
                                     <div class="card rounded-0 border border-dashed mb-0">
                                         <div class="card-body">
                                             <div class="mb-3 d-flex justify-content-between align-items-center">
-                                                <h5 class="fs-xl mb-0">3,750</h5>
-                                                <span>22.61% <i class="ti ti-bolt text-primary"></i></span>
+                                                <h5 class="fs-xl mb-0">{{depots_montant|floatformat:2}} <small>Fcfa</small></h5>
                                             </div>
                                             <p class="text-muted mb-2 text-truncate"><span>Dépots épargnes</span>
                                             </p>
@@ -192,24 +211,6 @@
                                     </div>
                                 </div><!-- end col -->
 
-                                <!-- Average Order Value Widget -->
-                                <div class="col">
-                                    <div class="card rounded-0 border border-dashed mb-0">
-                                        <div class="card-body">
-                                            <div class="mb-3 d-flex justify-content-between align-items-center">
-                                                <h5 class="fs-xl mb-0">$65.49 <small class="fs-6">USD</small>
-                                                </h5>
-                                                <span>5.92% <i class="ti ti-arrow-up text-success"></i></span>
-                                            </div>
-                                            <p class="text-muted mb-2"><span>Nouveaux comptes</span></p>
-                                            <div class="progress progress-sm mb-0">
-                                                <div class="progress-bar bg-secondary" role="progressbar"
-                                                    style="width: 5.92%" aria-valuenow="5.92" aria-valuemin="0"
-                                                    aria-valuemax="100"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div><!-- end col -->
                             </div><!-- end row -->
 
                             <div class="text-center my-3">
@@ -227,4 +228,12 @@
     </div> <!-- end row-->
 
 </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+<script>
+    {% include 'MainApp/dashboard.js' %}
+</script>
 {% endblock %}

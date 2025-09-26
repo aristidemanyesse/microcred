@@ -34,7 +34,7 @@ class InteretAdmin(admin.ModelAdmin):
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('compte', 'type_transaction', 'montant', 'commentaire')
+    list_display = ('compte', 'type_transaction', 'montant', 'commentaire', 'created_at')
     search_fields = ('compte__id', 'type_transaction__libelle', 'commentaire')
     
 @admin.register(ModaliteEcheance)

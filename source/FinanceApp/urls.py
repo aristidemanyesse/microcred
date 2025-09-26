@@ -16,4 +16,6 @@ urlpatterns = [
     path('confirm_pret/', ajax.confirm_pret, name='confirm_pret'),
     path('new_depot/', ajax.new_depot, name='new_depot'),
     path('new_retrait/', ajax.new_retrait, name='new_retrait'),
+    
+    path('api/stats-finance/', ajax.stats_finance, name='stats_finance'),
 ]
