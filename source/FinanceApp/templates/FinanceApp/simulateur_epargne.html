@@ -11,142 +11,137 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <form method="POST" action="{% url 'FinanceApp:simulateur_epargne' %}"
-                    class="card-header border-light justify-content-between">
+    <div class="card">
+        <form method="POST" action="{% url 'FinanceApp:simulateur_epargne' %}"
+            class="card-header border-light justify-content-between">
 
-                    <div class="d-flex gap-2">
-                        <div class="">
-                            <span class="me-2 fw-semibold">Références de l'épargne:</span>
-                            <div class="d-flex gap-2 mt-2">
-                                <div class="app-search">
-                                    <input type="number" class="form-control" placeholder="Montant de base" name="base"
-                                        value="{{base|stringformat:"s"}}" required>
-                                    <i data-lucide="coins" class="app-search-icon text-muted"></i>
-                                </div>
-
-                                <div class="app-search">
-                                    <select class="form-select form-control my-1 my-md-0" name="modalite" required>
-                                        <option value="">Modalité</option>
-                                        {% for mod in modalites %}
-                                        <option value="{{ mod.id }}" {% if mod.id == modalite.id %}selected{% endif %}>
-                                            {{ mod.libelle }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <i data-lucide="calendar" class="app-search-icon text-muted"></i>
-                                </div>
-
-                                <div class="app-search">
-                                    <input type="number" class="form-control" placeholder="Taux d'intérêt" name="taux"
-                                        step="0.01" value="{{taux|stringformat:"s"}}" required>
-                                    <i data-lucide="percent" class="app-search-icon text-muted"></i>
-                                </div>
-                            </div>
+            <div class="d-flex gap-2">
+                <div class="">
+                    <span class="me-2 fw-semibold">Références de l'épargne:</span>
+                    <div class="d-flex gap-2 mt-2">
+                        <div class="app-search">
+                            <input type="number" class="form-control" placeholder="Montant de base" name="base"
+                                value="{{base|stringformat:"s"}}" required>
+                            <i data-lucide="coins" class="app-search-icon text-muted"></i>
                         </div>
-                    </div>
 
-                    <div class="d-flex gap-2 border-left border-right">
-
-                        <div class="">
-                            <span class="me-2 fw-semibold">Durée de l'épargne:</span>
-                            <div class="d-flex mt-2 align-items-center gap-2">
-                                <div class="app-search">
-                                    <input type="number" class="form-control" placeholder="nombre de" value="{{duree}}"
-                                        name="duree">
-                                    <i data-lucide="coins" class="app-search-icon text-muted"></i>
-                                </div>
-
-                                <div class="app-search">
-                                    <select class="form-select form-control my-1 my-md-0" name="modalite_duree">
-                                        <option value="">Modalité</option>
-                                        {% for mod in modalites %}
-                                        <option value="{{ mod.id }}"
-                                            {% if mod.id == modalite_duree.id %}selected{% endif %}>
-                                            {{ mod.libelle }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <i data-lucide="calendar" class="app-search-icon text-muted"></i>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex gap-2">
-                        <div class="">
-                            <span class="me-2 fw-semibold">Régularité des approvisionnements:</span>
-                            <div class="d-flex mt-2 align-items-center gap-2">
-                                <div class="app-search">
-                                    <input type="number" class="form-control" placeholder="Versement regulier"
-                                        value="{{regulier|stringformat:"s"}}" name="regulier">
-                                    <i data-lucide="coins" class="app-search-icon text-muted"></i>
-                                </div>
-
-                                <div class="app-search">
-                                    <select class="form-select form-control my-1 my-md-0" name="modalite_regulier">
-                                        <option value="">Modalité</option>
-                                        {% for mod in modalites %}
-                                        <option value="{{ mod.id }}"
-                                            {% if mod.id == modalite_regulier.id %}selected{% endif %}>
-                                            {{ mod.libelle }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <i data-lucide="calendar" class="app-search-icon text-muted"></i>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex align-items-center gap-2">
-                        <button data-bs-toggle="modal" data-bs-target="#modal-new-user" class="btn btn-warning"><i
-                                class="ti ti-refresh"></i> Faire une simulation</button>
-
-                    </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header border-light justify-content-between">
-                    <div class="table-responsive">
-                        <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
-                            <thead class="bg-light align-middle bg-opacity-25 thead-sm">
-                                <tr class="text-uppercase fs-xxs">
-                                    <th>Date</th>
-                                    <th>Avoir</th>
-                                    <th>Approvisionneemnt</th>
-                                    <th>Total</th>
-                                    <th>Interet</th>
-                                    <th>Nouvel avoir</th>
-                                </tr>
-                            </thead><!-- end table-head -->
-                            <tbody>
-                                {% for ligne in tableaux %}
-                                <tr>
-                                    <td>{{ligne.date}}</td>
-                                    <td>{{ligne.base}} Fcfa</td>
-                                    <td>{{ligne.regulier}} Fcfa</td>
-                                    <td>{{ligne.total}} Fcfa</td>
-                                    <td>{{ligne.interet}} Fcfa</td>
-                                    <td>{{ligne.avoir}} Fcfa</td>
-                                    <td>{{ligne.transactions.first.employe}}</td>
-                                </tr>
+                        <div class="app-search">
+                            <select class="form-select form-control my-1 my-md-0" name="modalite" required>
+                                <option value="">Modalité</option>
+                                {% for mod in modalites %}
+                                <option value="{{ mod.id }}" {% if mod.id == modalite.id %}selected{% endif %}>
+                                    {{ mod.libelle }}</option>
                                 {% endfor %}
+                            </select>
+                            <i data-lucide="calendar" class="app-search-icon text-muted"></i>
+                        </div>
 
-                            </tbody><!-- end table-body -->
-                        </table><!-- end table -->
-                    </div>
-                    <div class="card-footer border-0">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div data-table-pagination-info="projects"></div>
-                            <div data-table-pagination></div>
+                        <div class="app-search">
+                            <input type="number" class="form-control" placeholder="Taux d'intérêt" name="taux"
+                                step="0.01" value="{{taux|stringformat:"s"}}" required>
+                            <i data-lucide="percent" class="app-search-icon text-muted"></i>
                         </div>
                     </div>
                 </div>
             </div>
-        </div><!-- end col -->
-    </div><!-- end row -->
+
+            <div class="d-flex gap-2 border-left border-right">
+                <div class="">
+                    <span class="me-2 fw-semibold">Durée de l'épargne:</span>
+                    <div class="d-flex mt-2 align-items-center gap-2">
+                        <div class="app-search">
+                            <input type="number" class="form-control" placeholder="nombre de" value="{{duree}}"
+                                name="duree">
+                            <i data-lucide="coins" class="app-search-icon text-muted"></i>
+                        </div>
+
+                        <div class="app-search">
+                            <select class="form-select form-control my-1 my-md-0" name="modalite_duree">
+                                <option value="">Modalité</option>
+                                {% for mod in modalites %}
+                                <option value="{{ mod.id }}" {% if mod.id == modalite_duree.id %}selected{% endif %}>
+                                    {{ mod.libelle }}</option>
+                                {% endfor %}
+                            </select>
+                            <i data-lucide="calendar" class="app-search-icon text-muted"></i>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <div class="">
+                    <span class="me-2 fw-semibold">Régularité des approvisionnements:</span>
+                    <div class="d-flex mt-2 align-items-center gap-2">
+                        <div class="app-search">
+                            <input type="number" class="form-control" placeholder="Versement regulier"
+                                value="{{regulier|stringformat:"s"}}" name="regulier">
+                            <i data-lucide="coins" class="app-search-icon text-muted"></i>
+                        </div>
+
+                        <div class="app-search">
+                            <select class="form-select form-control my-1 my-md-0" name="modalite_regulier">
+                                <option value="">Modalité</option>
+                                {% for mod in modalites %}
+                                <option value="{{ mod.id }}" {% if mod.id == modalite_regulier.id %}selected{% endif %}>
+                                    {{ mod.libelle }}</option>
+                                {% endfor %}
+                            </select>
+                            <i data-lucide="calendar" class="app-search-icon text-muted"></i>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <button data-bs-toggle="modal" data-bs-target="#modal-new-user" class="btn btn-warning"><i
+                        class="ti ti-refresh"></i> Faire une simulation</button>
+
+            </div>
+    </div>
+
+
+    
+
+    <div class="card" data-table data-table-rows-per-page="50">
+        <div class="card-body border-light justify-content-between">
+            <div class="table-responsive">
+                <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
+                    <thead class="bg-light align-middle bg-opacity-25 thead-sm">
+                        <tr class="text-uppercase fs-xxs">
+                            <th>Date</th>
+                            <th>Avoir</th>
+                            <th>Approvisionneemnt</th>
+                            <th>Total</th>
+                            <th>Interet</th>
+                            <th>Nouvel avoir</th>
+                        </tr>
+                    </thead><!-- end table-head -->
+
+                    <tbody>
+                        {% for ligne in tableaux %}
+                        <tr>
+                            <td>{{ligne.date}}</td>
+                            <td>{{ligne.base}} Fcfa</td>
+                            <td>{{ligne.regulier}} Fcfa</td>
+                            <td>{{ligne.total}} Fcfa</td>
+                            <td>{{ligne.interet}} Fcfa</td>
+                            <td>{{ligne.avoir}} Fcfa</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody><!-- end table-body -->
+                </table><!-- end table -->
+            </div>
+            <div class="card-footer border-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div data-table-pagination-info="projects"></div>
+                    <div data-table-pagination></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div><!-- end row -->
 
 {% endblock %}

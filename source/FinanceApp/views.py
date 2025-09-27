@@ -141,15 +141,16 @@ def epargnes_simulateur_view(request):
                 total_regulier += regulier
                 next += timedelta(days=duree_approvisonnement)
             
+            interet = 0 if start == date.today() else round((base__ + total_regulier) * taux/100, 2)
             tableaux.append({
                 "date"    : start,
                 "base"    : base__,
                 "regulier": total_regulier,
-                "total"   : base__ + total_regulier,
-                "interet" : round((base__ + total_regulier) * taux/100, 2),
-                "avoir"   : round((base__ + total_regulier + round((base__ + total_regulier) * taux/100, 2)), 2)
+                "total"   : round(base__ + total_regulier, 2),
+                "interet" : interet,
+                "avoir"   : round((base__ + total_regulier + interet), 2)
             })
-            base__ = round((base__ + total_regulier + round((base__ + total_regulier) * taux/100, 2)), 2)
+            base__ = round((base__ + total_regulier + interet), 2)
             start += timedelta(days=duree_echeance)
         
         ctx = {
