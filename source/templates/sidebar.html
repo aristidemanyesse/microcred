@@ -74,12 +74,25 @@
                 </a>
             </li>
 
+            <li class="side-nav-item">
+                <a href="{% url 'FinanceApp:simulateur_pret' %}" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-adjustments-plus"></i></span>
+                    <span class="menu-text" data-lang="landing-page">Simulateur de prêts</span>
+                </a>
+            </li>
+
             <li class="side-nav-title" data-lang="menu-title">Gestion des épargnes</li>
 
             <li class="side-nav-item">
                 <a href="{% url 'FinanceApp:epargnes' %}" class="side-nav-link">
                     <span class="menu-icon"><i class="ti ti-coins"></i></span>
                     <span class="menu-text" data-lang="landing-page">Comptes épargnes</span>
+                </a>
+            </li>
+            <li class="side-nav-item">
+                <a href="{% url 'FinanceApp:simulateur_epargne' %}" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-adjustments-plus"></i></span>
+                    <span class="menu-text" data-lang="landing-page">Simulateur d'épargne</span>
                 </a>
             </li>
 
@@ -99,13 +112,6 @@
                 </a>
             </li>
 
-
-            <li class="side-nav-item">
-                <a href="{% url 'MainApp:dashboard' %}" class="side-nav-link">
-                    <span class="menu-icon"><i class="ti ti-settings-star"></i></span>
-                    <span class="menu-text" data-lang="landing-page">Paramétrages</span>
-                </a>
-            </li>
 
         </ul>
     </div>

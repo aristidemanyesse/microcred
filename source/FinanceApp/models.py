@@ -31,6 +31,20 @@ class ModaliteEcheance(BaseModel):
     libelle = models.CharField(max_length=50) 
     etiquette = models.CharField(max_length=50)
     
+    def duree(self):
+        if self.etiquette == ModaliteEcheance.HEBDOMADAIRE:
+            return 7
+        elif self.etiquette == ModaliteEcheance.MENSUEL:
+            return 30
+        elif self.etiquette == ModaliteEcheance.BIMENSUEL:
+            return 60
+        elif self.etiquette == ModaliteEcheance.TRIMESTRIEL:
+            return 90
+        elif self.etiquette == ModaliteEcheance.SEMESTRIEL:
+            return 180
+        elif self.etiquette == ModaliteEcheance.ANNUEL:
+            return 360
+    
     
 class ModePayement(BaseModel):
     ESPECE = 1
