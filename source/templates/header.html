@@ -37,10 +37,10 @@
             </button>
 
             <!-- Search -->
-            <div class="app-search d-none d-xl-flex" data-bs-toggle="dropdown" data-bs-offset="0,16" type="button">
+            {% comment %} <div class="app-search d-none d-xl-flex" data-bs-toggle="dropdown" data-bs-offset="0,16" type="button">
                 <input type="search" class="form-control topbar-search" name="search" placeholder="Rechercher...">
                 <i data-lucide="search" class="app-search-icon text-muted"></i>
-            </div>
+            </div> {% endcomment %}
 
             <!-- Mega Menu Dropdown -->
             <div class="topbar-item d-none d-md-flex">
@@ -110,12 +110,12 @@
             <!-- Notification Dropdown -->
             <div class="topbar-item">
                 <div class="dropdown">
-                    <button class="topbar-link dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown"
+                    {% comment %} <button class="topbar-link dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown"
                         data-bs-offset="0,22" type="button" data-bs-auto-close="outside" aria-haspopup="false"
                         aria-expanded="false">
                         <i data-lucide="bell" class="fs-xxl"></i>
                         <span class="badge badge-square text-bg-warning topbar-badge">14</span>
-                    </button>
+                    </button> {% endcomment %}
 
                     <div class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg">
                         <div class="px-3 py-2 border-bottom">

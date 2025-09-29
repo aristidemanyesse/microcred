@@ -21,15 +21,58 @@ def prets_view(request):
     return ctx
 
 
-@render_to('FinanceApp/simulateur_pret.html')
+@render_to('FinanceApp/simulateur_prets.html')
 def prets_simulateur_view(request):
     if request.method == "GET":
-        prets = Pret.objects.filter(status__etiquette = StatusPret.EN_COURS)
+        epargnes = CompteEpargne.objects.filter(status__etiquette = StatusPret.EN_COURS)
         modalites = ModaliteEcheance.objects.all()
         ctx = {
-            'TITLE_PAGE' : "Simulateur de prêts",
-            "prets": prets,
+            'TITLE_PAGE' : "Simulateur d'épargne",
+            "epargnes": epargnes,
             "modalites": modalites,
+        }
+        return ctx
+    
+    elif request.method == "POST":
+        base = int(request.POST.get("base"))
+        taux = float(request.POST.get("taux"))
+        
+        duree = request.POST.get("duree")
+        modalite_duree = request.POST.get("modalite_duree", None)
+        modalite_duree = ModaliteEcheance.objects.get(pk=modalite_duree)
+        
+        
+        tableaux = []
+        total_reglement = 0
+        total = base * (1 + taux/100)
+        echeance = round(total / int(duree), 2)
+        i = 0
+        while i < int(duree):
+            total_reglement += echeance
+            reste = round(total - total_reglement, 2)
+            tableaux.append({
+                "base"    : base,
+                "taux"    : taux,
+                "total"   : total,
+                
+                "date"    : date.today() + timedelta(days=(i+1) * modalite_duree.duree()),
+                "echeance": echeance if reste > 0 else (echeance + reste),
+                "reste"   : reste if reste > 0 else 0,
+            })
+            i+=1
+            
+        if reste > 0:
+            tableaux[-1]["echeance"] += reste
+            tableaux[-1]["reste"] = 0
+        
+        ctx = {
+            'TITLE_PAGE' : "Simulateur d'épargne",
+            "base": base,
+            "taux": taux,
+            "duree": duree,
+            "modalite_duree": modalite_duree,
+            "tableaux": tableaux,
+            "modalites": ModaliteEcheance.objects.all(),
         }
         return ctx
     

@@ -26,6 +26,12 @@
                         </div>
 
                         <div class="app-search">
+                            <input type="number" class="form-control" placeholder="Taux d'intérêt" name="taux"
+                                step="0.01" value="{{taux|stringformat:"s"}}" required>
+                            <i data-lucide="percent" class="app-search-icon text-muted"></i>
+                        </div>
+
+                        <div class="app-search">
                             <select class="form-select form-control my-1 my-md-0" name="modalite" required>
                                 <option value="">Modalité</option>
                                 {% for mod in modalites %}
@@ -34,12 +40,6 @@
                                 {% endfor %}
                             </select>
                             <i data-lucide="calendar" class="app-search-icon text-muted"></i>
-                        </div>
-
-                        <div class="app-search">
-                            <input type="number" class="form-control" placeholder="Taux d'intérêt" name="taux"
-                                step="0.01" value="{{taux|stringformat:"s"}}" required>
-                            <i data-lucide="percent" class="app-search-icon text-muted"></i>
                         </div>
                     </div>
                 </div>

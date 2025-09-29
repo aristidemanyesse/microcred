@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load mathfilters %}
 
 {% block content %}
 <div class="container-fluid">
@@ -10,141 +11,95 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12">
-            <div data-table data-table-rows-per-page="20" class="card">
-                <div class="card-header border-light justify-content-between">
+    <div class="card">
+        <form method="POST" action="{% url 'FinanceApp:simulateur_pret' %}"
+            class="card-header border-light justify-content-between">
 
-                    <div class="d-flex gap-2">
+            <div class="d-flex gap-2">
+                <div class="">
+                    <span class="me-2 fw-semibold">Références de l'épargne:</span>
+                    <div class="d-flex gap-2 mt-2">
                         <div class="app-search">
-                            <input data-table-search type="search" class="form-control"
-                                placeholder="Rechercher un prêt...">
-                            <i data-lucide="search" class="app-search-icon text-muted"></i>
+                            <input type="number" class="form-control" placeholder="Montant emprunté" name="base"
+                                value="{{base|stringformat:"s"}}" required>
+                            <i data-lucide="coins" class="app-search-icon text-muted"></i>
                         </div>
-                    </div>
 
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="me-2 fw-semibold">Filtrer par:</span>
-
-                        <!-- Status Filter -->
                         <div class="app-search">
-                            <select data-table-filter="status" class="form-select form-control my-1 my-md-0">
-                                <option value="All">Status</option>
-                                <option value="In Progress">In Progress</option>
-                                <option value="Pending Review">Pending Review</option>
-                                <option value="Overdue">Overdue</option>
-                                <option value="In Review">In Review</option>
-                                <option value="Completed">Completed</option>
-                                <option value="Scheduled">Scheduled</option>
-                                <option value="On Hold">On Hold</option>
-                                <option value="Pending">Pending</option>
-                            </select>
-                            <i data-lucide="activity" class="app-search-icon text-muted"></i>
+                            <input type="number" class="form-control" placeholder="Taux d'intérêt" name="taux"
+                                step="0.01" value="{{taux|stringformat:"s"}}" required>
+                            <i data-lucide="percent" class="app-search-icon text-muted"></i>
                         </div>
-
-                        <!-- Deadline Filter -->
-                        <div class="app-search">
-                            <select data-table-range-filter="date" class="form-select form-control my-1 my-md-0">
-                                <option value="All">Deadline</option>
-                                <option value="Today">Aujourd'hui</option>
-                                <option value="Last 3 Days">3 derniers jours</option>
-                                <option value="Last 7 Days">7 derniers jours</option>
-                            </select>
-                            <i data-lucide="calendar-clock" class="app-search-icon text-muted"></i>
-                        </div>
-
-                        <!-- Records Per Page -->
-                        <div>
-                            <select data-table-set-rows-per-page class="form-select form-control my-1 my-md-0">
-                                <option value="5">5</option>
-                                <option value="10">10</option>
-                                <option value="15">15</option>
-                                <option value="20">20</option>
-                            </select>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
-                        <thead class="bg-light align-middle bg-opacity-25 thead-sm">
-                            <tr class="text-uppercase fs-xxs">
-                                <th>ID</th>
-                                <th>Status</th>
-                                <th>Montant dû</th>
-                                <th>Pénalités</th>
-                                <th data-table-sort>Réglé</th>
-                                <th>date de reglement</th>
-                                <th data-table-sort>Effectué par</th>
-                                <th class="text-center">Actions</th>
-                            </tr>
-                        </thead><!-- end table-head -->
-                        <tbody>
-                            {% for echeance in echeances %}
-                            <tr>
-                                <td>
-                                    <div class="d-flex">
-                                        <div class="avatar-md me-3">
-                                            <span class="avatar-title text-bg-light rounded">
-                                                <i class="ti ti-file-invoice fs-24 text-success"></i>
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <h5 class="mb-1 d-flex align-items-center">
-                                                <a data-sort="project" href="#" class="link-reset">Echéance
-                                                    N°{{echeance.level}}</a>
-                                            </h5>
-                                            <p class="text-muted mb-0 fs-xxs">{{echeance.date_echeance|date:"d M Y"}}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span
-                                        class="badge badge-label text-bg-{{echeance.status.classe}}">{{echeance.status}}</span>
-                                </td>
-                                <td>{{echeance.montant_a_payer}} Fcfa</td>
-                                <td>
-                                    {% if echeance.penalites.count > 0 %}
-                                    {{echeance.penalites.count}} pénalités <br>
-                                    <span class="text-danger fw-bold">{{echeance.penalites_montant}} Fcfa</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if echeance.montant_paye > 0 %}
-                                    {{echeance.montant_paye}} Fcfa
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {{echeance.transactions.first.created_at|date:"d/m/Y à H:i"}}
-                                </td>
-                                <td>{{echeance.transactions.first.employe}}</td>
-                                <td>
-                                    {% if echeance.montant_paye > 0 %}
-                                    <div class="d-flex align-items-center justify-content-center gap-1">
-                                        <a href="{% url 'FinanceApp:pret' echeance.pret.id %}"
-                                            class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                                class="ti ti-eye fs-lg"></i></a>
-                                    </div>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-
-                        </tbody><!-- end table-body -->
-                    </table><!-- end table -->
-                </div>
-                <div class="card-footer border-0">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div data-table-pagination-info="projects"></div>
-                        <div data-table-pagination></div>
                     </div>
                 </div>
             </div>
 
-        </div><!-- end col -->
-    </div><!-- end row -->
+            <div class="d-flex gap-2 border-left border-right">
+                <div class="">
+                    <span class="me-2 fw-semibold">Etalement du prêt:</span>
+                    <div class="d-flex mt-2 align-items-center gap-2">
+                        <div class="app-search">
+                            <input type="number" class="form-control" placeholder="nombre de" value="{{duree}}"
+                                name="duree">
+                            <i data-lucide="calendar" class="app-search-icon text-muted"></i>
+                        </div>
 
-</div>
+                        <div class="app-search">
+                            <select class="form-select form-control my-1 my-md-0" name="modalite_duree">
+                                <option value="">Modalité</option>
+                                {% for mod in modalites %}
+                                <option value="{{ mod.id }}" {% if mod.id == modalite_duree.id %}selected{% endif %}>
+                                    {{ mod.libelle }}</option>
+                                {% endfor %}
+                            </select>
+                            <i data-lucide="calendar" class="app-search-icon text-muted"></i>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <button data-bs-toggle="modal" data-bs-target="#modal-new-user" class="btn btn-warning"><i
+                        class="ti ti-refresh"></i> Faire une simulation</button>
+
+            </div>
+    </div>
+
+
+    
+
+    <div class="card" data-table data-table-rows-per-page="50">
+        <div class="card-body border-light justify-content-between">
+            <div class="table-responsive">
+                <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
+                    <thead class="bg-light align-middle bg-opacity-25 thead-sm">
+                        <tr class="text-uppercase fs-xxs">
+                            <th>Date</th>
+                            <th>Echéance</th>
+                            <th>Reste à payer</th>
+                        </tr>
+                    </thead><!-- end table-head -->
+
+                    <tbody>
+                        {% for ligne in tableaux %}
+                        <tr>
+                            <td>{{ligne.date}}</td>
+                            <td>{{ligne.echeance}} Fcfa</td>
+                            <td>{{ligne.reste}} Fcfa</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody><!-- end table-body -->
+                </table><!-- end table -->
+            </div>
+            <div class="card-footer border-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div data-table-pagination-info="projects"></div>
+                    <div data-table-pagination></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- end row -->
+
 {% endblock %}
