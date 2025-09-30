@@ -14,9 +14,11 @@ from django.core.paginator import Paginator
 @render_to('FinanceApp/prets.html')
 def prets_view(request):
     prets = Pret.objects.filter(status__etiquette = StatusPret.EN_COURS)
+    status = StatusPret.objects.all()
     ctx = {
         'TITLE_PAGE' : "Liste des prêts en cours",
         "prets": prets,
+        "status": status,
     }
     return ctx
 
@@ -97,10 +99,12 @@ def demandes_view(request):
 @render_to('FinanceApp/echeances.html')
 def echeances_view(request):
     today = date.today()
-    echeances = Echeance.objects.filter(date_echeance__range = [today - timedelta(days=3), today + timedelta(days=5)]).exclude(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE]).order_by("-date_echeance")
+    echeances = Echeance.objects.filter(date_echeance__range = [today - timedelta(days=5), today + timedelta(days=5)]).exclude(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE]).order_by("date_echeance")
+    status = StatusPret.objects.all()
     ctx = {
         'TITLE_PAGE' : "Liste des rétards d'échéances",
         "echeances": echeances,
+        "status": status,
     }
     return ctx
 
