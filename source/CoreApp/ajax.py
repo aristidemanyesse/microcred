@@ -152,6 +152,9 @@ def change_active(request):
 
             obj = MyModel.objects.get(pk=datas["id"])
             if datas["model"] == "Employe":
+                if obj == request.user:
+                    return JsonResponse({"status": False, "message": "Vous ne pouvez pas bloquer votre propre compte !"})
+                
                 obj.is_active = not obj.is_active
                 obj.save()
             else:

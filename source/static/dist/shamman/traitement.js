@@ -120,7 +120,6 @@
 
 
         delete_password = function(model, id){
-            url = "/core/ajax/supprimer/";
             Swal.fire({
                 title: "Vous êtes sur le point de faire une suppression. Voulez-vous continuer ?",
                 icon: "warning",
@@ -138,6 +137,7 @@
                         },
                         showCancelButton: true,
                         confirmButtonText: "Valider",
+                        denyButtonText: "Annuler",
                         showLoaderOnConfirm: true,
                         preConfirm: async (password) => {
                             url = "/core/ajax/supprimer/";

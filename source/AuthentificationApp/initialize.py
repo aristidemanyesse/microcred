@@ -36,7 +36,7 @@ def initialize():
                 last_name  = 'Attiékou',
                 contact    = '0612345678',
                 username   = 'administration',
-                brut   = '12345678',
+                brut       = '12345678',
                 address    = '12 rue de la gare',
                 role       = Role.objects.get(libelle='Superviseur'),
                 agence     = Agence.objects.filter(protected=True).first()
@@ -50,7 +50,7 @@ def initialize():
                 contact    = '0612345678',
                 username   = 'assana',
                 address    = '12 rue de la gare',
-                brut   = '12345678',
+                brut       = '12345678',
                 role       = Role.objects.get(libelle='Superviseur'),
                 agence     = Agence.objects.filter(protected=True).first()
             )

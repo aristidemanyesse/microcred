@@ -7,7 +7,8 @@ from FinanceApp.models import CompteEpargne, Echeance, Interet, ModaliteEcheance
 from MainApp.models import Client, Genre, TypeClient
 from django.db.models import Count, Sum, Case, When, DecimalField
 from django.utils.timezone import now
-
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 
 @login_required()
@@ -89,9 +90,11 @@ def dashboard_view(request):
 
 
 
+@login_required()
+@permission_classes([IsAuthenticated])
 @render_to('MainApp/clients.html')
 def clients_view(request):
-    clients = Client.objects.filter(agence=request.user.agence)
+    clients = Client.objects.filter(agence=request.user.agence, deleted=False)
     ctx = {
         'TITLE_PAGE' : "Liste des souscripteurs",
         "clients": clients,
@@ -103,11 +106,11 @@ def clients_view(request):
     return ctx
 
 
-
+@login_required()
 @render_to('MainApp/client.html')
 def client_view(request, pk):
     try:
-        client = Client.objects.get(pk=pk)
+        client = Client.objects.get(pk=pk, deleted=False)
         epargnes = CompteEpargne.objects.filter(client=client, status__etiquette = StatusPret.EN_COURS)
         prets = Pret.objects.filter(client=client, status__etiquette__in = [StatusPret.EN_COURS, StatusPret.EN_ATTENTE])
         transactions = client.transactions.filter().order_by("-created_at")[:5]

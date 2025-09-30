@@ -27,7 +27,7 @@
 
                     <!-- Country Filter -->
                     <div class="app-search">
-                        <select data-table-filter="Type" class="form-select form-control my-1 my-md-0">
+                        <select data-table-filter="type" class="form-select form-control my-1 my-md-0">
                             <option value="All">Tous les types</option>
                             {% for type in types %}
                             <option value="{{ type.libelle }}">{{ type.libelle }}</option>
@@ -52,11 +52,10 @@
                     <thead class="bg-light bg-opacity-25 thead-sm">
                         <tr class="text-uppercase fs-xxs">
                             <th data-table-sort="name">Nom & Prénoms</th>
-                            <th data-table-sort>Type</th>
+                            <th data-table-sort data-column="type">Type</th>
                             <th data-table-sort>Contacts</th>
                             <th data-table-sort>Enregistré le</th>
-                            <th data-table-sort data-column="type">Profession</th>
-                            <th data-table-sort>Agence</th>
+                            <th data-table-sort>Profession</th>
                             <th data-table-sort>Status</th>
                             <th class="text-center">Actions</th>
                         </tr>
@@ -67,8 +66,12 @@
                             <td>
                                 <div class="d-flex justify-content-start align-items-center gap-2">
                                     <div class="avatar avatar-sm">
+                                        {% if client.type_client.etiquette == "1" %}
                                         <img src="{% static 'dist/images/clients/default.jpg' %}" alt="avatar-7"
                                             class="img-fluid rounded-circle">
+                                        {% elif client.type_client.etiquette == "2" %}
+                                            <i class="ti ti-home fs-xxl text-primary"></i>
+                                        {% endif %}
                                     </div>
                                     <div>
                                         <h5 class="text-nowrap mb-0 lh-base fs-base"><a data-sort="name"
@@ -87,7 +90,6 @@
                             </td>
                             <td>{{client.created_at|date:"d/m/Y"}}</td>
                             <td>{{client.profession}}</td>
-                            <td>{{client.agence}}</td>
                             <td>
                                 {% if client.is_actif %}
                                 <span class="badge bg-success-subtle text-success badge-label">Actif</span>

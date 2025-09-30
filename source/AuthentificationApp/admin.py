@@ -6,7 +6,7 @@ from AuthentificationApp.models import *
 
 @admin.register(Employe)
 class EmployeAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'username', 'email', 'is_superuser')
+    list_display = ('first_name', 'last_name', 'username', 'email', 'is_superuser', "is_staff", "is_active")
     search_fields = ('first_name', 'last_name', 'username', 'email')
     
 @admin.register(Role)

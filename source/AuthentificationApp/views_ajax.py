@@ -19,30 +19,35 @@ def get_tokens_for_user(user):
     
 @csrf_exempt
 def login_ajax(request):
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-        employe = authenticate(request, username=username, password=password)
+    try:
+        if request.method == "POST":
+            username = request.POST.get("username")
+            password = request.POST.get("password")
+            employe = authenticate(request, username=username, password=password)
 
-        if employe is not None and not employe.is_superuser:
-            if not employe.is_active:
-                return JsonResponse({'status': False, 'message': "L'accès est déjà refusé à cet employé, veuillez d'abord le débloquer !"})
-            
-            if employe.is_new:
-                request.session['user_id'] = str(employe.id)
-                return JsonResponse({'status': True, "is_new": employe.is_new, "id": employe.id})
-            
+            if employe is not None and not employe.is_superuser:
+                if not employe.is_active:
+                    return JsonResponse({'status': False, 'message': "L'accès est déjà refusé à cet employé, veuillez d'abord le débloquer !"})
+                
+                if employe.is_new:
+                    request.session['user_id'] = str(employe.id)
+                    return JsonResponse({'status': True, "is_new": employe.is_new, "id": employe.id})
+                
+                else:
+                    login(request, employe)
+                    tokens = get_tokens_for_user(employe)
+                    request.session['access_token'] = tokens['access']
+                    request.session.employe = employe
+                    return JsonResponse({'status': True, "is_new": employe.is_new})
+                
             else:
-                login(request, employe)
-                tokens = get_tokens_for_user(employe)
-                request.session['access_token'] = tokens['access']
-                request.session.employe = employe
-                return JsonResponse({'status': True, "is_new": employe.is_new})
-            
-        else:
-            return JsonResponse({'status': False, 'message': "Nom d'utilisateur ou mot de passe incorrect"})
+                return JsonResponse({'status': False, 'message': "Nom d'utilisateur ou mot de passe incorrect"})
+
+        return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
     
-    return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
+    except Exception as e:
+        print("--------------------", e)
+        return JsonResponse({"status": False, "message": str(e)})
 
 
 
