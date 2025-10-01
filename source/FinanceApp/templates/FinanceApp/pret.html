@@ -148,7 +148,7 @@
                 {% if pret.status.etiquette != '0' %}
                 <ul class="nav nav-tabs nav-justified nav-bordered nav-bordered-primary mb-3">
                     <li class="nav-item">
-                        <a href="#transactions-b2" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
+                        <a href="#garanties-b2" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
                             <i class="ti ti-file-invoice fs-lg me-md-1 align-middle"></i>
                             <span class="d-none d-md-inline-block align-middle">Garanties</span>
                         </a>
@@ -174,6 +174,71 @@
                 </ul>
 
                 <div class="tab-content">
+                    <div data-table data-table-rows-per-page="20" class="tab-pane show" id="garanties-b2">
+                        <div
+                            class="card-header border-light d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="d-flex gap-2">
+                                <div class="app-search">
+                                    <input data-table-search type="search" class="form-control"
+                                        placeholder="Rechercher...">
+                                    <i data-lucide="search" class="app-search-icon text-muted"></i>
+                                </div>
+
+                                 <button data-bs-toggle="modal" data-bs-target="#modal-new-garantie" class="btn btn-light"><i
+                            class="ti ti-plus fs-lg"></i> Ajouter une garantie</button>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2">
+                                <div>
+                                    <select data-table-set-rows-per-page="20"
+                                        class="form-select form-control my-1 my-md-0">
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="">
+                            <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
+                                <thead class="bg-light align-middle bg-opacity-25 thead-sm">
+                                    <tr class="text-uppercase fs-xxs">
+                                        <th>Intitulé</th>
+                                        <th>Valeur</th>
+                                        <th>Condition</th>
+                                        <th>enregistré le</th>
+                                        <th>Par</th>
+                                    </tr>
+                                </thead><!-- end table-head -->
+                                <tbody>
+                                    {% for garantie in garanties %}
+                                    <tr>
+                                        <td>
+                                            <h5 class="mb-1 d-flex align-items-center">{{garantie.libelle}}</h5>
+                                        </td>
+                                        <td>{{garantie.montant}} Fcfa</td>
+                                        <td>{{garantie.condition}}</td>
+                                        <td>
+                                            {{garantie.created_at|date:"d/m/Y à H:i"}}
+                                        </td>
+                                        <td>{{garantie.employe}}</td>
+                                    </tr>
+                                    {% endfor %}
+
+                                </tbody><!-- end table-body -->
+                            </table><!-- end table -->
+                        </div>
+                        <div class="card-footer border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div data-table-pagination-info="invoices"></div>
+
+                                <div data-table-pagination></div>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div data-table data-table-rows-per-page="20" class="tab-pane show active" id="home-b2">
                         <div
                             class="card-header border-light d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -482,6 +547,67 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+
+
+
+
+<div class="modal fade" id="modal-new-garantie" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header modal-md bg-primary text-white">
+                <h2 class="modal-title" id="mySmallModalLabel"> Nouvelle garantie</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" class="formShamman" classname="GarantieForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <br />
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Intitulé <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
+                            <input type="text" class="form-control" name="libelle" id="userEmail" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword" class="form-label">Estimation de la valeur<span
+                                class="text-danger">*</span></label>
+                         <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
+                            <input type="text" class="form-control number" name="montant" id="userEmail" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword2" class="form-label">Condition de saisie </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="ti ti-edit text-muted fs-xl"></i></span>
+                            <textarea class="form-control" name="condition" rows="4"
+                                placeholder="Condition de saisie"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer d-flex justify-content-between">
+                    <input type="hidden" name="pret" value="{{ pret.id }}">
+                    <input type="hidden" name="employe" value="{{ request.user.id }}">
+                    <button type="button" class="btn btn-default dim pull-left" data-dismiss="modal">
+                        <i class="ti ti-close"></i> Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary dim pull-right"> <i class="ti ti-check"></i> Valider
+                    </button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 
 {% endblock %}
 

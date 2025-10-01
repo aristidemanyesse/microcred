@@ -6,13 +6,16 @@ from annoying.decorators import render_to
 from django.contrib.auth.decorators import login_required
 from faker import Faker
 from datetime import date, timedelta
-from FinanceApp.models import CompteEpargne, Echeance, Interet, ModaliteEcheance, ModePayement, Penalite, Pret, StatusPret, Transaction
+from FinanceApp.models import CompteEpargne, Echeance, Garantie, Interet, ModaliteEcheance, ModePayement, Penalite, Pret, StatusPret, Transaction
 from django.core.paginator import Paginator
 from datetime import datetime
 
 
 @render_to('FinanceApp/prets.html')
 def prets_view(request):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
     prets = Pret.objects.filter(status__etiquette = StatusPret.EN_COURS)
     status = StatusPret.objects.all()
     ctx = {
@@ -25,6 +28,9 @@ def prets_view(request):
 
 @render_to('FinanceApp/simulateur_prets.html')
 def prets_simulateur_view(request):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
     if request.method == "GET":
         epargnes = CompteEpargne.objects.filter(status__etiquette = StatusPret.EN_COURS)
         modalites = ModaliteEcheance.objects.all()
@@ -82,6 +88,9 @@ def prets_simulateur_view(request):
 
 @render_to('FinanceApp/demandes.html')
 def demandes_view(request):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
     prets = Pret.objects.filter(status__etiquette = StatusPret.EN_ATTENTE)
     paginator = Paginator(prets, 20)
     
@@ -98,6 +107,9 @@ def demandes_view(request):
 
 @render_to('FinanceApp/echeances.html')
 def echeances_view(request):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
     today = date.today()
     echeances = Echeance.objects.filter(date_echeance__range = [today - timedelta(days=5), today + timedelta(days=5)]).exclude(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE]).order_by("date_echeance")
     status = StatusPret.objects.all()
@@ -111,6 +123,9 @@ def echeances_view(request):
 
 @render_to('FinanceApp/invoice.html')
 def invoice(request, pk):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
     try:
         transaction = Transaction.objects.get(pk = pk)
         avance = 0
@@ -143,6 +158,9 @@ def invoice(request, pk):
 
 @render_to('FinanceApp/releve_pret.html')
 def releve_pret(request, pk):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+
     try:
         pret = Pret.objects.get(pk = pk)
         echeances = pret.echeances.filter(status__etiquette = StatusPret.TERMINE).order_by("level")
@@ -166,12 +184,16 @@ def releve_pret(request, pk):
 
 @render_to('FinanceApp/pret.html')
 def pret_view(request, pk):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
     try:
         pret = Pret.objects.get(pk=pk)
         echeances = Echeance.objects.filter(pret=pret).order_by("level")
         penalites = Penalite.objects.filter(echeance__pret=pret)
         transactions = Transaction.objects.filter(echeance__pret=pret).order_by("-created_at")
         modes = ModePayement.objects.all()
+        garanties = Garantie.objects.filter(pret=pret)
         ctx = {
             'TITLE_PAGE'  : "Fiche de prêt",
             "pret"        : pret,
@@ -179,6 +201,7 @@ def pret_view(request, pk):
             "penalites"   : penalites,
             "transactions": transactions,
             "modes": modes,
+            "garanties": garanties,
         }
         return ctx
     except Exception as e:
@@ -188,6 +211,9 @@ def pret_view(request, pk):
 
 @render_to('FinanceApp/epargnes.html')
 def epargnes_view(request):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+        
     epargnes = CompteEpargne.objects.filter(status__etiquette = StatusPret.EN_COURS)
     ladate = date.today() - timedelta(days=3)
     ctx = {

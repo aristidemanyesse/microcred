@@ -22,6 +22,9 @@ def logout_view(request):
 
 @render_to('AuthentificationApp/users.html')
 def users_view(request):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
     roles = Role.objects.all().order_by('etiquette')
     users = Employe.objects.filter(deleted = False).order_by("created_at")
     ctx = {

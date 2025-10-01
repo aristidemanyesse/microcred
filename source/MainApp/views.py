@@ -14,6 +14,9 @@ from rest_framework.permissions import IsAuthenticated
 @login_required()
 @render_to('MainApp/dashboard.html')
 def dashboard_view(request):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+
     today = now().date()
     start_month = today.replace(day=1)
     
@@ -94,6 +97,9 @@ def dashboard_view(request):
 @permission_classes([IsAuthenticated])
 @render_to('MainApp/clients.html')
 def clients_view(request):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
     clients = Client.objects.filter(agence=request.user.agence, deleted=False)
     ctx = {
         'TITLE_PAGE' : "Liste des souscripteurs",
@@ -109,6 +115,9 @@ def clients_view(request):
 @login_required()
 @render_to('MainApp/client.html')
 def client_view(request, pk):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
     try:
         client = Client.objects.get(pk=pk, deleted=False)
         epargnes = CompteEpargne.objects.filter(client=client, status__etiquette = StatusPret.EN_COURS)
@@ -135,6 +144,9 @@ def client_view(request, pk):
 
 @render_to('MainApp/rapports.html')
 def rapports_view(request):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
     ctx = {
         'TITLE_PAGE' : "Rapports Stats",
     }

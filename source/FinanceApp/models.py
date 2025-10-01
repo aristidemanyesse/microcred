@@ -267,7 +267,14 @@ class Echeance(BaseModel):
             employe          = employe
         )
 
-        
+
+
+class Garantie(BaseModel):
+    libelle   = models.CharField(max_length=50, null=True, blank=True)
+    montant    = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    pret      = models.ForeignKey(Pret, on_delete=models.CASCADE, related_name='garanties')
+    condition = models.TextField(null=True, blank=True)
+    employe   = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='garanties')
         
 
 class Penalite(BaseModel):
@@ -298,6 +305,11 @@ class Transaction(BaseModel):
     employe          = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='transactions')
 
 
+   
+   
+   
+   
+   
    
    
    
