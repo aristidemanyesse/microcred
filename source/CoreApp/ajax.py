@@ -13,6 +13,7 @@ import CoreApp.tools as tools
 from MainApp.forms import *
 from FinanceApp.forms import *
 from AuthentificationApp.forms import *
+from TresorApp.forms import *
 from FinanceApp.models import StatusPret
 
 # Create your views here.
@@ -21,10 +22,14 @@ def save(request):
     if request.method == "POST":
         datas = request.POST
         datas._mutable = True
-        print(datas)
+
         for key in datas:
             if datas[key] == "on": datas[key]=True
 
+        if "base" in datas: datas["base"] = float(datas["base"].replace(" ", ""))
+        if "taux" in datas: datas["taux"] = float(datas["taux"].replace(" ", ""))
+        if "montant" in datas: datas["montant"] = float(datas["montant"].replace(" ", ""))
+        
         try:
             modelform = datas["modelform"]
             MyForm = globals()[modelform]

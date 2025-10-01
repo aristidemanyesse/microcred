@@ -6,6 +6,8 @@ from CoreApp.models import BaseModel
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 
+from TresorApp.models import Operation
+
 # Create your models here.
 
 
@@ -311,6 +313,21 @@ def sighandler(instance, **kwargs):
     if instance._state.adding:
         code = instance.compte.client.agence if instance.compte else (instance.echeance.pret.client.agence if instance.echeance else None)
         instance.numero = GenerateTools.transactionId(code)
+
+
+
+@signals.post_save(sender=Transaction)
+def sighandler(instance, created, **kwargs):
+    if created:
+        compte = instance.employe.agence.comptes.filter(principal=True).first()
+        Operation.objects.create(
+            libelle       = instance.type_transaction,
+            compte_credit = compte,
+            montant       = instance.montant,
+            employe       = instance.employe,
+            transaction   = instance,
+        )
+
 
 
 

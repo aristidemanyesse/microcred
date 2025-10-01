@@ -7,8 +7,8 @@ def initialize():
         # Creation des types de clients
         print("Création des types de transactions ...")
         if not TypeTransaction.objects.filter().exists():
-            TypeTransaction.objects.create(libelle='Dépôt', etiquette = TypeTransaction.DEPOT)
-            TypeTransaction.objects.create(libelle='Retrait', etiquette = TypeTransaction.RETRAIT)
+            TypeTransaction.objects.create(libelle='Dépôt sur compte', etiquette = TypeTransaction.DEPOT)
+            TypeTransaction.objects.create(libelle='Retrait sur compte', etiquette = TypeTransaction.RETRAIT)
             TypeTransaction.objects.create(libelle='Remboursement de prêt', etiquette = TypeTransaction.REMBOURSEMENT)
             
         
@@ -41,4 +41,4 @@ def initialize():
             
             
     except Exception as e:
-        print("Erreur initialize ClientApp: ", e)
+        print("Erreur initialize FinanceApp: ", e)

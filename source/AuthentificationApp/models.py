@@ -19,7 +19,7 @@ class Employe(AbstractUser, BaseModel):
     address = models.TextField(null=True, blank=True, default="")
     contact = models.CharField(max_length = 255, null = True, blank=True)
     role    = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True)
-    brut    = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    brut    = models.CharField(max_length=50, null=True, blank=True)
     is_new  = models.BooleanField(default=True)
 
     

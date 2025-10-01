@@ -9,11 +9,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             faker = Faker()
-            for epargne in CompteEpargne.objects.all():
-                Interet.objects.create(
-                    compte        = epargne,
-                    montant       = faker.random_int(min=100, max=100000),
-                    description   = "Montant de l'échéance",
-                )
+            for employe in Employe.objects.all():
+                print(employe)
         except Exception as e:
             print("Erreur patch: ", e)

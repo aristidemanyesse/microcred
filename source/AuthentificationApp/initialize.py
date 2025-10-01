@@ -8,10 +8,10 @@ def initialize():
         # Create a defaults roles
         print("Création des roles ...")
         if not Role.objects.filter().exists():
-            Role.objects.create(libelle='Administrateur', discription='Gestion des utilisateurs et des droits', etiquette=Role.ADMINISTRATEUR)
-            Role.objects.create(libelle='Superviseur', discription='Gestion des agences', etiquette=Role.SUPERVISEUR)
-            Role.objects.create(libelle='Gestionnaire de compte', discription='Gestion des comptes épargnes', etiquette=Role.GESTIONNAIRE_EPARGNE)
-            Role.objects.create(libelle='Gestionnaire de prêt', discription='Gestion des prêts', etiquette=Role.GESTIONNAIRE_PRET)
+            Role.objects.create(libelle='Administrateur', description='Gestion des utilisateurs et des droits', etiquette=Role.ADMINISTRATEUR)
+            Role.objects.create(libelle='Superviseur', description='Gestion des agences', etiquette=Role.SUPERVISEUR)
+            Role.objects.create(libelle='Gestionnaire de compte', description='Gestion des comptes épargnes', etiquette=Role.GESTIONNAIRE_EPARGNE)
+            Role.objects.create(libelle='Gestionnaire de prêt', description='Gestion des prêts', etiquette=Role.GESTIONNAIRE_PRET)
             
             
         # Create a superuser to access the Admin site.

@@ -61,4 +61,5 @@ class Client(BaseModel):
 @signals.pre_save(sender=Client)
 def sighandler(instance, **kwargs):
     if instance._state.adding:
-        instance.numero = GenerateTools.clientId(instance.agence)
+        instance.agence = instance.employe.agence
+        instance.numero = GenerateTools.clientId(instance.employe.agence)
