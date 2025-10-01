@@ -24,12 +24,12 @@ def initialize():
             
         print("Création des modalités d'échéance ...")
         if not ModaliteEcheance.objects.filter().exists():
-            ModaliteEcheance.objects.create(libelle='Hébédomadaire', etiquette = ModaliteEcheance.HEBDOMADAIRE)
-            ModaliteEcheance.objects.create(libelle='Mensuel', etiquette = ModaliteEcheance.MENSUEL)
-            ModaliteEcheance.objects.create(libelle='Bimensuel', etiquette = ModaliteEcheance.BIMENSUEL)
-            ModaliteEcheance.objects.create(libelle='Trimestriel', etiquette = ModaliteEcheance.TRIMESTRIEL)
-            ModaliteEcheance.objects.create(libelle='Semestriel', etiquette = ModaliteEcheance.SEMESTRIEL)
-            ModaliteEcheance.objects.create(libelle='Annuel', etiquette = ModaliteEcheance.ANNUEL)
+            ModaliteEcheance.objects.create(libelle='Hébédomadaire', libelle2="semaine", etiquette = ModaliteEcheance.HEBDOMADAIRE)
+            ModaliteEcheance.objects.create(libelle='Mensuel', libelle2="mois", etiquette = ModaliteEcheance.MENSUEL)
+            ModaliteEcheance.objects.create(libelle='Bimensuel', libelle2="2 mois", etiquette = ModaliteEcheance.BIMENSUEL)
+            ModaliteEcheance.objects.create(libelle='Trimestriel', libelle2="3 mois", etiquette = ModaliteEcheance.TRIMESTRIEL)
+            ModaliteEcheance.objects.create(libelle='Semestriel', libelle2="6 mois", etiquette = ModaliteEcheance.SEMESTRIEL)
+            ModaliteEcheance.objects.create(libelle='Annuel', libelle2="année", etiquette = ModaliteEcheance.ANNUEL)
             
             
         print("Création des modes de payement ...")

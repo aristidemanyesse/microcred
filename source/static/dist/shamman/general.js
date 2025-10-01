@@ -1,16 +1,38 @@
 
 $(function () {
 
-    //bouton principal de deconnexion
-    $("a#btn-deconnexion").click(function (event) {
-        alerty.confirm("Voulez-vous vraiment vous deconnecter ???", {
-            title: "Deconnexion",
-            cancelLabel: "Non",
-            okLabel: "Oui, me deconnecter !",
-        }, function () {
-            window.location.href = "/auth/logout/";
-        })
+     $('input[type="text"].number').each(function() {
+    // si tu veux éviter de ré-initialiser un masque déjà présent :
+    if ($(this).data('imask')) return;
+    const mask = IMask(this, {
+      mask: Number,
+      min: 0,
+      max: 999999999,
+      thousandsSeparator: ' ',
+      radix: ',',
+      scale: 2,
+      normalizeZeros: true,
+      padFractionalZeros: false
     });
+    $(this).data('imask', mask);
+  });
+
+  // Taux %
+  $('input[type="text"].taux').each(function() {
+    if ($(this).data('imask')) return;
+    const mask = IMask(this, {
+      mask: Number,
+      min: 0,
+      max: 100,
+      thousandsSeparator: ' ',
+      radix: ',',
+      scale: 2,
+      normalizeZeros: true,
+      padFractionalZeros: false,
+      suffix: ' %'
+    });
+    $(this).data('imask', mask);
+  });
 
 
     //filtre de la barre generale de recherche
@@ -33,20 +55,6 @@ $(function () {
 
 
 
-    //superposition de modals
-    $(document).on('show.bs.modal', '.modal', function () {
-        var zIndex = 1040 + (10 * $('.modal:visible').length);
-        $(this).css('z-index', zIndex);
-        setTimeout(function () {
-            $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
-        }, 0);
-    });
-    $(document).on('hidden.bs.modal', '.modal', function () {
-        $('.modal:visible').length && $(document.body).addClass('modal-open');
-    });
-
-
-
     //Watchdog de deconnexion
     $(document).idleTimer(10 * 60 * 1000);
     $(document).on("idle.idleTimer", function (event, elem, obj) {
@@ -65,37 +73,5 @@ $(function () {
 
 
 
-
-    //boutons de changement des langues
-    $(".div-langues a").fadeOut()
-    $(".div-langues a.active").fadeIn()
-    $(".div-langues a.active span").fadeOut()
-
-    $(".div-langues").hover(() => {
-        $(".div-langues a").fadeIn()
-        $(".div-langues a span").fadeIn()
-    }, () => {
-        $(".div-langues a").fadeOut()
-        $(".div-langues a.active").fadeIn()
-        $(".div-langues a.active span").fadeOut()
-    })
-
-
-    $(".div-langues a").click(function(){
-        if($(this).hasClass("active")){
-            return false
-        }else{
-            var lang = $(this).attr("set")
-            $(".div-langues a").removeClass("active")
-            $(this).addClass("active")
-            Alerter.success('Langue changée avec succès !');
-
-            url = "../../../core/ajax/change_language/";
-            $.post(url, {lang:lang}, (data)=>{
-                console.log(data)
-                window.location.reload()
-            },"json");
-        }
-    })
 
 });

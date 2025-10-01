@@ -29,6 +29,7 @@ class ModaliteEcheance(BaseModel):
     SEMESTRIEL = "5"
     ANNUEL = "6"
     libelle = models.CharField(max_length=50) 
+    libelle2 = models.CharField(max_length=50) 
     etiquette = models.CharField(max_length=50)
     
     def duree(self):
@@ -97,12 +98,19 @@ class CompteEpargne(BaseModel):
             self.save()
         else:
             raise ValueError("Le solde du compte est insuffisant pour ce retrait.")
-        
+    
+    
+    def total_depots(self):
+        return Transaction.objects.filter(compte=self, type_transaction__etiquette= TypeTransaction.DEPOT).aggregate(total=models.Sum('montant'))['total'] or 0
+    
+    def total_retraits(self):    
+        return Transaction.objects.filter(compte=self, type_transaction__etiquette = TypeTransaction.RETRAIT).aggregate(total=models.Sum('montant'))['total'] or 0
+    
+    def total_interets(self):
+        return Interet.objects.filter(compte=self).aggregate(total=models.Sum('montant'))['total'] or 0
     
     def solde(self):
-        depots = Transaction.objects.filter(compte=self, type_transaction__etiquette= TypeTransaction.DEPOT).aggregate(total=models.Sum('montant'))['total'] or 0
-        retraits = Transaction.objects.filter(compte=self, type_transaction__etiquette = TypeTransaction.RETRAIT).aggregate(total=models.Sum('montant'))['total'] or 0
-        return depots - retraits
+        return self.total_depots() + self.total_interets() - self.total_retraits() 
         
 
 class Interet(BaseModel):
@@ -133,11 +141,17 @@ class Pret(BaseModel):
     confirmateur    = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='confirm_prets', null=True, blank=True)
     commentaire     = models.TextField(null=True, blank=True)
     
+    def total(self):
+        total = 0
+        for echeance in self.echeances.all():
+            total += echeance.total()
+        return total
+    
+    def montant_rembourse(self):
+        return Transaction.objects.filter(echeance__pret=self, type_transaction__etiquette = TypeTransaction.REMBOURSEMENT).aggregate(total=models.Sum('montant'))['total'] or 0
     
     def reste_a_payer(self):
-        payes = self.echeances.exclude(status__etiquette = StatusPret.ANNULEE).aggregate(total=models.Sum('montant_paye'))['total'] or 0
-        penalites = sum(p.montant for e in self.echeances.all() for p in e.penalites.all())
-        return self.montant + penalites - payes
+        return self.total() - self.montant_rembourse()
     
     def echeances_success(self):
         echeances = self.echeances.filter(status__etiquette = StatusPret.TERMINE)
@@ -221,8 +235,15 @@ class Echeance(BaseModel):
     montant_paye    = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     status          = models.ForeignKey(StatusPret, on_delete=models.CASCADE)
     
+    def total(self):
+        return self.montant_a_payer + self.penalites_montant()
+    
     def montant_restant(self):
-        return self.montant_a_payer + self.penalites_montant() - self.montant_paye
+        return self.total() - self.montant_paye
+    
+    def penalites_montant(self):
+        return self.penalites.aggregate(total=models.Sum('montant'))['total'] or 0
+    
     
     def regler(self, montant, employe, mode, commentaire):
         if montant > self.montant_restant():
@@ -243,9 +264,7 @@ class Echeance(BaseModel):
             montant          = montant,
             employe          = employe
         )
-        
-    def penalites_montant(self):
-        return self.penalites.aggregate(total=models.Sum('montant'))['total'] or 0
+
         
         
 
@@ -334,3 +353,12 @@ def sighandler(instance, created, **kwargs):
                     date_echeance   = date_echeance,
                     status          = StatusPret.objects.get(etiquette = StatusPret.EN_COURS),
                 )
+                
+
+
+@signals.post_save(sender=Interet)
+def sighandler(instance, created, **kwargs):
+    if created:
+        instance.compte.solde_actuel = instance.compte.solde()
+        instance.compte.save()
+    

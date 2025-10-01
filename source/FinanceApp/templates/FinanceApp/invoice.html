@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% load static %}
+{% load mathfilters %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="page-title-head d-flex align-items-center">
+        <div class="flex-grow-1">
+            <h4 class="fs-sm text-uppercase fw-bold m-0">{{TITLE_PAGE}}</h4>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-xxl-10">
+            <div class="row">
+                <div class="col-xl-9">
+                    <div class="card">
+                        <div class="card-body px-4">
+                            <!-- Invoice Header -->
+                            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-3">
+                                <div class="auth-brand mb-0">
+                                    <a href="#" class="logo-dark">
+                                        <img src="{% static 'dist/images/site/logo.jpeg' %}" alt="dark logo"
+                                            height="55">
+                                    </a>
+                                    <a href="#" class="logo-light">
+                                        <img src="{% static 'dist/images/site/logo.jpeg' %}" alt="logo" height="55">
+                                    </a>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success-subtle text-success mb-2 fs-xs px-2 py-1">Réçu de
+                                        transaction</span>
+                                    <h3 class="fw-bold text-dark m-0">#{{transaction.numero}}</h3>
+                                    <p class="text-muted mb-0 fs-sm mb-2">
+                                        {{transaction.created_at|date:"d M Y à H:i:s"}}</p>
+
+                                    <p class="text-muted mb-0 fs-xs">par
+                                        {{transaction.employe}}</p>
+                                </div>
+                            </div>
+
+                            <!-- Invoice Info -->
+                            <div class="row">
+                                <!-- From -->
+                                {% if transaction.echeance %}
+                                <div class="col-7">
+                                    <h4 class="text-uppercase mb-0">{{transaction.echeance.pret.client}}</h4>
+                                    <p class="text-muted mb-0">{{transaction.echeance.pret.client.type_client}}</p>
+                                    <p class="text-muted mb-2">{{transaction.echeance.pret.client.adresse}}</p>
+
+                                    <p class="mt-4 mb-0 fw-semibold">Echeance N°{{transaction.echeance.level}} du prêt
+                                        N°{{transaction.echeance.pret.numero}}</p>
+                                    <p class="text-muted mb-1">du {{transaction.echeance.date_echeance|date:"d/m/Y"}}
+                                    </p>
+                                </div>
+                                {% endif %}
+
+                                {% if transaction.compte %}
+                                <div class="col-7">
+                                    <h4 class="text-uppercase mb-0">{{transaction.compte.client}}</h4>
+                                    <p class="text-muted mb-0">{{transaction.compte.client.type_client}}</p>
+                                    <p class="text-muted mb-2">{{transaction.compte.client.adresse}}</p>
+
+                                    <p class="mt-4 mb-0 fw-semibold">Epargne N°{{transaction.compte.numero}}</p>
+                                    <p class="text-muted mb-1">ouvert le {{transaction.compte.created_at|date:"d/m/Y"}}
+                                    </p>
+                                </div>
+                                {% endif %}
+
+                                <!-- To -->
+                                <div class="col-4">
+                                    <h6 class="text-uppercase mb-2">Autres informations</h6>
+                                    <p class="text-muted mb-1">Paiement par {{transaction.mode.libelle}}</p>
+                                    <p class="text-muted mb-1">Effectué par {{transaction.employe}}</p>
+                                    <p class="text-muted mb-1">{{transaction.created_at|date:"d M Y à H:i:s"}}</p>
+                                </div>
+
+                            </div>
+
+                            <!-- Summary Table -->
+                            <div class="d-flex justify-content-end mt-5">
+                                {% if transaction.echeance %}
+                                <table class="table w-auto table-borderless text-end">
+                                    <tbody>
+                                        <tr>
+                                            <td class="fw-medium">Montant dû de base</td>
+                                            <td>{{transaction.echeance.montant_a_payer|floatformat:2}} Fcfa</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-medium">Pénalité ({{transaction.echeance.penalites.count}})
+                                            </td>
+                                            <td class="text-danger">+ {{penalite|floatformat:2}} Fcfa</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-medium">Montant déja avancé</td>
+                                            <td>{{avance}} Fcfa</td>
+                                        </tr>
+                                        <tr class="border-top pt-2 fs-5">
+                                            <td class="fw-medium">Montant total dû</td>
+                                            <td class="fs-lg">{{total|floatformat:2}} Fcfa</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Montant versé</td>
+                                            <td class="fw-bold fs-xxl text-primary">
+                                                {{transaction.montant|floatformat:2}} Fcfa</td>
+                                        </tr>
+                                        <tr class="border-top pt-2 fs-5 fw-bold">
+                                            <td>Reste à payer</td>
+                                            <td>{{reste}} Fcfa</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                {% endif %}
+
+
+                                {% if transaction.compte %}
+                                <table class="table w-auto table-borderless text-end">
+                                    <tbody>
+                                        <tr>
+                                            <td class="fw-medium">Avoir précédent</td>
+                                            <td class="text-muted fs-xxs fst-italic">veuillez consulter votre relévé de compte</td>
+                                        </tr>
+                                        {% if transaction.type_transaction.etiquette == "1" %}
+                                            <tr>
+                                                <td class="fw-bold">Montant versé</td>
+                                                <td class="fw-bold fs-xxl text-success">
+                                                    {{transaction.montant|floatformat:2}} Fcfa</td>
+                                            </tr>
+                                        {% elif transaction.type_transaction.etiquette == "2" %}
+                                            <tr>
+                                                <td class="fw-bold">Montant retiré</td>
+                                                <td class="fw-bold fs-xxl text-danger">
+                                                    {{transaction.montant|floatformat:2}} Fcfa</td>
+                                            </tr>
+                                        {% endif %}
+                                        <tr class="border-top pt-2 fs-5 fw-bold">
+                                            <td>Nouvel avoir</td>
+                                            <td class="text-muted fs-xxs fst-italic">veuillez consulter votre relévé de compte</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                {% endif %}
+                            </div>
+
+                            <!-- Note -->
+                            <div class="mt-lg-4 mt-2 bg-light bg-opacity-50 rounded px-3 py-2">
+                                <p class="mb-0 text-muted"><strong>Important:</strong> Aucun remboursement n'est
+                                    possible après le versement. Pour toute question, contactez le support par
+                                    email à <a href="mailto:support@assana-services.com"
+                                        class="fw-medium">support@assana-services.com</a> ou par téléphone au 06 12 34
+                                    56 78.</p>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="d-flex mt-4  justify-content-end">
+                                <div class="mt-4 ">
+                                    <p class="fw-semibold mb-0 ">Fait à Abidjan, Côte d'Ivoire</p>
+                                    <p class="text-muted mb-0 text-center fs-xxs fst-italic">imprimé le
+                                        {{now|date:"d/m/Y à H:i:s"}}</p>
+                                    <p class="text-muted text-center fs-xxs fst-italic">par {{request.user}}</p>
+                                    <!-- <h4 class="fst-italic">WebAppLayers</h4> -->
+                                    <div style="height:50px"></div>
+                                    <p class="text-muted text-center fs-xxs fst-italic">Signature autorisée</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> <!-- end card-->
+                </div> <!-- end col-9-->
+
+                <div class="col-xl-3 d-print-none">
+                    <div class="card card-top-sticky">
+                        <div class="card-body">
+                            <div class="justify-content-center d-flex flex-column gap-2">
+                                <a href="javascript:window.print()" class="btn btn-primary"><i
+                                        class="ti ti-printer me-1"></i> Imprimer / Télécharger</a>
+                            </div>
+                        </div> <!-- end card-body-->
+                    </div> <!-- end card-->
+                </div> <!-- end col-9-->
+            </div> <!-- end row-->
+        </div> <!-- end col-10-->
+    </div> <!-- end row-->
+
+</div>
+{% endblock %}

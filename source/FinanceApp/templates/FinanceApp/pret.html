@@ -55,14 +55,17 @@
                                                 <small>Reste :</small> <span
                                                     class="text-success fw-bold">{{pret.reste_a_payer|floatformat:2}}</span>
                                             </h2>
-                                            <div class="d-flex justify-content-center align-items-center">
+                                            <div class="d-flex justify-content-around align-items-center">
                                                 {% if pret.status.etiquette != '0' %}
                                                 <a href="#" data-bs-toggle="modal"
                                                     data-bs-target="#modal-new-remboursement" class="btn btn-primary"><i
                                                         class="ti ti-coins fs-lg"></i> Effectuer un remboursement</a>
+
+                                                         <a href="{% url 'FinanceApp:releve_pret' pret.id %}" class="btn btn-warning">
+                                                        <i class="ti ti-invoice fs-lg"></i> Imprimer le relévé de compte</a>
                                                 {% else %}
                                                 <a href="#" class="btn btn-warning" onclick="confirmPret('{{pret.id}}')"><i
-                                                        class="ti ti-coins fs-lg"></i> Valider le prêt du souscripteur</a>
+                                                        class="ti ti-check fs-lg"></i> Valider le prêt du souscripteur</a>
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -204,8 +207,6 @@
                                         <th>Pénalités</th>
                                         <th data-table-sort>Réglé</th>
                                         <th>date de reglement</th>
-                                        <th data-table-sort>Effectué par</th>
-                                        <th class="text-center">Actions</th>
                                     </tr>
                                 </thead><!-- end table-head -->
                                 <tbody>
@@ -246,16 +247,6 @@
                                         </td>
                                         <td>
                                             {{echeance.transactions.first.created_at|date:"d/m/Y à H:i"}}
-                                        </td>
-                                        <td>{{echeance.transactions.first.employe}}</td>
-                                        <td>
-                                            {% if echeance.montant_paye > 0 %}
-                                            <div class="d-flex align-items-center justify-content-center gap-1">
-                                                <a href="invoice-details.html"
-                                                    class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                                        class="ti ti-file-invoice fs-lg"></i></a>
-                                            </div>
-                                            {% endif %}
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -338,7 +329,7 @@
                                         <td>{{transaction.employe}}</td>
                                         <td>
                                             <div class="d-flex align-items-center justify-content-center gap-1">
-                                                <a href="invoice-details.html"
+                                                <a href="{% url 'FinanceApp:invoice' transaction.id %}"
                                                     class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                                         class="ti ti-file-invoice fs-lg"></i></a>
                                             </div>
@@ -452,7 +443,7 @@
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i
                                     class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
-                            <input type="text" class="form-control" name="montant" id="userEmail" required>
+                            <input type="text" class="form-control number" name="montant" id="userEmail" required>
                         </div>
                     </div>
 

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from django.db.models import Sum
 # Create your views here.
 from django.shortcuts import render, redirect
 from annoying.decorators import render_to
@@ -8,7 +8,7 @@ from faker import Faker
 from datetime import date, timedelta
 from FinanceApp.models import CompteEpargne, Echeance, Interet, ModaliteEcheance, ModePayement, Penalite, Pret, StatusPret, Transaction
 from django.core.paginator import Paginator
-
+from datetime import datetime
 
 
 @render_to('FinanceApp/prets.html')
@@ -109,6 +109,60 @@ def echeances_view(request):
     return ctx
 
 
+@render_to('FinanceApp/invoice.html')
+def invoice(request, pk):
+    try:
+        transaction = Transaction.objects.get(pk = pk)
+        avance = 0
+        penalite = 0
+        total = 0
+        reste = 0
+        if transaction.echeance:
+            penalite = transaction.echeance.penalites_montant()
+            avance = transaction.echeance.transactions.filter(created_at__lt = transaction.created_at).aggregate(total=Sum('montant'))['total'] or 0
+            total = transaction.echeance.montant_a_payer + penalite - avance
+            reste = total - transaction.montant
+
+        ctx = {
+            'TITLE_PAGE' : "Réçu de transaction",
+            "transaction": transaction,
+            "avance": avance,
+            "penalite": penalite,
+            "total": total,
+            "reste": reste,
+            "now": datetime.now(),
+        }
+        return ctx
+    
+    except Exception as e:
+        print("Erreur invoice_view: ", e)
+        return redirect('FinanceApp:prets')
+
+
+
+
+@render_to('FinanceApp/releve_pret.html')
+def releve_pret(request, pk):
+    try:
+        pret = Pret.objects.get(pk = pk)
+        echeances = pret.echeances.filter(status__etiquette = StatusPret.TERMINE).order_by("level")
+        reste = pret.echeances.exclude(status__etiquette__in = [StatusPret.TERMINE, StatusPret.ANNULEE]).count()
+        ctx = {
+            'TITLE_PAGE' : "Réçu de transaction",
+            "pret" : pret,
+            "echeances": echeances,
+            "reste": reste,
+            "now": datetime.now(),
+        }
+        return ctx
+    
+    except Exception as e:
+        print("Erreur invoice_view: ", e)
+        return redirect('FinanceApp:prets')
+
+
+
+
 
 @render_to('FinanceApp/pret.html')
 def pret_view(request, pk):
@@ -146,6 +200,50 @@ def epargnes_view(request):
 
 
 
+@render_to('FinanceApp/releve_epargne.html')
+def releve_epargne(request, pk):
+    try:
+        epargne = CompteEpargne.objects.get(pk = pk)
+        transactions = epargne.transactions.filter()
+        interets = epargne.interets.filter()
+        items = list(transactions) + list(interets)
+        sorted(items, key=lambda x: x.created_at)
+        
+        
+        datas = []
+        base = 0
+        for item in items:
+            if type(item) == Interet:
+                base += item.montant
+                datas.append({
+                    "type" : "Interet",
+                    "title" : f"Intérêt {epargne.modalite} de {epargne.taux}% payé",
+                    "montant" : item.montant,
+                    "avoir": round(base, 2),
+                    "created_at" : item.created_at,
+                })
+            else:
+                base = (base + item.montant) if item.type_transaction.etiquette == "1" else (base - item.montant)
+                datas.append({
+                    "type" : "Transaction",
+                    "title" : f"{item.type_transaction} N°{item.numero}",
+                    "montant" : item.montant,
+                    "avoir": round(base, 2),
+                    "created_at" : item.created_at,
+                })
+                
+        ctx = {
+            'TITLE_PAGE' : "Réçu de transaction",
+            "epargne" : epargne,
+            "datas": datas,
+            "now": datetime.now(),
+        }
+        return ctx
+    
+    except Exception as e:
+        print("Erreur invoice_view: ", e)
+        return redirect('FinanceApp:epargnes')
+    
 
 
 @render_to('FinanceApp/simulateur_epargne.html')

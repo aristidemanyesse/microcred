@@ -47,6 +47,9 @@
                                                 <button data-bs-toggle="modal"
                                                     data-bs-target="#modal-new-retrait" class="btn btn-danger"><i
                                                         class="ti ti-coins fs-lg"></i> Faire un retrait</button>
+
+                                                <a href="{% url 'FinanceApp:releve_epargne' epargne.id %}" class="btn btn-warning">
+                                                        <i class="ti ti-invoice fs-lg"></i> Imprimer le relévé de compte</a>
                                                
                                             </div>
                                         </div>
@@ -205,7 +208,7 @@
                                         <td>
                                             {% if transaction.montant > 0 %}
                                             <div class="d-flex align-items-center justify-content-center gap-1">
-                                                <a href="invoice-details.html"
+                                                <a href="{% url 'FinanceApp:invoice' transaction.id %}"
                                                     class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                                         class="ti ti-file-invoice fs-lg"></i></a>
                                             </div>

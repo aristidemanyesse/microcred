@@ -17,16 +17,16 @@
 
             <div class="d-flex gap-2">
                 <div class="">
-                    <span class="me-2 fw-semibold">Références de l'épargne:</span>
+                    <span class="me-2 fw-semibold">Références du prêt:</span>
                     <div class="d-flex gap-2 mt-2">
                         <div class="app-search">
-                            <input type="number" class="form-control" placeholder="Montant emprunté" name="base"
+                            <input type="text" class="form-control number" placeholder="Montant emprunté" name="base"
                                 value="{{base|stringformat:"s"}}" required>
                             <i data-lucide="coins" class="app-search-icon text-muted"></i>
                         </div>
 
                         <div class="app-search">
-                            <input type="number" class="form-control" placeholder="Taux d'intérêt" name="taux"
+                            <input type="text" class="form-control taux" placeholder="Taux d'intérêt" name="taux"
                                 step="0.01" value="{{taux|stringformat:"s"}}" required>
                             <i data-lucide="percent" class="app-search-icon text-muted"></i>
                         </div>
@@ -39,7 +39,7 @@
                     <span class="me-2 fw-semibold">Etalement du prêt:</span>
                     <div class="d-flex mt-2 align-items-center gap-2">
                         <div class="app-search">
-                            <input type="number" class="form-control" placeholder="nombre de" value="{{duree}}"
+                            <input type="text" class="form-control taux" placeholder="nombre de" value="{{duree}}"
                                 name="duree">
                             <i data-lucide="calendar" class="app-search-icon text-muted"></i>
                         </div>
@@ -49,7 +49,7 @@
                                 <option value="">Modalité</option>
                                 {% for mod in modalites %}
                                 <option value="{{ mod.id }}" {% if mod.id == modalite_duree.id %}selected{% endif %}>
-                                    {{ mod.libelle }}</option>
+                                    {{ mod.libelle2 }}</option>
                                 {% endfor %}
                             </select>
                             <i data-lucide="calendar" class="app-search-icon text-muted"></i>
