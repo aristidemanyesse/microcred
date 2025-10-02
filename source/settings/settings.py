@@ -154,8 +154,8 @@ USE_TZ = True
 CRONTAB_DJANGO_PROJECT_NAME = "Microcred"
 CRONJOBS = [
     # chaque jour à minuit → calcul pénalités
-    ('0 0 * * *', 'FinanceApp.crons.generer_penalites'),
+    ('0 0 * * *', 'FinanceApp.crons.generer_penalites', '>> {}'.format(os.path.join(BASE_DIR, "logs/penelites.log" ))),
 
-    # chaque 1er du mois à 01h → calcul intérêts épargne
-    ('0 1 1 * *', 'FinanceApp.crons.generer_interets_epargnes'),
+    # chaque jour à 01h → calcul intérêts épargne
+    ('0 1 * * *', 'FinanceApp.crons.generer_interets_epargnes', '>> {}'.format(os.path.join(BASE_DIR, "logs/interets.log" ))),
 ]

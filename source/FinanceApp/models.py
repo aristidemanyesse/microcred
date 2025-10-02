@@ -3,9 +3,9 @@ from annoying.decorators import signals
 from MainApp.models import Client
 from CoreApp.tools import GenerateTools
 from CoreApp.models import BaseModel
-from datetime import timedelta
 from dateutil.relativedelta import relativedelta
-
+from datetime import date, timedelta
+import calendar
 from TresorApp.models import Operation
 
 # Create your models here.
@@ -58,14 +58,15 @@ class ModePayement(BaseModel):
     etiquette = models.CharField(max_length=50)
     
 class CompteEpargne(BaseModel):
-    numero       = models.CharField(max_length=50, null=True, blank=True)
-    client       = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='epargnes')
-    solde_actuel = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
-    taux         = models.DecimalField(max_digits=5, decimal_places=2)
-    modalite     = models.ForeignKey(ModaliteEcheance, on_delete=models.CASCADE, null=True, blank=True)
-    status       = models.ForeignKey(StatusPret, on_delete=models.CASCADE, null=True, blank=True)
-    employe      = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='epargnes')
-    commentaire  = models.TextField(null=True, blank=True)
+    numero                = models.CharField(max_length=50, null=True, blank=True)
+    client                = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='epargnes')
+    solde_actuel          = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    taux                  = models.DecimalField(max_digits=5, decimal_places=2)
+    modalite              = models.ForeignKey(ModaliteEcheance, on_delete=models.CASCADE, null=True, blank=True)
+    status                = models.ForeignKey(StatusPret, on_delete=models.CASCADE, null=True, blank=True)
+    employe               = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='epargnes')
+    derniere_date_interet = models.DateField(null=True, blank=True)
+    commentaire           = models.TextField(null=True, blank=True)
     
     def __str__(self):
         return f"Epargne N°{self.numero}"
@@ -102,8 +103,52 @@ class CompteEpargne(BaseModel):
             raise ValueError("Le solde du compte est insuffisant pour ce retrait.")
         
     
-    def calculer_interet(self):
-        return self.solde() * self.taux / 100
+    def calculer_interet_prorata(self, today = None):
+        today = today or date.today()
+        periodicite = self.modalite.etiquette
+
+        # ---- Durée de la période (en jours) ----
+        if periodicite == ModaliteEcheance.HEBDOMADAIRE:
+            jours_periode = 7
+            debut_periode = today - timedelta(days=today.weekday())
+            
+        elif periodicite == ModaliteEcheance.MENSUEL:
+            jours_periode = calendar.monthrange(today.year, today.month)[1]
+            debut_periode = date(today.year, today.month, 1)
+            
+        elif periodicite == ModaliteEcheance.BIMENSUEL:
+            mois_ref = today.month - ((today.month - 1) % 2)
+            debut_periode = date(today.year, mois_ref, 1)
+            fin_periode = date(today.year + (mois_ref+1)//12, ((mois_ref+1-1)%12)+1, 1)
+            jours_periode = (fin_periode - debut_periode).days
+            
+        elif periodicite == ModaliteEcheance.TRIMESTRIEL:
+            mois_ref = today.month - ((today.month - 1) % 3)
+            debut_periode = date(today.year, mois_ref, 1)
+            fin_periode = date(today.year + (mois_ref+2)//12, ((mois_ref+2-1)%12)+1, 1)
+            jours_periode = (fin_periode - debut_periode).days
+            
+        elif periodicite == ModaliteEcheance.SEMESTRIEL:
+            mois_ref = today.month - ((today.month - 1) % 6)
+            debut_periode = date(today.year, mois_ref, 1)
+            fin_periode = date(today.year + (mois_ref+5)//12, ((mois_ref+5-1)%12)+1, 1)
+            jours_periode = (fin_periode - debut_periode).days
+            
+        elif periodicite == ModaliteEcheance.ANNUEL:
+            debut_periode = date(today.year, 1, 1)
+            jours_periode = 366 if calendar.isleap(today.year) else 365
+
+        # ---- Prorata si compte ouvert après le début de la période ----
+        debut_effectif = max(self.created_at, debut_periode)
+        jours_ecoules = (today - debut_effectif).days + 1
+        prorata = jours_ecoules / jours_periode
+
+        # ---- Intérêt ----
+        interet = self.solde * (float(self.taux) / 100) * prorata
+        return round(interet, 2)
+    
+    
+    
     
     
     def total_depots(self):
@@ -135,18 +180,19 @@ class TypeTransaction(BaseModel):
     
 
 class Pret(BaseModel):
-    numero          = models.CharField(max_length=50, null=True, blank=True, unique=True)
-    client          = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='prets')
-    base            = models.DecimalField(max_digits=12, decimal_places=2)
-    taux            = models.DecimalField(max_digits=5, decimal_places=2)
-    taux_penalite   = models.DecimalField(max_digits=5, decimal_places=2, default=10, null=True, blank=True)
-    montant         = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
-    modalite        = models.ForeignKey(ModaliteEcheance, on_delete=models.CASCADE)
-    nombre_modalite = models.PositiveIntegerField()
-    status          = models.ForeignKey(StatusPret, on_delete=models.CASCADE, null=True, blank=True,)
-    employe         = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='prets')
-    confirmateur    = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='confirm_prets', null=True, blank=True)
-    commentaire     = models.TextField(null=True, blank=True)
+    numero                 = models.CharField(max_length=50, null=True, blank=True, unique=True)
+    client                 = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='prets')
+    base                   = models.DecimalField(max_digits=12, decimal_places=2)
+    taux                   = models.DecimalField(max_digits=5, decimal_places=2)
+    taux_penalite          = models.DecimalField(max_digits=5, decimal_places=2, default=10, null=True, blank=True)
+    montant                = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    modalite               = models.ForeignKey(ModaliteEcheance, on_delete=models.CASCADE)
+    nombre_modalite        = models.PositiveIntegerField()
+    status                 = models.ForeignKey(StatusPret, on_delete=models.CASCADE, null=True, blank=True,)
+    employe                = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='prets')
+    confirmateur           = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='confirm_prets', null=True, blank=True)
+    derniere_date_penalite = models.DateField(null=True, blank=True)
+    commentaire            = models.TextField(null=True, blank=True)
     
     def total(self):
         total = 0
@@ -254,7 +300,10 @@ class Echeance(BaseModel):
     
     def calculer_penalite(self):
         return self.montant_a_payer * self.pret.taux_penalite / 100
-    
+        # today = date.today()
+        # jours_retard = (today - self.date_echeance).days
+        # montant_penalite = (self.pret.taux_penalite * self.montant_restant())
+        # return (montant_penalite * jours_retard) / self.pret.modalite.duree()
     
     def regler(self, montant, employe, mode, commentaire):
         if montant > self.montant_restant():
@@ -398,5 +447,15 @@ def sighandler(instance, created, **kwargs):
 def sighandler(instance, created, **kwargs):
     if created:
         instance.compte.solde_actuel = instance.compte.solde()
+        instance.compte.derniere_date_interet = instance.created_at
         instance.compte.save()
+    
+
+
+@signals.post_save(sender=Penalite)
+def sighandler(instance, created, **kwargs):
+    if created:
+        instance.echeance.status = StatusPret.objects.get(etiquette = StatusPret.RETARD)
+        instance.echeance.derniere_date_penalite = instance.created_at
+        instance.echeance.save()
     
