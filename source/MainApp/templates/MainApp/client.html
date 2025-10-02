@@ -308,7 +308,7 @@
                                 <span class="input-group-text bg-light"><i
                                         class="ti ti-calendar text-muted fs-xl"></i></span>
                                 <input type="date" class="form-control" name="date_naissance" placeholder="__/__/____"
-                                    required value="{{ client.date_naissance }}">
+                                    required value="{{ client.date_naissance|date:"Y-m-d" }}">
                             </div>
                         </div>
                         <div class="col">
@@ -390,7 +390,7 @@
                                 <span class="input-group-text bg-light"><i
                                         class="ti ti-calendar text-muted fs-xl"></i></span>
                                 <input type="date" class="form-control" name="date_naissance" placeholder="__/__/____"
-                                    required value="{{ client.date_naissance }}">
+                                    required value="{{ client.date_naissance|date:"Y-m-d" }}">
                             </div>
                         </div>
                         <div class="col">
@@ -484,7 +484,6 @@
                                     required>
                             </div>
                         </div>
-
                     </div>
 
                     <div class="mb-3">
@@ -504,7 +503,7 @@
                                             class="ti ti-calendar text-muted fs-xl"></i></span>
                                     <select name="modalite" class="form-select form-control my-1 my-md-0" required>
                                         {% for modalite in modalites %}
-                                        <option value="{{ modalite.id }}">Echéancier {{ modalite.libelle }}</option>
+                                        <option value="{{ modalite.id }}">{{ modalite.libelle2 }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>

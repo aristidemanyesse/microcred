@@ -192,7 +192,7 @@
                                                 </div>
                                                 <div>
                                                     <h5 class="mb-1 d-flex align-items-center">
-                                                        <a data-sort="project" href="#" class="link-reset">#{{transaction.numero}}</a>
+                                                        <a data-sort="project" href="{% url 'FinanceApp:invoice' transaction.id %}" class="link-reset">#{{transaction.numero}}</a>
                                                     </h5>
                                                     <p class="text-muted mb-0 fs-xxs">
                                                         {{transaction.created_at|date:"d M Y à H:i:s"}}</p>
@@ -324,7 +324,7 @@
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i
                                     class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
-                            <input type="text" class="form-control" name="montant" id="userEmail" required>
+                            <input type="text" class="form-control number" name="montant" id="userEmail" required>
                         </div>
                     </div>
 
@@ -385,7 +385,7 @@
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i
                                     class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
-                            <input type="text" class="form-control" name="montant" id="userEmail" required>
+                            <input type="text" class="form-control number" name="montant" id="userEmail" required>
                         </div>
                     </div>
 

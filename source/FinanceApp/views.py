@@ -42,8 +42,8 @@ def prets_simulateur_view(request):
         return ctx
     
     elif request.method == "POST":
-        base = int(request.POST.get("base"))
-        taux = float(request.POST.get("taux"))
+        base = int(request.POST.get("base").replace(" ", ""))
+        taux = float(request.POST.get("taux").replace(" ", "").replace(",", "."))
         
         duree = request.POST.get("duree")
         modalite_duree = request.POST.get("modalite_duree", None)
@@ -285,8 +285,9 @@ def epargnes_simulateur_view(request):
         return ctx
     
     elif request.method == "POST":
-        base = int(request.POST.get("base"))
-        taux = float(request.POST.get("taux"))
+        base = int(request.POST.get("base").replace(" ", ""))
+        taux = float(request.POST.get("taux").replace(" ", "").replace(",", "."))
+        
         modalite = request.POST.get("modalite")
         modalite = ModaliteEcheance.objects.get(pk=modalite)
         
@@ -294,7 +295,7 @@ def epargnes_simulateur_view(request):
         modalite_duree = request.POST.get("modalite_duree")
         modalite_duree = ModaliteEcheance.objects.get(pk=modalite_duree)
         
-        regulier = int(request.POST.get("regulier"))
+        regulier = int(request.POST.get("regulier").replace(" ", ""))
         modalite_regulier = request.POST.get("modalite_regulier")
         modalite_regulier = ModaliteEcheance.objects.get(pk=modalite_regulier)
         

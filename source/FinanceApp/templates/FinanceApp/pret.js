@@ -11,6 +11,7 @@ $(function() {
                 contentType: false
             }, function(data) {
                 if (data.status) {
+                    Loader.stop()
                     Swal.fire({
                         title: "Le remboursement a été effectué avec succès !",
                         icon: "success",
@@ -24,9 +25,9 @@ $(function() {
                             } 
                     });
                 } else {
+                    Loader.stop();
                     Alerter.error('Erreur !', data.message);
                 }
-                Loader.stop();
             });
             return false;
         });
@@ -42,6 +43,7 @@ $(function() {
                 }).then((result) => {
                     /* Read more about isConfirmed, isDenied below */
                     if (result.isConfirmed) {
+                        Loader.start()
                         var token = $(".footer").find("input[name=csrfmiddlewaretoken]").val()
                         $.ajax({
                             url: "{% url 'FinanceApp:confirm_pret' %}",     
@@ -52,6 +54,7 @@ $(function() {
                             },
                             success: function(data) {
                                 if (data.status) {
+                                    Loader.stop()
                                     Swal.fire({
                                         title: "Le prêt a été validé avec succès !",
                                         icon: "success",

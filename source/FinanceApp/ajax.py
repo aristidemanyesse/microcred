@@ -52,9 +52,9 @@ def new_remboursement(request):
 def confirm_pret(request):
     if request.method == "POST":
         try:
-            datas = request.POST
-            pret = Pret.objects.get(pk=datas["pret_id"])
-            pret.status = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
+            datas             = request.POST
+            pret              = Pret.objects.get(pk=datas["pret_id"])
+            pret.status       = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
             pret.confirmateur = Employe.objects.get(pk=request.user.id) 
             pret.save()
             return JsonResponse({"status": True, "message": "Prêt validé avec succès !"})
@@ -67,11 +67,11 @@ def confirm_pret(request):
 def new_depot(request):
     if request.method == "POST":
         try:
-            datas = request.POST
-            epargne = CompteEpargne.objects.get(pk=datas["id"])
-            mode = ModePayement.objects.get(pk=datas["mode"])
+            datas       = request.POST
+            epargne     = CompteEpargne.objects.get(pk=datas["id"])
+            mode        = ModePayement.objects.get(pk=datas["mode"])
             commentaire = datas["commentaire"]
-            montant = int(datas["montant"].replace(" ", ""))
+            montant     = int(datas["montant"].replace(" ", ""))
             
             if montant > 0:
                 epargne.deposer(montant, request.user, mode, commentaire)

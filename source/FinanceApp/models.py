@@ -194,21 +194,22 @@ class Pret(BaseModel):
     derniere_date_penalite = models.DateField(null=True, blank=True)
     commentaire            = models.TextField(null=True, blank=True)
     
-    def total(self):
-        total = 0
-        for echeance in self.echeances.all():
-            total += echeance.total()
-        return total
+    def total(self):    
+        return self.montant + self.penalites_montant()
+    
     
     def montant_rembourse(self):
         return Transaction.objects.filter(echeance__pret=self, type_transaction__etiquette = TypeTransaction.REMBOURSEMENT).aggregate(total=models.Sum('montant'))['total'] or 0
     
+    
     def reste_a_payer(self):
         return self.total() - self.montant_rembourse()
+    
     
     def echeances_success(self):
         echeances = self.echeances.filter(status__etiquette = StatusPret.TERMINE)
         return echeances
+    
     
     def progress(self):
         total = self.echeances.count()
@@ -412,10 +413,12 @@ def sighandler(instance, **kwargs):
 @signals.post_save(sender=Pret)
 def sighandler(instance, created, **kwargs):
     if created:
-        date_echeance = instance.created_at.date()
         montant = instance.montant / instance.nombre_modalite
     
     else:
+        date_echeance = instance.created_at.date()
+        montant = round(instance.total() / instance.nombre_modalite, 2)
+
         if instance.status.etiquette == StatusPret.EN_COURS and len(instance.echeances.filter()) == 0:
             i = 0
             while i < instance.nombre_modalite:
@@ -433,6 +436,7 @@ def sighandler(instance, created, **kwargs):
                 elif instance.modalite.etiquette == ModaliteEcheance.ANNUEL:
                     date_echeance += relativedelta(days=360)
 
+                print("date_echeance", date_echeance)
                 Echeance.objects.create(
                     pret            = instance,
                     level           = i,

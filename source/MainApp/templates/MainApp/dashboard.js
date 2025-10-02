@@ -41,26 +41,23 @@ function loadTransactionsChart() {
           series: [
             {
               name: "Dépôts",
-              type: "line",
-              smooth: true,
-              itemStyle: { color: ins("success") },
-              showAllSymbol: true,
-              symbol: "emptyCircle",
-              symbolSize: 5,
+              type: "bar",
+              barWidth: 14,
+              itemStyle: { borderRadius: [5, 5, 0, 0], color: ins("success") },
               data: depots
             },
             {
               name: "Retraits",
               type: "bar",
               barWidth: 14,
-              itemStyle: { borderRadius: [5, 5, 0, 0], color: ins("secondary") },
+              itemStyle: { borderRadius: [5, 5, 0, 0], color: ins("danger") },
               data: retraits
             },
             {
               name: "Remboursements",
-              type: "bar",
+              type: "line",
               barWidth: 14,
-              itemStyle: { borderRadius: [5, 5, 0, 0], color: "#bbcae14d" },
+              itemStyle: { borderRadius: [5, 5, 0, 0], color: ins("secondary") },
               data: remboursements
             }
           ]

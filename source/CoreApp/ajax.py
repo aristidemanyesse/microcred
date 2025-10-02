@@ -27,7 +27,8 @@ def save(request):
             if datas[key] == "on": datas[key]=True
 
         if "base" in datas: datas["base"] = float(datas["base"].replace(" ", ""))
-        if "taux" in datas: datas["taux"] = float(datas["taux"].replace(" ", ""))
+        if "taux" in datas: datas["taux"] = float(datas["taux"].replace(" ", "").replace(",", "."))
+        if "taux_penalite" in datas: datas["taux_penalite"] = float(datas["taux_penalite"].replace(" ", "").replace(",", "."))
         if "montant" in datas: datas["montant"] = float(datas["montant"].replace(" ", ""))
         
         try:

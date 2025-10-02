@@ -27,7 +27,7 @@
 
                         <div class="app-search">
                             <input type="text" class="form-control taux" placeholder="Taux d'intérêt" name="taux"
-                                step="0.01" value="{{taux|stringformat:"s"}}" required>
+                                step="0.01" value="{{taux}}" required>
                             <i data-lucide="percent" class="app-search-icon text-muted"></i>
                         </div>
 
@@ -50,7 +50,7 @@
                     <span class="me-2 fw-semibold">Durée de l'épargne:</span>
                     <div class="d-flex mt-2 align-items-center gap-2">
                         <div class="app-search">
-                            <input type="text" class="form-control taux" placeholder="nombre de" value="{{duree}}"
+                            <input type="text" class="form-control taux" placeholder="nombre de" value="{{duree|stringformat:"s"}}"
                                 name="duree">
                             <i data-lucide="coins" class="app-search-icon text-muted"></i>
                         </div>

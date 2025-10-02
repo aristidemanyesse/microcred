@@ -18,7 +18,7 @@
                         <div class="row gap-3">
                             <div class="col-lg-4">
                                 <div class="app-search">
-                                    <input type="text" class="form-control" placeholder="Rechercher un prêt">
+                                    <input type="text" id="top-search" class="form-control" placeholder="Rechercher un prêt">
                                     <i data-lucide="search" class="app-search-icon text-muted"></i>
                                 </div>
                             </div>
@@ -32,7 +32,7 @@
 
     <div class="row">
         {% for pret in prets %}
-        <div class="col-md-6 col-xxl-4">
+        <div class="col-md-6 col-xxl-4 searchable-item">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex mb-4">

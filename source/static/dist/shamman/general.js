@@ -41,6 +41,10 @@ $(function () {
         $("table.table-mise tr:not(.no), .item").filter(function () {
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
         });
+
+         $("div.searchable-item").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
     });
 
 

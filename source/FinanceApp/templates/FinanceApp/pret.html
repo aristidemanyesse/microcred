@@ -41,15 +41,14 @@
                                             <h4
                                                 class="d-flex align-items-center justify-content-between gap-2 border-bottom">
                                                 <small>Pénalités ({{pret.penalites}}):</small> <span
-                                                    class="text-danger fw-bold">{{pret.penalites_montant}}</span></h4>
+                                                    class="text-danger fw-bold">{{pret.penalites_montant|floatformat:2}}</span></h4>
                                             <h4
                                                 class="d-flex justify-content-end gap-2 justify-content-between align-items-center">
-                                                <small>dû:</small> <span
-                                                    class="text-primary fw-bold">{{pret.montant}}</span></h4>
+                                                <small>dû:</small> <span class="text-primary fw-bold">{{pret.total}}</span></h4>
                                             <h4
                                                 class="d-flex justify-content-end gap-2 justify-content-between align-items-center border-bottom">
                                                 <small>remboursé:</small> <span
-                                                    class="text-warning fw-bold">{{pret.montant|sub:pret.reste_a_payer|floatformat:2}}</span>
+                                                    class="text-warning fw-bold">{{pret.montant_rembourse|floatformat:2}}</span>
                                             </h4>
                                             <h2 class="d-flex align-items-center justify-content-between gap-2">
                                                 <small>Reste :</small> <span

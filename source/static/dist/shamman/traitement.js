@@ -71,6 +71,7 @@
                 confirmButtonText: "Oui, changer !",
             }).then((result) => {
                 if (result.isConfirmed) {
+                    Loader.start()
                     Swal.fire({
                         title: "Entrez votre mot de passe pour confirmer l'opération !",
                         input: "password",
@@ -129,6 +130,7 @@
                 confirmButtonText: "Oui, supprimer !",
             }).then((result) => {
                 if (result.isConfirmed) {
+                    Loader.start()
                     Swal.fire({
                         title: "Entrez votre mot de passe pour confirmer l'opération !",
                         input: "password",
@@ -168,6 +170,7 @@
                 }).then((result) => {
                     /* Read more about isConfirmed, isDenied below */
                     if (result.isConfirmed) {
+                        Loader.start()
                         Swal.fire({
                             title: "Entrez votre mot de passe pour confirmer l'opération !",
                             input: "password",
