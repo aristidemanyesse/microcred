@@ -17,3 +17,7 @@ USER root
 RUN chmod +x /code/start.sh
 
 ENTRYPOINT ["/code/start.sh"]
+
+
+
+# docker run -d --name mariadb_cred --restart=always -e MARIADB_USER=admin -e MARIADB_PASSWORD=1sd48ds5ds45 -e MARIADB_ROOT_PASSWORD=1sd48ds5ds45 -v "mysql_cred:/var/lib/mysql" -p 3307:3306 mariadb:latest

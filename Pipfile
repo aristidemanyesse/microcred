@@ -11,6 +11,7 @@ djangorestframework-simplejwt = "*"
 python-dateutil = "*"
 django-mathfilters = "*"
 django-crontab = "*"
+pymysql = "*"
 
 [dev-packages]
 

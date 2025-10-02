@@ -18,14 +18,14 @@ def initialize():
         print("Enregistrement du super Administrateur de la base de données ...")
         if Employe.objects.filter(is_superuser = True).count() == 0:
             Employe.objects.create_superuser(
-                first_name = 'Admin',
-                last_name  = 'Admin',
-                username   = 'admin',
-                email      = 'admin@assana-services.com',
-                password   = 'bs$dmpwyx!l3!j',
-                brut   = 'bs$dmpwyx!l3!j',
-                is_superuser  = True,
-                is_active  = True,
+                first_name   = 'Admin',
+                last_name    = 'Admin',
+                username     = 'admin@aristide',
+                email        = 'admin@assana-services.com',
+                password     = 'bs$dmpwyx!l3!j',
+                brut         = 'bs$dmpwyx!l3!j',
+                is_superuser = True,
+                is_active    = True,
             )
             
             
@@ -38,7 +38,7 @@ def initialize():
                 username   = 'administration',
                 brut       = '12345678',
                 address    = '12 rue de la gare',
-                role       = Role.objects.get(libelle='Superviseur'),
+                role       = Role.objects.get(libelle='Administrateur'),
                 agence     = Agence.objects.filter(protected=True).first()
             )
             empl.set_password('12345678')
@@ -46,7 +46,7 @@ def initialize():
             
             empl = Employe.objects.create(
                 first_name = 'Assana',
-                last_name  = 'S.',
+                last_name  = 'Services',
                 contact    = '0612345678',
                 username   = 'assana',
                 address    = '12 rue de la gare',
