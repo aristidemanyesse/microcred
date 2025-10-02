@@ -15,7 +15,7 @@
         <div class="col">
             <div class="card">
                 <div class="card-body">
-                    <a href="#!" class="text-muted float-end mt-n1 fs-xl"><i class="ti ti-eye"></i></a>
+                    <a href="{% url 'TresorApp:compte' compte.id %}" class="btn btn-light btn-icon btn-sm rounded-circle float-end mt-n1 fs-xl"><i class="ti ti-eye"></i></a>
                     <h5 title="Number of Tasks">{{ compte.libelle }}</h5>
                     <div class="d-flex align-items-center gap-2 my-3">
                         <div class="avatar-md flex-shrink-0">
@@ -24,7 +24,6 @@
                             </span>
                         </div>
                         <h3 class="mb-0"><span data-target="{{compte.solde|stringformat:"s"}}">0</span></h3>
-                        <span class="badge badge-soft-primary fw-medium ms-2 fs-xs ms-auto">+3 New</span>
                     </div>
                     <p class="mb-0">
                         <span class="text-muted fs-xs"><i class="ti ti-clock me-1"></i> dernière opération, il y a

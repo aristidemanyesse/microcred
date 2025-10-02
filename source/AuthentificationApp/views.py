@@ -26,12 +26,11 @@ def users_view(request):
         return redirect('AuthentificationApp:login')
     
     roles = Role.objects.all().order_by('etiquette')
-    users = Employe.objects.filter(deleted = False).order_by("created_at")
+    users = Employe.objects.filter(deleted = False, is_superuser = False).order_by("created_at")
     ctx = {
         "TITLE_PAGE": "Gestion des utilisateurs et des droits",
         "roles": roles,
         "users": users,
-        
     }
     return ctx
 

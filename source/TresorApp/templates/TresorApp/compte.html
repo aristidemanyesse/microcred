@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+{% load static %}
+{% load mathfilters %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="page-title-head d-flex align-items-center">
+        <div class="flex-grow-1">
+            <h4 class="fs-sm text-uppercase fw-bold m-0">{{TITLE_PAGE}}</h4>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-xxl-12">
+            <div class="card">
+                <div class="card-header p-0 d-block">
+                    <div class="row g-0">
+                        <div class="col-xl-12 border-end border-dashed">
+
+                            <div class="row  g-0">
+                                <div class="col-xl-6 border-end">
+                                    <div class=" gap-4 p-4 ">
+                                        <div>
+                                            <h3 class="text-purple d-flex align-items-center gap-2  fw-bold">
+                                                {{compte.libelle}} <span
+                                                    class="float-end badge badge-label text-bg-{{compte.status.classe}}">{{compte.status}}</span>
+                                            </h3>
+                                            <p class="mb-2 text-muted fs-xl">{{compte.agence}}</p>
+                                            <p class="mb-2 text-muted">créé le {{compte.created_at|date:"d/m/Y à H:i"}}
+                                            </p>
+
+                                            <h1 class="d-flex align-items-center justify-content-center gap-2">
+                                                <span class="text-success fw-bold">{{compte.solde|floatformat:2}}
+                                                    Fcfa</span>
+                                            </h1>
+
+                                            <div class="d-flex justify-content-around align-items-center mt-5">
+
+                                                <button data-bs-toggle="modal" data-bs-target="#modal-new-depot"
+                                                    class="btn btn-success"><i class="ti ti-coins fs-lg "></i> Faire un
+                                                    dépôt</button>
+
+                                                <button data-bs-toggle="modal" data-bs-target="#modal-new-retrait"
+                                                    class="btn btn-danger"><i class="ti ti-coins fs-lg"></i> Faire un
+                                                    retrait</button>
+
+                                                <a href="{% url 'TresorApp:releve_compte' compte.id %}"
+                                                    class="btn btn-warning">
+                                                    <i class="ti ti-invoice fs-lg"></i> Imprimer le relévé de compte</a>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <div class="card-body">
+
+                                        <!---->
+                                    </div>
+                                </div>
+                            </div>
+                        </div> <!-- end col-->
+                    </div> <!-- end row-->
+                </div>
+
+                <div data-table data-table-rows-per-page="20" class="" id="home-b2">
+                    <div
+                        class="card-header border-light d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div class="d-flex gap-2">
+                            <div class="app-search">
+                                <input data-table-search type="search" class="form-control"
+                                    placeholder="Rechercher ......">
+                                <i data-lucide="search" class="app-search-icon text-muted"></i>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <div>
+                                <select data-table-set-rows-per-page="20" class="form-select form-control my-1 my-md-0">
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="">
+                        <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
+                            <thead class="bg-light align-middle bg-opacity-25 thead-sm">
+                                <tr class="text-uppercase fs-xxs">
+                                    <th>ID</th>
+                                    <th>Compte débit</th>
+                                    <th>Compte crédit</th>
+                                    <th>Montant</th>
+                                    <th data-table-sort>Effectué par</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead><!-- end table-head -->
+                            <tbody>
+                                {% for operation in operations %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="avatar-md me-3">
+                                                <span class="avatar-title text-bg-light rounded">
+                                                    <i class="ti ti-file-invoice fs-24 text-success"></i>
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-1 d-flex align-items-center">
+                                                    <a data-sort="project" href="#"
+                                                        class="link-reset">{{operation.libelle}}</a>
+                                                </h5>
+                                                <p class="text-muted mb-0 fs-xxs">
+                                                    {{operation.created_at|date:"d M Y à H:i:s"}}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-start align-items-center gap-2">
+                                            <div>
+                                                <h5 class="text-nowrap mb-0 lh-base fs-base">
+                                                    {{ operation.compte_debit.agence }}
+                                                </h5>
+                                                <p class="text-muted fs-xs mb-0">{{operation.compte_debit}}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-start align-items-center gap-2">
+                                            <div>
+                                                <h5 class="text-nowrap mb-0 lh-base fs-base">
+                                                    {{ operation.compte_credit.agence }}</h5>
+                                                <p class="text-muted fs-xs mb-0">{{operation.compte_credit}}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{operation.montant}} Fcfa</td>
+                                    <td>{{operation.employe}}</td>
+                                    <td class="text-center">
+                                        {% if operation.transaction %}
+                                        <a href="{% url 'FinanceApp:pret' operation.transaction.id %}"
+                                            class="btn btn-light btn-icon btn-sm rounded-circle"><i
+                                                class="ti ti-eye fs-lg"></i></a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody><!-- end table-body -->
+                        </table><!-- end table -->
+                    </div>
+                    <div class="card-footer border-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div data-table-pagination-info="invoices"></div>
+
+                            <div data-table-pagination></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div><!-- end col -->
+    </div><!-- end row -->
+
+</div>
+
+<div class="modal fade" id="modal-new-depot" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header modal-md bg-success text-white">
+                <h2 class="modal-title" id="mySmallModalLabel"> Dépot</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" class="formShamman" classname="OperationForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <br />
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Montant à verser <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
+                            <input type="text" class="form-control number" name="montant" id="userEmail" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword2" class="form-label">Commentaire </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="ti ti-edit text-muted fs-xl"></i></span>
+                            <textarea class="form-control" name="commentaire" rows="4"
+                                placeholder="numero de paiement"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer d-flex justify-content-between">
+                    <input type="hidden" name="libelle" value="Dépôt sur compte">
+                    <input type="hidden" name="compte_credit" value="{{ compte.id }}">
+                    <input type="hidden" name="employe" value="{{ request.user.id }}">
+                    <button type="button" class="btn btn-default dim pull-left" data-dismiss="modal">
+                        <i class="ti ti-close"></i> Annuler
+                    </button>
+                    <button type="submit" class="btn btn-success dim pull-right"> <i class="ti ti-check"></i> Valider
+                    </button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="modal-new-retrait" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header modal-md bg-danger text-white">
+                <h2 class="modal-title" id="mySmallModalLabel"> Retrait</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" class="formShamman" classname="OperationForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <br />
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Montant à verser <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
+                            <input type="text" class="form-control number" name="montant" id="userEmail" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword2" class="form-label">Commentaire </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="ti ti-edit text-muted fs-xl"></i></span>
+                            <textarea class="form-control" name="commentaire" rows="4"
+                                placeholder="numero de paiement"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer d-flex justify-content-between">
+                    <input type="hidden" name="libelle" value="Retrait sur compte">
+                    <input type="hidden" name="compte_debit" value="{{ compte.id }}">
+                    <input type="hidden" name="employe" value="{{ request.user.id }}">
+                    <button type="button" class="btn btn-default dim pull-left" data-dismiss="modal">
+                        <i class="ti ti-close"></i> Annuler
+                    </button>
+                    <button type="submit" class="btn btn-danger dim pull-right"> <i class="ti ti-check"></i> Valider
+                    </button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'dist/plugins/apexcharts.min.js' %}"></script>
+<script src="{% static 'dist/plugins/ecommerce-reviews.js' %}"></script>
+{% endblock %}

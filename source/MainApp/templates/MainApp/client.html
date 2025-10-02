@@ -119,66 +119,71 @@
         <div class="col-xl-8">
             <div class="row align-items-center">
                 {% for pret in prets %}
-                    <div class="col-6">
-                        <div class="card ">
-                            <div class="card-body">
-                                <a href="{% url 'FinanceApp:pret' pret.id %}" data-table-delete-row
-                                    class="btn btn-light btn-icon btn-sm rounded-circle text-muted float-end mt-n1 fs-md">
-                                    <i class="ti ti-eye "></i></a>
-                                <h5 title="Revenue Generated">
-                                    <span class="{% if pret.status.etiquette == '0' %}text-warning{% else %}text-primary{% endif %}">{{pret.numero}}</span>
-                                    <span class="badge badge-label text-bg-{{pret.status.classe}}">{{pret.status}}</span>
-                                </h5>
-                                <div class="d-flex align-items-center gap-2 my-3">
-                                    <div class="avatar-md flex-shrink-0">
-                                        <span class="avatar-title {% if pret.status.etiquette == '0' %}text-bg-warning{% else %}text-bg-primary{% endif %} rounded-circle fs-22">
-                                            <i class="ti ti-calendar-dollar"></i>
-                                        </span>
-                                    </div>
-                                    <h3 class="mb-0">{{pret.base|floatformat:0}} Fcfa</h3>
-                                    <span class="badge {% if pret.status.etiquette == '0' %}badge-soft-warning{% else %}badge-soft-primary{% endif %} fw-medium ms-2 fs-xs ms-auto">+
-                                        {{pret.taux|floatformat:2}}%</span>
+                <div class="col-6">
+                    <div class="card ">
+                        <div class="card-body">
+                            <a href="{% url 'FinanceApp:pret' pret.id %}" data-table-delete-row
+                                class="btn btn-light btn-icon btn-sm rounded-circle text-muted float-end mt-n1 fs-md">
+                                <i class="ti ti-eye "></i></a>
+                            <h5 title="Revenue Generated">
+                                <span
+                                    class="{% if pret.status.etiquette == '0' %}text-warning{% else %}text-primary{% endif %}">{{pret.numero}}</span>
+                                <span class="badge badge-label text-bg-{{pret.status.classe}}">{{pret.status}}</span>
+                            </h5>
+                            <div class="d-flex align-items-center gap-2 my-3">
+                                <div class="avatar-md flex-shrink-0">
+                                    <span
+                                        class="avatar-title {% if pret.status.etiquette == '0' %}text-bg-warning{% else %}text-bg-primary{% endif %} rounded-circle fs-22">
+                                        <i class="ti ti-calendar-dollar"></i>
+                                    </span>
                                 </div>
-                                <p class="mb-0">
-                                    <span class="{% if pret.status.etiquette == '0' %}text-warning{% else %}text-primary{% endif %}"><i class="ti ti-point-filled"></i></span>
-                                    {% if pret.status.etiquette != '0' %}
-                                    <span class="text-nowrap text-muted">Reste à payer</span>
-                                    <span class="float-end"><b>{{pret.reste_a_payer|floatformat:2}} Fcfa</b></span>
-                                    {% endif %}
-                                </p>
+                                <h3 class="mb-0">{{pret.base|floatformat:0}} Fcfa</h3>
+                                <span
+                                    class="badge {% if pret.status.etiquette == '0' %}badge-soft-warning{% else %}badge-soft-primary{% endif %} fw-medium ms-2 fs-xs ms-auto">+
+                                    {{pret.taux|floatformat:2}}%</span>
                             </div>
-
+                            <p class="mb-0">
+                                <span
+                                    class="{% if pret.status.etiquette == '0' %}text-warning{% else %}text-primary{% endif %}"><i
+                                        class="ti ti-point-filled"></i></span>
+                                {% if pret.status.etiquette != '0' %}
+                                <span class="text-nowrap text-muted">Reste à payer</span>
+                                <span class="float-end"><b>{{pret.reste_a_payer|floatformat:2}} Fcfa</b></span>
+                                {% endif %}
+                            </p>
                         </div>
+
                     </div>
+                </div>
                 {% endfor %}
 
                 {% for epargne in epargnes %}
-                    <div class="col-6">
-                        <div class="card">
-                            <div class="card-body">
-                                <a href="{% url 'FinanceApp:epargne' epargne.id %}" data-table-delete-row
-                                    class="btn btn-light btn-icon btn-sm rounded-circle text-muted float-end mt-n1 fs-md">
-                                    <i class="ti ti-eye "></i></a>
-                                <h5 title="Revenue Generated"><span class="text-purple">{{epargne.numero}}</span>
-                                </h5>
-                                <div class="d-flex align-items-center gap-2 my-3">
-                                    <div class="avatar-md flex-shrink-0">
-                                        <span class="avatar-title text-bg-purple rounded-circle fs-22">
-                                            <i class="ti ti-coins"></i>
-                                        </span>
-                                    </div>
-                                    <h3 class="mb-0">{{epargne.solde_actuel|floatformat:2}} Fcfa</h3>
-                                    <span class="badge badge-soft-primary fw-medium ms-2 fs-xs ms-auto">+
-                                        {{epargne.taux|floatformat:2}}%</span>
+                <div class="col-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <a href="{% url 'FinanceApp:epargne' epargne.id %}" data-table-delete-row
+                                class="btn btn-light btn-icon btn-sm rounded-circle text-muted float-end mt-n1 fs-md">
+                                <i class="ti ti-eye "></i></a>
+                            <h5 title="Revenue Generated"><span class="text-purple">{{epargne.numero}}</span>
+                            </h5>
+                            <div class="d-flex align-items-center gap-2 my-3">
+                                <div class="avatar-md flex-shrink-0">
+                                    <span class="avatar-title text-bg-purple rounded-circle fs-22">
+                                        <i class="ti ti-coins"></i>
+                                    </span>
                                 </div>
-                                <p class="mb-0 d-flex justify-content-end">
-                                    <span class="text-nowrap text-muted">Dernière opération le <span
-                                            class="text-purple">{{epargne.update_at|date:"d/m/Y à H:i"}}</span></span>
-                                </p>
+                                <h3 class="mb-0">{{epargne.solde_actuel|floatformat:2}} Fcfa</h3>
+                                <span class="badge badge-soft-primary fw-medium ms-2 fs-xs ms-auto">+
+                                    {{epargne.taux|floatformat:2}}%</span>
                             </div>
-
+                            <p class="mb-0 d-flex justify-content-end">
+                                <span class="text-nowrap text-muted">Dernière opération le <span
+                                        class="text-purple">{{epargne.update_at|date:"d/m/Y à H:i"}}</span></span>
+                            </p>
                         </div>
+
                     </div>
+                </div>
                 {% endfor %}
 
             </div><!-- end row -->
@@ -206,19 +211,19 @@
                                         <div class="d-flex justify-content-start align-items-center gap-2">
                                             <div class="avatar avatar-sm">
                                                 {% if transaction.type_transaction.etiquette == "1" %}
-                                                
-                                                <a href="#"
-                                                class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-file-invoice fs-xxl text-success"></i></a>
+
+                                                <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
+                                                        class="ti ti-file-invoice fs-xxl text-success"></i></a>
                                                 {% elif transaction.type_transaction.etiquette == "2" %}
-                                                    <a href="#"
-                                                class="btn btn-light btn-icon btn-sm rounded-circle"><i class="ti ti-file-invoice fs-xxl text-danger"></i></a>
+                                                <a href="#" class="btn btn-light btn-icon btn-sm rounded-circle"><i
+                                                        class="ti ti-file-invoice fs-xxl text-danger"></i></a>
                                                 {% endif %}
                                             </div>
                                             <div>
                                                 <h5 class="text-nowrap mb-0 lh-base fs-base"><a data-sort="name"
-                                                        href="#"
-                                                        class="link-reset">#{{transaction.numero}}</a></h5>
-                                                <p class="text-muted fs-xs mb-0">{{transaction.created_at|date:"d/m/Y à H:i"}}</p>
+                                                        href="#" class="link-reset">#{{transaction.numero}}</a></h5>
+                                                <p class="text-muted fs-xs mb-0">
+                                                    {{transaction.created_at|date:"d/m/Y à H:i"}}</p>
                                             </div>
                                         </div>
                                     </td>
@@ -475,37 +480,49 @@
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i
                                         class="ti ti-percentage text-muted fs-xl"></i></span>
-                                <input type="text" class="form-control taux" name="taux" step="0.01"
-                                    placeholder="2%" required>
+                                <input type="text" class="form-control taux" name="taux" step="0.01" placeholder="2%"
+                                    required>
                             </div>
                         </div>
-                        
+
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Durée de remboursement <span class="text-danger">*</span></label>
-                      <div class="row">
-                        <div class="col">
-                            <div class="input-group">
-                                <span class="input-group-text bg-light"><i
-                                        class="ti ti-number text-muted fs-xl"></i></span>
-                                <input type="text" class="form-control taux" name="nombre_modalite"
-                                    placeholder="15" required>
+                        <div class="row">
+                            <div class="col">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i
+                                            class="ti ti-number text-muted fs-xl"></i></span>
+                                    <input type="text" class="form-control taux" name="nombre_modalite" placeholder="15"
+                                        required>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col">
-                            <div class="input-group">
-                                <span class="input-group-text bg-light"><i
-                                        class="ti ti-calendar text-muted fs-xl"></i></span>
-                                <select name="modalite" class="form-select form-control my-1 my-md-0" required>
-                                    {% for modalite in modalites %}
-                                    <option value="{{ modalite.id }}">Echéancier {{ modalite.libelle }}</option>
-                                    {% endfor %}
-                                </select>
+                            <div class="col">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i
+                                            class="ti ti-calendar text-muted fs-xl"></i></span>
+                                    <select name="modalite" class="form-select form-control my-1 my-md-0" required>
+                                        {% for modalite in modalites %}
+                                        <option value="{{ modalite.id }}">Echéancier {{ modalite.libelle }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
 
+
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
+                            <label class="form-label">Taux de pénalité <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-percentage text-muted fs-xl"></i></span>
+                                <input type="text" class="form-control taux" name="taux_penalite" step="0.01"
+                                    placeholder="2%" required>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="">
@@ -531,11 +548,9 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-
-
 <div class="modal fade" id="modal-new-epargne" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-purple text-white">
                 <h1 class="modal-title" id="mySmallModalLabel">Compte épargne</h1>

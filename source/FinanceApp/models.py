@@ -100,6 +100,10 @@ class CompteEpargne(BaseModel):
             self.save()
         else:
             raise ValueError("Le solde du compte est insuffisant pour ce retrait.")
+        
+    
+    def calculer_interet(self):
+        return self.solde() * self.taux / 100
     
     
     def total_depots(self):
@@ -135,6 +139,7 @@ class Pret(BaseModel):
     client          = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='prets')
     base            = models.DecimalField(max_digits=12, decimal_places=2)
     taux            = models.DecimalField(max_digits=5, decimal_places=2)
+    taux_penalite   = models.DecimalField(max_digits=5, decimal_places=2, default=10, null=True, blank=True)
     montant         = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     modalite        = models.ForeignKey(ModaliteEcheance, on_delete=models.CASCADE)
     nombre_modalite = models.PositiveIntegerField()
@@ -245,6 +250,10 @@ class Echeance(BaseModel):
     
     def penalites_montant(self):
         return self.penalites.aggregate(total=models.Sum('montant'))['total'] or 0
+    
+    
+    def calculer_penalite(self):
+        return self.montant_a_payer * self.pret.taux_penalite / 100
     
     
     def regler(self, montant, employe, mode, commentaire):

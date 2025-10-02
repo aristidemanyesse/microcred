@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "StatsApp",
     "CoreApp",
     
+    "django_crontab",
     "mathfilters"
 ]
 
@@ -148,3 +149,13 @@ LOGOUT_REDIRECT_URL = 'AuthentificationApp:logout'
 
 USE_THOUSAND_SEPARATOR = True
 USE_TZ = True
+
+
+CRONTAB_DJANGO_PROJECT_NAME = "Microcred"
+CRONJOBS = [
+    # chaque jour à minuit → calcul pénalités
+    ('0 0 * * *', 'FinanceApp.crons.generer_penalites'),
+
+    # chaque 1er du mois à 01h → calcul intérêts épargne
+    ('0 1 1 * *', 'FinanceApp.crons.generer_interets_epargnes'),
+]
