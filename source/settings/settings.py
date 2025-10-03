@@ -164,12 +164,12 @@ USE_TZ = True
 CRONTAB_DJANGO_PROJECT_NAME = "Microcred"
 CRONJOBS = [
     # chaque jour à minuit → calcul pénalités
-    # ('0 0 * * *', 'FinanceApp.crons.generer_penalites', '>> {}'.format(os.path.join(BASE_DIR, "logs/penelites.log" ))),
+    ('0 0 * * *', 'FinanceApp.crons.generer_penalites', '>> {}'.format(os.path.join(BASE_DIR, "logs/penelites.log" ))),
 
     # # chaque jour à 01h → calcul intérêts épargne
-    # ('0 1 * * *', 'FinanceApp.crons.generer_interets_epargnes', '>> {}'.format(os.path.join(BASE_DIR, "logs/interets.log" ))),
+    ('0 1 * * *', 'FinanceApp.crons.generer_interets_epargnes', '>> {}'.format(os.path.join(BASE_DIR, "logs/interets.log" ))),
     
     
-    ('* * * * *', 'FinanceApp.crons.generer_penalites', '>> {}'.format(os.path.join(BASE_DIR, "logs/penelites.txt" ))),
-    ('* * * * *', 'FinanceApp.crons.generer_interets_epargnes', '>> {}'.format(os.path.join(BASE_DIR, "logs/interets.txt" ))),
+    # ('* * * * *', 'FinanceApp.crons.generer_penalites', '>> {}'.format(os.path.join(BASE_DIR, "logs/penelites.txt" ))),
+    # ('* * * * *', 'FinanceApp.crons.generer_interets_epargnes', '>> {}'.format(os.path.join(BASE_DIR, "logs/interets.txt" ))),
 ]

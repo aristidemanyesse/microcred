@@ -1,13 +1,6 @@
-print("jlrkgjl")
-print("kjkdfjkldjflkd")
 from datetime import date, datetime
-print("kdldpz")
 from django.db import transaction
-print("zasssss")
 from .models import *
-print("djkfj")
-
-print("Importation des crons ...", datetime.now())
 
 def generer_penalites():
     """
