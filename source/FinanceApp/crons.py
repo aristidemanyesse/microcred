@@ -1,17 +1,20 @@
-import logging
-from datetime import date
+print("jlrkgjl")
+print("kjkdfjkldjflkd")
+from datetime import date, datetime
+print("kdldpz")
 from django.db import transaction
-from django.utils import timezone
-from .models import CompteEpargne, Echeance, Interet, ModaliteEcheance, Penalite, Epargne, StatusPret
+print("zasssss")
+from .models import *
+print("djkfj")
 
-logger = logging.getLogger(__name__)
-
+print("Importation des crons ...", datetime.now())
 
 def generer_penalites():
     """
     Vérifie les échéances échues et impayées,
     et crée une pénalité pour chacune.
     """
+    print("Création des pénalités ...", datetime.now())
     today = date.today()
 
     # on cible les échéances échues et non réglées
@@ -28,7 +31,7 @@ def generer_penalites():
                 }
             )
             if created:
-                logger.info(f"Pénalité générée pour échéance {echeance.level} de {echeance.pret.numero}")
+                print(f"Pénalité générée pour échéance {echeance.level} de {echeance.pret.numero}")
 
 
 
@@ -37,7 +40,7 @@ def generer_interets_epargnes():
     """
     Calcule et crédite les intérêts pour chaque épargne active.
     """
-
+    print("Création des intérêts ...", datetime.now())
     today = date.today()
     epargnes = CompteEpargne.objects.filter(active=True)
 
@@ -78,3 +81,4 @@ def generer_interets_epargnes():
                         montant     = interet,
                         description = f"Intérêt {epargne.modalite} de {epargne.taux}%",
                     )
+                    print(f"Intérêt créé pour épargne {epargne.numero}")
