@@ -58,11 +58,10 @@ def confirm_pret(request):
             if not request.user.is_chef():
                 return JsonResponse({"status": False, "message": "Vous n'avez pas le droit de valider ce prêt !"})
             
-            datas             = request.POST
-            pret              = Pret.objects.get(pk=datas["pret_id"])
-            pret.status       = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
-            pret.confirmateur = Employe.objects.get(pk=request.user.id) 
-            pret.save()
+            datas = request.POST
+            pret  = Pret.objects.get(pk=datas["pret_id"])
+            pret.confirm_pret(request.user)
+            
             return JsonResponse({"status": True, "message": "Prêt validé avec succès !"})
         except Exception as e:
             print("--------------------", e)

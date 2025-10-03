@@ -6,6 +6,7 @@ app_name = 'FinanceApp'
 urlpatterns = [
     path('prets/', views.prets_view, name='prets'),
     path('prets/simulateur/', views.prets_simulateur_view, name='simulateur_pret'),
+    path('prets/archivage/', views.archivage_prets, name='archivage_prets'),
     path('demandes/', views.demandes_view, name='demandes'),
     path('pret/<uuid:pk>/', views.pret_view, name='pret'),
     path('pret/<uuid:pk>/releve/', views.releve_pret, name='releve_pret'),
@@ -15,6 +16,7 @@ urlpatterns = [
  
     path('epargnes/', views.epargnes_view, name='epargnes'),
     path('epargnes/simulateur/', views.epargnes_simulateur_view, name='simulateur_epargne'),
+    path('epargnes/archivage/', views.archivage_epargnes, name='archivage_epargnes'),
     path('epargne/<uuid:pk>/', views.epargne_view, name='epargne'),
     path('epargne/<uuid:pk>/releve/', views.releve_epargne, name='releve_epargne'),
     

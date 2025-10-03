@@ -7,8 +7,8 @@ def initialize():
         # Creation des types de clients
         print("Création des types de transactions ...")
         if not TypeTransaction.objects.filter().exists():
-            TypeTransaction.objects.create(libelle='Dépôt sur compte', etiquette = TypeTransaction.DEPOT)
-            TypeTransaction.objects.create(libelle='Retrait sur compte', etiquette = TypeTransaction.RETRAIT)
+            TypeTransaction.objects.create(libelle='Dépôt sur compte épargne', etiquette = TypeTransaction.DEPOT)
+            TypeTransaction.objects.create(libelle='Retrait sur compte épargne', etiquette = TypeTransaction.RETRAIT)
             TypeTransaction.objects.create(libelle='Remboursement de prêt', etiquette = TypeTransaction.REMBOURSEMENT)
             
         

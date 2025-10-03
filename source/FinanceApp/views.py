@@ -29,6 +29,27 @@ def prets_view(request):
     return ctx
 
 
+
+@render_to('FinanceApp/archivage_prets.html')
+def archivage_prets(request):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
+    if request.user.is_gestionnaire_epargne():
+        return redirect('MainApp:dashboard')
+    
+    prets = Pret.objects.filter(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE])
+    status = StatusPret.objects.all()
+    ctx = {
+        'TITLE_PAGE' : "Archives des prêts en cours",
+        "prets": prets,
+        "status": status,
+    }
+    return ctx
+
+
+
+
 @render_to('FinanceApp/simulateur_prets.html')
 def prets_simulateur_view(request):
     if not request.user.is_authenticated:
@@ -212,25 +233,27 @@ def pret_view(request, pk):
         return redirect('MainApp:dashboard')
     
     try:
-        pret = Pret.objects.get(pk=pk)
-        echeances = Echeance.objects.filter(pret=pret).order_by("level")
-        penalites = Penalite.objects.filter(echeance__pret=pret)
+        pret         = Pret.objects.get(pk=pk)
+        echeances    = Echeance.objects.filter(pret=pret).order_by("level")
+        penalites    = Penalite.objects.filter(echeance__pret=pret)
         transactions = Transaction.objects.filter(echeance__pret=pret).order_by("-created_at")
-        modes = ModePayement.objects.all()
-        garanties = Garantie.objects.filter(pret=pret)
+        modes        = ModePayement.objects.all()
+        garanties    = Garantie.objects.filter(pret=pret)
         ctx = {
             'TITLE_PAGE'  : "Fiche de prêt",
             "pret"        : pret,
             "echeances"   : echeances,
             "penalites"   : penalites,
             "transactions": transactions,
-            "modes": modes,
-            "garanties": garanties,
+            "modes"       : modes,
+            "garanties"   : garanties,
         }
         return ctx
     except Exception as e:
         print("Erreur pret_view: ", e)
         return redirect('FinanceApp:prets')    
+
+
 
 
 @render_to('FinanceApp/epargnes.html')
@@ -245,6 +268,25 @@ def epargnes_view(request):
     ladate = date.today() - timedelta(days=3)
     ctx = {
         'TITLE_PAGE' : "Liste des comptes épargnes",
+        "epargnes": epargnes,
+        "ladate": ladate,
+    }
+    return ctx
+
+
+
+@render_to('FinanceApp/archivage_epargnes.html')
+def archivage_epargnes(request):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
+    if request.user.is_gestionnaire_pret():
+        return redirect('MainApp:dashboard')
+        
+    epargnes = CompteEpargne.objects.filter(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE])
+    ladate = date.today() - timedelta(days=3)
+    ctx = {
+        'TITLE_PAGE' : "Archives des comptes épargnes",
         "epargnes": epargnes,
         "ladate": ladate,
     }

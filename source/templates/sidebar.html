@@ -28,11 +28,11 @@
     <div class="scrollbar" data-simplebar>
 
         <!-- User -->
-        <div class="sidenav-user">
+        {% comment %} <div class="sidenav-user">
             <div class="d-flex justify-content-between align-items-center">
-                
+
             </div>
-        </div>
+        </div> {% endcomment %}
 
         <!--- Sidenav Menu -->
         <ul class="side-nav">
@@ -98,9 +98,31 @@
             </li>
             {% endif %}
 
-            
             {% if not request.user.is_employe %}
             <li class="side-nav-title text-warning" data-lang="apps-title">Administration</li>
+
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarDashboards" aria-expanded="false"
+                    aria-controls="sidebarDashboards" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-archive"></i></span>
+                    <span class="menu-text" data-lang="dashboards">Archives</span>
+                </a>
+                <div class="collapse" id="sidebarDashboards">
+                    <ul class="sub-menu">
+                        <li class="side-nav-item">
+                            <a href="{% url 'FinanceApp:archivage_prets' %}" class="side-nav-link">
+                                <span class="menu-text" data-lang="dashboard-one">Prets</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="{% url 'FinanceApp:archivage_epargnes' %}" class="side-nav-link">
+                                <span class="menu-text" data-lang="dashboard-two">Comptes épargnes</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
             <li class="side-nav-item">
                 <a href="{% url 'TresorApp:rapports' %}" class="side-nav-link">
                     <span class="menu-icon"><i class="ti ti-chart-dots"></i></span>
@@ -115,7 +137,6 @@
                 </a>
             </li>
             {% endif %}
-
 
         </ul>
     </div>

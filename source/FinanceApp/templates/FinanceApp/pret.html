@@ -56,14 +56,16 @@
                                             </h2>
                                             <div class="d-flex justify-content-around align-items-center">
                                                 {% if pret.status.etiquette != '0' %}
-                                                <a href="#" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-new-remboursement" class="btn btn-primary"><i
-                                                        class="ti ti-coins fs-lg"></i> Effectuer un remboursement</a>
+                                                    {% if pret.reste_a_payer > 0 %}
+                                                        <a href="#" data-bs-toggle="modal"
+                                                        data-bs-target="#modal-new-remboursement" class="btn btn-primary"><i
+                                                            class="ti ti-coins fs-lg"></i> Effectuer un remboursement</a>
+                                                    {% endif %}
 
-                                                         <a href="{% url 'FinanceApp:releve_pret' pret.id %}" class="btn btn-warning">
-                                                        <i class="ti ti-invoice fs-lg"></i> Imprimer le relévé de compte</a>
+                                                    <a href="{% url 'FinanceApp:releve_pret' pret.id %}" class="btn btn-warning">
+                                                    <i class="ti ti-invoice fs-lg"></i> Imprimer le relévé de compte</a>
                                                 {% else %}
-                                                <a href="#" class="btn btn-warning" onclick="confirmPret('{{pret.id}}')"><i
+                                                    <a href="#" class="btn btn-warning" onclick="confirmPret('{{pret.id}}')"><i
                                                         class="ti ti-check fs-lg"></i> Valider le prêt du souscripteur</a>
                                                 {% endif %}
                                             </div>

@@ -194,6 +194,27 @@ class Pret(BaseModel):
     derniere_date_penalite = models.DateField(null=True, blank=True)
     commentaire            = models.TextField(null=True, blank=True)
     
+    
+    def confirm_pret(self, employe):
+        date_echeance = self.created_at.date()
+        montant = round(self.total() / self.nombre_modalite, 2)
+        i = 0
+        while i < self.nombre_modalite:
+            i += 1
+            date_echeance += timedelta(days= self.modalite.duree())
+            Echeance.objects.create(
+                pret            = self,
+                level           = i,
+                montant_a_payer = montant,
+                date_echeance   = date_echeance,
+                status          = StatusPret.objects.get(etiquette = StatusPret.EN_COURS),
+            )
+            
+        self.status       = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
+        self.confirmateur = employe
+        self.save()
+            
+ 
     def total(self):    
         return self.montant + self.penalites_montant()
     
@@ -316,7 +337,7 @@ class Echeance(BaseModel):
             self.status = StatusPret.objects.get(etiquette = StatusPret.TERMINE)
         self.save()
 
-        Transaction.objects.create(
+        transaction = Transaction.objects.create(
             echeance         = self,
             client           = self.pret.client,
             mode             = mode,
@@ -325,6 +346,11 @@ class Echeance(BaseModel):
             montant          = montant,
             employe          = employe
         )
+
+        if transaction:
+            if self.pret.reste_a_payer() == 0:
+                self.pret.status = StatusPret.objects.get(etiquette = StatusPret.TERMINE)
+                self.pret.save()
 
 
 
@@ -393,7 +419,8 @@ def sighandler(instance, created, **kwargs):
         compte = instance.employe.agence.comptes.filter(principal=True).first()
         Operation.objects.create(
             libelle       = instance.type_transaction,
-            compte_credit = compte,
+            compte_credit = compte if instance.type_transaction.etiquette != TypeTransaction.RETRAIT else None,
+            compte_debit  = compte if instance.type_transaction.etiquette == TypeTransaction.RETRAIT else None,
             montant       = instance.montant,
             employe       = instance.employe,
             transaction   = instance,
@@ -409,42 +436,7 @@ def sighandler(instance, **kwargs):
         instance.montant = instance.base + (instance.base * instance.taux / 100)
         instance.status = StatusPret.objects.get(etiquette = StatusPret.EN_ATTENTE)
 
-
-@signals.post_save(sender=Pret)
-def sighandler(instance, created, **kwargs):
-    if created:
-        montant = instance.montant / instance.nombre_modalite
     
-    else:
-        date_echeance = instance.created_at.date()
-        montant = round(instance.total() / instance.nombre_modalite, 2)
-
-        if instance.status.etiquette == StatusPret.EN_COURS and len(instance.echeances.filter()) == 0:
-            i = 0
-            while i < instance.nombre_modalite:
-                i += 1
-                if instance.modalite.etiquette == ModaliteEcheance.HEBDOMADAIRE:
-                    date_echeance += timedelta(days=7)
-                elif instance.modalite.etiquette == ModaliteEcheance.MENSUEL:
-                    date_echeance += timedelta(days=30)
-                elif instance.modalite.etiquette == ModaliteEcheance.BIMENSUEL:
-                    date_echeance += timedelta(days=60)
-                elif instance.modalite.etiquette == ModaliteEcheance.TRIMESTRIEL:
-                    date_echeance += timedelta(days=90)
-                elif instance.modalite.etiquette == ModaliteEcheance.SEMESTRIEL:
-                    date_echeance += timedelta(days=180)
-                elif instance.modalite.etiquette == ModaliteEcheance.ANNUEL:
-                    date_echeance += relativedelta(days=360)
-
-                print("date_echeance", date_echeance)
-                Echeance.objects.create(
-                    pret            = instance,
-                    level           = i,
-                    montant_a_payer = montant,
-                    date_echeance   = date_echeance,
-                    status          = StatusPret.objects.get(etiquette = StatusPret.EN_COURS),
-                )
-                
 
 
 @signals.post_save(sender=Interet)
