@@ -17,6 +17,9 @@ def new_remboursement(request):
         if not request.user.is_authenticated:
             return JsonResponse({"status": False, "message": "Vous devez être connecté pour effectuer ce remboursement !"})
         
+        if request.user.is_gestionnaire_epargne():
+            return JsonResponse({"status": False, "message": "Vous n'avez pas le droit de faire un remboursement !"})
+        
         id = request.POST.get("id")
         mode = request.POST.get("mode")
         commentaire = request.POST.get("commentaire")
@@ -52,6 +55,9 @@ def new_remboursement(request):
 def confirm_pret(request):
     if request.method == "POST":
         try:
+            if not request.user.is_chef():
+                return JsonResponse({"status": False, "message": "Vous n'avez pas le droit de valider ce prêt !"})
+            
             datas             = request.POST
             pret              = Pret.objects.get(pk=datas["pret_id"])
             pret.status       = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
@@ -67,6 +73,9 @@ def confirm_pret(request):
 def new_depot(request):
     if request.method == "POST":
         try:
+            if request.user.is_gestionnaire_pret():
+                return JsonResponse({"status": False, "message": "Vous n'avez pas le droit de déposer de l'argent !"})
+            
             datas       = request.POST
             epargne     = CompteEpargne.objects.get(pk=datas["id"])
             mode        = ModePayement.objects.get(pk=datas["mode"])
@@ -87,6 +96,9 @@ def new_depot(request):
 def new_retrait(request):
     if request.method == "POST":
         try:
+            if request.user.is_gestionnaire_pret():
+                return JsonResponse({"status": False, "message": "Vous n'avez pas le droit de retirer de l'argent !"})
+            
             datas = request.POST
             epargne = CompteEpargne.objects.get(pk=datas["id"])
             mode = ModePayement.objects.get(pk=datas["mode"])
@@ -108,7 +120,6 @@ def new_retrait(request):
 def stats_finance(request):
     today = now().date()
     start_date = (today.replace(day=1) - relativedelta(months=11))
-    print(today, start_date)
 
     # Récupération groupée
     qs = (Transaction.objects
@@ -140,7 +151,6 @@ def stats_finance(request):
           )
           .order_by("month")
     )
-    print(qs)
 
     # Indexer les résultats par mois pour lookup rapide
     results_map = {row["month"].strftime("%Y-%m"): row for row in qs}

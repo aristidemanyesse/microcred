@@ -139,15 +139,3 @@ def client_view(request, pk):
     except Exception as e:
         print("Erreur client_view: ", e)
         return redirect('MainApp:clients')
-
-
-
-@render_to('MainApp/rapports.html')
-def rapports_view(request):
-    if not request.user.is_authenticated:
-        return redirect('AuthentificationApp:login')
-    
-    ctx = {
-        'TITLE_PAGE' : "Rapports Stats",
-    }
-    return ctx

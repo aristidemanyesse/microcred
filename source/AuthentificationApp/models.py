@@ -30,14 +30,23 @@ class Employe(AbstractUser, BaseModel):
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
 
-    def is_agent(self):
-        return self.role.nom.lower() == 'agent'
-
-    def is_superviseur_agence(self):
-        return self.role.nom.lower() == 'superviseur agence'
-
-    def is_admin(self):
-        return self.role.nom.lower() == 'admin'
+    def has_role(self, etiquette):
+        return self.role.etiquette ==  etiquette
+    
+    def is_gestionnaire_pret(self):
+        return  self.has_role(Role.GESTIONNAIRE_PRET)
+    
+    def is_gestionnaire_epargne(self):
+        return self.has_role(Role.GESTIONNAIRE_EPARGNE)
+    
+    def is_superviseur(self):
+        return self.has_role(Role.SUPERVISEUR)
+    
+    def is_employe(self):
+        return self.has_role(Role.GESTIONNAIRE_EPARGNE) or self.has_role(Role.GESTIONNAIRE_PRET) or self.has_role(Role.SUPERVISEUR)
+    
+    def is_chef(self):
+        return self.has_role(Role.ADMINISTRATEUR) or self.has_role(Role.SUPERVISEUR)
 
 
 

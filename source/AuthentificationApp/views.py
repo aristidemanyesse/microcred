@@ -25,6 +25,9 @@ def users_view(request):
     if not request.user.is_authenticated:
         return redirect('AuthentificationApp:login')
     
+    if request.user.is_employe():
+        return redirect('MainApp:dashboard')
+    
     roles = Role.objects.all().order_by('etiquette')
     users = Employe.objects.filter(deleted = False, is_superuser = False).order_by("created_at")
     ctx = {

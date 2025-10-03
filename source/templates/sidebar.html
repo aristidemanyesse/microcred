@@ -51,8 +51,8 @@
                 </a>
             </li>
 
+            {% if request.user.is_gestionnaire_pret or request.user.is_chef  %}
             <li class="side-nav-title text-warning" data-lang="menu-title">Gestion des prêts</li>
-
             <li class="side-nav-item">
                 <a href="{% url 'FinanceApp:prets' %}" class="side-nav-link">
                     <span class="menu-icon"><i class="ti ti-calendar-dollar"></i></span>
@@ -80,9 +80,10 @@
                     <span class="menu-text" data-lang="landing-page">Simulateur de prêts</span>
                 </a>
             </li>
+            {% endif %}
 
+            {% if request.user.is_gestionnaire_epargne or request.user.is_chef  %}
             <li class="side-nav-title text-warning" data-lang="menu-title">Gestion des épargnes</li>
-
             <li class="side-nav-item">
                 <a href="{% url 'FinanceApp:epargnes' %}" class="side-nav-link">
                     <span class="menu-icon"><i class="ti ti-coins"></i></span>
@@ -95,22 +96,25 @@
                     <span class="menu-text" data-lang="landing-page">Simulateur d'épargne</span>
                 </a>
             </li>
+            {% endif %}
 
+            
+            {% if not request.user.is_employe %}
             <li class="side-nav-title text-warning" data-lang="apps-title">Administration</li>
-
-
             <li class="side-nav-item">
                 <a href="{% url 'TresorApp:rapports' %}" class="side-nav-link">
                     <span class="menu-icon"><i class="ti ti-chart-dots"></i></span>
                     <span class="menu-text" data-lang="landing-page">Rapports Stats</span>
                 </a>
             </li>
+
             <li class="side-nav-item">
                 <a href="{% url 'AuthentificationApp:users' %}" class="side-nav-link">
                     <span class="menu-icon"><i class="ti ti-user-shield"></i></span>
                     <span class="menu-text" data-lang="landing-page">Gestion des utilisateurs</span>
                 </a>
             </li>
+            {% endif %}
 
 
         </ul>

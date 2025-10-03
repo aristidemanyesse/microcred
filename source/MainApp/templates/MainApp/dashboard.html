@@ -213,12 +213,14 @@
 
                             </div><!-- end row -->
 
+                            {% if not request.user.is_employe %}
                             <div class="text-center my-3">
                                 <a href="{% url 'MainApp:rapports' %}"
                                     class="link-reset text-decoration-underline fw-semibold link-offset-3">
                                     Plus de statistiques <i class="ti ti-send-2"></i>
                                 </a>
                             </div>
+                            {% endif %}
 
                         </div> <!-- end col-->
                     </div> <!-- end row-->

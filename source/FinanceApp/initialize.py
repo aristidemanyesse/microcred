@@ -26,9 +26,9 @@ def initialize():
         if not ModaliteEcheance.objects.filter().exists():
             ModaliteEcheance.objects.create(libelle='Hébédomadaire', libelle2="semaine", etiquette = ModaliteEcheance.HEBDOMADAIRE)
             ModaliteEcheance.objects.create(libelle='Mensuel', libelle2="mois", etiquette = ModaliteEcheance.MENSUEL)
-            ModaliteEcheance.objects.create(libelle='Bimensuel', libelle2="2 mois", etiquette = ModaliteEcheance.BIMENSUEL)
-            ModaliteEcheance.objects.create(libelle='Trimestriel', libelle2="3 mois", etiquette = ModaliteEcheance.TRIMESTRIEL)
-            ModaliteEcheance.objects.create(libelle='Semestriel', libelle2="6 mois", etiquette = ModaliteEcheance.SEMESTRIEL)
+            ModaliteEcheance.objects.create(libelle='Bimensuel', libelle2="bimestre", etiquette = ModaliteEcheance.BIMENSUEL)
+            ModaliteEcheance.objects.create(libelle='Trimestriel', libelle2="trimestre", etiquette = ModaliteEcheance.TRIMESTRIEL)
+            ModaliteEcheance.objects.create(libelle='Semestriel', libelle2="semestre", etiquette = ModaliteEcheance.SEMESTRIEL)
             ModaliteEcheance.objects.create(libelle='Annuel', libelle2="année", etiquette = ModaliteEcheance.ANNUEL)
             
             

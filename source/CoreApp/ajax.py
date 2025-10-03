@@ -119,6 +119,9 @@ def supprimer(request):
     if request.method == "POST":
         datas = request.POST
         try:
+            if request.user.is_employe():
+                return JsonResponse({"status": False, "message": "Vous n'avez pas le droit de supprimer cet élément !"})
+            
             modelform = datas["model"]
             content_type = ContentType.objects.get(model= modelform.lower())
             MyModel = content_type.model_class()
@@ -149,6 +152,9 @@ def change_active(request):
         datas = request.POST
 
         try:
+            if request.user.is_employe():
+                return JsonResponse({"status": False, "message": "Vous n'avez pas le droit de modifier l'état de cet élément !"})
+            
             modelform = datas["model"]
             content_type = ContentType.objects.get(model= modelform.lower())
             MyModel = content_type.model_class()
@@ -178,6 +184,9 @@ def change_active(request):
 def refresh_password(request):
     if request.method == "POST":
         try:
+            if request.user.is_employe():
+                return JsonResponse({"status": False, "message": "Vous n'avez pas le droit de modifier le mot de passe !"})
+            
             datas = request.POST
             faker = Faker()
             psd = faker.password(length=8, special_chars=False, digits=True, upper_case=False, lower_case=True)

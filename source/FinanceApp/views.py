@@ -16,6 +16,9 @@ def prets_view(request):
     if not request.user.is_authenticated:
         return redirect('AuthentificationApp:login')
     
+    if request.user.is_gestionnaire_epargne():
+        return redirect('MainApp:dashboard')
+    
     prets = Pret.objects.filter(status__etiquette = StatusPret.EN_COURS)
     status = StatusPret.objects.all()
     ctx = {
@@ -30,6 +33,9 @@ def prets_view(request):
 def prets_simulateur_view(request):
     if not request.user.is_authenticated:
         return redirect('AuthentificationApp:login')
+    
+    if request.user.is_gestionnaire_epargne():
+        return redirect('MainApp:dashboard')
     
     if request.method == "GET":
         epargnes = CompteEpargne.objects.filter(status__etiquette = StatusPret.EN_COURS)
@@ -91,6 +97,9 @@ def demandes_view(request):
     if not request.user.is_authenticated:
         return redirect('AuthentificationApp:login')
     
+    if request.user.is_gestionnaire_epargne():
+        return redirect('MainApp:dashboard')
+    
     prets = Pret.objects.filter(status__etiquette = StatusPret.EN_ATTENTE)
     paginator = Paginator(prets, 20)
     
@@ -109,6 +118,9 @@ def demandes_view(request):
 def echeances_view(request):
     if not request.user.is_authenticated:
         return redirect('AuthentificationApp:login')
+    
+    if request.user.is_gestionnaire_epargne():
+        return redirect('MainApp:dashboard')
     
     today = date.today()
     echeances = Echeance.objects.filter(date_echeance__range = [today - timedelta(days=5), today + timedelta(days=5)]).exclude(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE]).order_by("date_echeance")
@@ -133,10 +145,16 @@ def invoice(request, pk):
         total = 0
         reste = 0
         if transaction.echeance:
+            if request.user.is_gestionnaire_epargne():
+                return redirect('MainApp:dashboard')
+            
             penalite = transaction.echeance.penalites_montant()
             avance = transaction.echeance.transactions.filter(created_at__lt = transaction.created_at).aggregate(total=Sum('montant'))['total'] or 0
             total = transaction.echeance.montant_a_payer + penalite - avance
             reste = total - transaction.montant
+        else:
+            if request.user.is_gestionnaire_pret():
+                return redirect('MainApp:dashboard')
 
         ctx = {
             'TITLE_PAGE' : "Réçu de transaction",
@@ -160,6 +178,9 @@ def invoice(request, pk):
 def releve_pret(request, pk):
     if not request.user.is_authenticated:
         return redirect('AuthentificationApp:login')
+    
+    if request.user.is_gestionnaire_epargne():
+        return redirect('MainApp:dashboard')
 
     try:
         pret = Pret.objects.get(pk = pk)
@@ -187,6 +208,9 @@ def pret_view(request, pk):
     if not request.user.is_authenticated:
         return redirect('AuthentificationApp:login')
     
+    if request.user.is_gestionnaire_epargne():
+        return redirect('MainApp:dashboard')
+    
     try:
         pret = Pret.objects.get(pk=pk)
         echeances = Echeance.objects.filter(pret=pret).order_by("level")
@@ -213,6 +237,9 @@ def pret_view(request, pk):
 def epargnes_view(request):
     if not request.user.is_authenticated:
         return redirect('AuthentificationApp:login')
+    
+    if request.user.is_gestionnaire_pret():
+        return redirect('MainApp:dashboard')
         
     epargnes = CompteEpargne.objects.filter(status__etiquette = StatusPret.EN_COURS)
     ladate = date.today() - timedelta(days=3)
@@ -229,6 +256,12 @@ def epargnes_view(request):
 @render_to('FinanceApp/releve_epargne.html')
 def releve_epargne(request, pk):
     try:
+        if not request.user.is_authenticated:
+            return redirect('AuthentificationApp:login')
+        
+        if request.user.is_gestionnaire_pret():
+            return redirect('MainApp:dashboard')
+        
         epargne = CompteEpargne.objects.get(pk = pk)
         transactions = epargne.transactions.filter()
         interets = epargne.interets.filter()
@@ -274,6 +307,12 @@ def releve_epargne(request, pk):
 
 @render_to('FinanceApp/simulateur_epargne.html')
 def epargnes_simulateur_view(request):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
+    if request.user.is_gestionnaire_pret():
+        return redirect('MainApp:dashboard')
+    
     if request.method == "GET":
         epargnes = CompteEpargne.objects.filter(status__etiquette = StatusPret.EN_COURS)
         modalites = ModaliteEcheance.objects.all()
@@ -343,6 +382,12 @@ def epargnes_simulateur_view(request):
 
 @render_to('FinanceApp/epargne.html')
 def epargne_view(request, pk):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
+    if request.user.is_gestionnaire_pret():
+        return redirect('MainApp:dashboard')
+    
     try:
         epargne = CompteEpargne.objects.get(pk=pk)
         transactions = epargne.transactions.filter().order_by("-created_at")

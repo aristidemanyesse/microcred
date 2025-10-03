@@ -1,4 +1,3 @@
-from django.shortcuts import render
 
 # Create your views here.
 from django.shortcuts import render, redirect
@@ -16,6 +15,9 @@ def compte_view(request, pk):
     if not request.user.is_authenticated:
         return redirect('AuthentificationApp:login')
     
+    if request.user.is_employe():
+        return redirect('MainApp:dashboard')
+    
     compte = CompteAgence.objects.get(pk = pk)
     operations = Operation.objects.filter(Q(compte_credit = compte) | Q(compte_debit = compte)).order_by("-created_at")
     agences = Agence.objects.all()
@@ -32,6 +34,12 @@ def compte_view(request, pk):
 
 @render_to('TresorApp/releve_compte.html')
 def releve_view(request, pk):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
+    if request.user.is_employe():
+        return redirect('MainApp:dashboard')
+    
     try:
         compte     = CompteAgence.objects.get(pk = pk)
         operations = Operation.objects.filter(Q(compte_credit = compte) | Q(compte_debit = compte)).order_by("created_at")
@@ -65,6 +73,9 @@ def releve_view(request, pk):
 def rapports_view(request):
     if not request.user.is_authenticated:
         return redirect('AuthentificationApp:login')
+    
+    if request.user.is_employe():
+        return redirect('MainApp:dashboard')
     
     comptes = CompteAgence.objects.filter().order_by("created_at")
     agences = Agence.objects.all()

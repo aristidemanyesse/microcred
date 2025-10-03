@@ -88,6 +88,8 @@ def reset_password(request):
     if request.method == "POST":
         datas = request.POST
         try:
+            if request.user.is_employe():
+                return JsonResponse({"status": False, "message": "Vous n'avez pas le droit de modifier le mot de passe !"})
             
             employe = Employe.objects.get(pk = datas["id"])
             if employe == request.user:
