@@ -55,3 +55,11 @@ class EcheanceAdmin(admin.ModelAdmin):
     list_filter = ('status',)
     
 
+@admin.register(Garantie)
+class GarantieAdmin(admin.ModelAdmin):
+    list_display = ('pret', 'montant', 'temoin', 'contact', 'libelle') 
+    
+
+@admin.register(TypeAmortissement)
+class TypeAmortissementAdmin(admin.ModelAdmin):
+    list_display = ('libelle', 'etiquette')

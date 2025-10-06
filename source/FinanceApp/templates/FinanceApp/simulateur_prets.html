@@ -30,6 +30,17 @@
                                 step="0.01" value="{{taux|stringformat:"s"}}" required>
                             <i data-lucide="percent" class="app-search-icon text-muted"></i>
                         </div>
+
+                        <div class="app-search">
+                            <select class="form-select form-control my-1 my-md-0" name="amortissement" required>
+                                <option value="">Amortissement</option>
+                                {% for amor in amortissements %}
+                                <option value="{{ amor.id }}" {% if amor.id == amortissement.id %}selected{% endif %}>
+                                    {{ amor.libelle }}</option>
+                                {% endfor %}
+                            </select>
+                            <i data-lucide="settings" class="app-search-icon text-muted"></i>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -66,8 +77,46 @@
             </div>
     </div>
 
+    <div class="row row-cols-sm-2 row-cols-md-3 row-cols-1 g-1 p-1 my-3">
+        <!-- Total Sales Widget -->
+        <div class="col">
+            <div class="card rounded-0 border border-dashed mb-0">
+                <div class="card-body">
+                    <div class="mb-3 d-flex justify-content-between align-items-center">
+                        <h4 class="fs-xxl mb-0">{{base|floatformat:2}} <small>Fcfa</small></h4>
+                    </div>
+                    <p class="text-muted mb-2"><span>Montant de base</span></p>
+                </div>
+            </div>
+        </div><!-- end col -->
 
-    
+        <!-- Number of Customers Widget -->
+        <div class="col">
+            <div class="card rounded-0 border border-dashed mb-0">
+                <div class="card-body">
+                    <div class="mb-3 d-flex justify-content-between align-items-center">
+                        <h5 class="fs-xxl mb-0">{{total_interets|floatformat:2}} <small>Fcfa</small></h5>
+                        <span>{{echeances_count}}</span>
+                    </div>
+                    <p class="text-muted mb-2"><span>Interêts générés ({{taux|floatformat:2}}%)</span></p>
+                </div>
+            </div>
+        </div><!-- end col -->
+
+        <!-- Products Sold Widget -->
+        <div class="col">
+            <div class="card rounded-0 border border-dashed mb-0">
+                <div class="card-body">
+                    <div class="mb-3 d-flex justify-content-between align-items-center">
+                        <h5 class="fs-xxl mb-0">{{total_reglement|floatformat:2}} <small>Fcfa</small></h5>
+                    </div>
+                    <p class="text-muted mb-2 text-truncate"><span>Total à rembourser</span>
+                    </p>
+                </div>
+            </div>
+        </div><!-- end col -->
+
+    </div><!-- end row -->
 
     <div class="card" data-table data-table-rows-per-page="50">
         <div class="card-body border-light justify-content-between">
@@ -76,8 +125,10 @@
                     <thead class="bg-light align-middle bg-opacity-25 thead-sm">
                         <tr class="text-uppercase fs-xxs">
                             <th>Date</th>
+                            <th>Principal</th>
+                            <th>Intérêt</th>
                             <th>Echéance</th>
-                            <th>Reste à payer</th>
+                            <th>Restera à payer</th>
                         </tr>
                     </thead><!-- end table-head -->
 
@@ -85,7 +136,9 @@
                         {% for ligne in tableaux %}
                         <tr>
                             <td>{{ligne.date}}</td>
-                            <td>{{ligne.echeance}} Fcfa</td>
+                            <td>{{ligne.principal}} Fcfa</td>
+                            <td>{{ligne.interet}} Fcfa</td>
+                            <td>{{ligne.total}} Fcfa</td>
                             <td>{{ligne.reste}} Fcfa</td>
                         </tr>
                         {% endfor %}

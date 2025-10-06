@@ -15,7 +15,9 @@
         <div class="col">
             <div class="card">
                 <div class="card-body">
-                    <a href="{% url 'TresorApp:compte' compte.id %}" class="btn btn-light btn-icon btn-sm rounded-circle float-end mt-n1 fs-xl"><i class="ti ti-eye"></i></a>
+                    <a href="{% url 'TresorApp:compte' compte.id %}"
+                        class="btn btn-light btn-icon btn-sm rounded-circle float-end mt-n1 fs-xl"><i
+                            class="ti ti-eye"></i></a>
                     <h5 title="Number of Tasks">{{ compte.libelle }}</h5>
                     <div class="d-flex align-items-center gap-2 my-3">
                         <div class="avatar-md flex-shrink-0">
@@ -34,7 +36,7 @@
         </div> <!-- end col-->
         {% endfor %}
 
-        <div class="text-center">
+        <div class="text-center mb-3">
             <a href="#!" data-bs-toggle="modal" data-bs-target="#modal-add-compte"
                 class="btn btn-secondary rounded-pill"><i class="ti ti-plus me-1"></i> Ajouter un compte</a>
             <a href="#!" data-bs-toggle="modal" data-bs-target="#modal-transfert"
@@ -58,10 +60,10 @@
 
                     <!-- Country Filter -->
                     <div class="app-search">
-                        <select data-table-filter="type" class="form-select form-control my-1 my-md-0">
-                            <option value="All">Toutes les agences</option>
-                            {% for agence in agences %}
-                            <option value="{{ agence.libelle }}">{{ agence.libelle }}</option>
+                        <select data-table-filter="debit" class="form-select form-control my-1 my-md-0">
+                            <option value="All">Tous les comptes</option>
+                            {% for compte in comptes %}
+                            <option value="{{ compte.libelle }}">{{ compte.libelle }}</option>
                             {% endfor %}
                         </select>
                         <i data-lucide="globe" class="app-search-icon text-muted"></i>
@@ -69,7 +71,7 @@
 
                     <!-- Country Filter -->
                     <div class="app-search">
-                        <select data-table-filter="type" class="form-select form-control my-1 my-md-0">
+                        <select data-table-filter="credit" class="form-select form-control my-1 my-md-0">
                             <option value="All">Tous les comptes</option>
                             {% for compte in comptes %}
                             <option value="{{ compte.libelle }}">{{ compte.libelle }}</option>
@@ -94,8 +96,8 @@
                     <thead class="bg-light bg-opacity-25 thead-sm">
                         <tr class="text-uppercase fs-xxs">
                             <th data-table-sort="name">Nom & Prénoms</th>
-                            <th data-table-sort data-column="agence">Compte débit</th>
-                            <th data-table-sort data-column="agence">Compte crédit</th>
+                            <th data-table-sort data-column="debit">Compte débit</th>
+                            <th data-table-sort data-column="credit">Compte crédit</th>
                             <th data-table-sort>Montant</th>
                             <th data-table-sort>Effectué par</th>
                             <th class="text-center">Actions</th>
@@ -116,9 +118,8 @@
                             <td>
                                 <div class="d-flex justify-content-start align-items-center gap-2">
                                     <div>
-                                        <h5 class="text-nowrap mb-0 lh-base fs-base">{{ operation.compte_debit.agence }}
+                                        <h5 class="text-nowrap mb-0 lh-base fs-base">{{ operation.compte_debit }}
                                         </h5>
-                                        <p class="text-muted fs-xs mb-0">{{operation.compte_debit}}</p>
                                     </div>
                                 </div>
                             </td>
@@ -126,8 +127,7 @@
                                 <div class="d-flex justify-content-start align-items-center gap-2">
                                     <div>
                                         <h5 class="text-nowrap mb-0 lh-base fs-base">
-                                            {{ operation.compte_credit.agence }}</h5>
-                                        <p class="text-muted fs-xs mb-0">{{operation.compte_credit}}</p>
+                                            {{ operation.compte_credit }}</h5>
                                     </div>
                                 </div>
                             </td>
@@ -170,18 +170,6 @@
                 {% csrf_token %}
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Pour quelle agence <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i
-                                    class="ti ti-calendar text-muted fs-xl"></i></span>
-                            <select name="agence" class="form-select form-control my-1 my-md-0" required>
-                                {% for agence in agences %}
-                                <option value="{{ agence.id }}">{{ agence.libelle }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-3">
                         <label class="form-label">Nom du compte <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="ti ti-edit text-muted fs-xl"></i></span>
@@ -199,6 +187,7 @@
                 </div>
                 <br>
                 <div class="modal-footer d-flex justify-content-between">
+                    <input type="hidden" name="agence" value="{{ request.user.agence.id }}">
                     <input type="hidden" name="employe" value="{{ request.user.id }}">
                     <button type="button" class="btn btn-default dim pull-left" data-bs-dismiss="modal">
                         <i class="ti ti-close"></i> Annuler

@@ -130,7 +130,6 @@
                 confirmButtonText: "Oui, supprimer !",
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Loader.start()
                     Swal.fire({
                         title: "Entrez votre mot de passe pour confirmer l'opération !",
                         input: "password",
@@ -142,6 +141,7 @@
                         denyButtonText: "Annuler",
                         showLoaderOnConfirm: true,
                         preConfirm: async (password) => {
+                            Loader.start()
                             url = "/core/ajax/supprimer/";
                             var token = $(".footer").find("input[name=csrfmiddlewaretoken]").val()
                             $.post(url, {model:model, id:id, password:password, csrfmiddlewaretoken:token}, (data)=>{
@@ -170,7 +170,6 @@
                 }).then((result) => {
                     /* Read more about isConfirmed, isDenied below */
                     if (result.isConfirmed) {
-                        Loader.start()
                         Swal.fire({
                             title: "Entrez votre mot de passe pour confirmer l'opération !",
                             input: "password",
@@ -181,6 +180,7 @@
                             confirmButtonText: "Valider",
                             showLoaderOnConfirm: true,
                             preConfirm: async (password) => {
+                                Loader.start();
                                 url = "/core/ajax/refresh_password/";
                                 var token = $(".footer").find("input[name=csrfmiddlewaretoken]").val()
                                 $.post(url, {id:id, password:password, csrfmiddlewaretoken:token}, (data)=>{

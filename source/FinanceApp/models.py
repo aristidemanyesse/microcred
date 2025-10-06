@@ -50,12 +50,22 @@ class ModaliteEcheance(BaseModel):
     
     
 class ModePayement(BaseModel):
-    ESPECE = 1
-    MOBILE = 3
-    CHEQUE = 3
-    VIREMENT = 4
+    ESPECE = "1"
+    MOBILE = "2"
+    CHEQUE = "3"
+    VIREMENT = "4"
     libelle = models.CharField(max_length=50)  # Espèces / Chèque / Virement
     etiquette = models.CharField(max_length=50)
+
+
+
+class TypeAmortissement(BaseModel):
+    BASE      = "1"
+    CAPITAL   = "2"
+    ANNUITE   = "3"
+    libelle   = models.CharField(max_length=50)  # Espèces / Chèque / Virement
+    etiquette = models.CharField(max_length=50)
+    
     
 class CompteEpargne(BaseModel):
     numero                = models.CharField(max_length=50, null=True, blank=True)
@@ -185,9 +195,11 @@ class Pret(BaseModel):
     base                   = models.DecimalField(max_digits=12, decimal_places=2)
     taux                   = models.DecimalField(max_digits=5, decimal_places=2)
     taux_penalite          = models.DecimalField(max_digits=5, decimal_places=2, default=10, null=True, blank=True)
-    montant                = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     modalite               = models.ForeignKey(ModaliteEcheance, on_delete=models.CASCADE)
     nombre_modalite        = models.PositiveIntegerField()
+    amortissement          = models.ForeignKey(TypeAmortissement, on_delete=models.CASCADE, null=True, blank=True)
+    interet                = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    montant                = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     status                 = models.ForeignKey(StatusPret, on_delete=models.CASCADE, null=True, blank=True,)
     employe                = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='prets')
     confirmateur           = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='confirm_prets', null=True, blank=True)
@@ -195,20 +207,100 @@ class Pret(BaseModel):
     commentaire            = models.TextField(null=True, blank=True)
     
     
+    def calcul_interets(self):
+        r = self.taux / 100
+        n = self.nombre_modalite
+        if self.amortissement.etiquette == TypeAmortissement.ANNUITE:
+            annuite = self.base * (r * (1 + r) ** n) / ((1 + r) ** n - 1)
+            interets = []
+            capital_restant = self.base
+            for i in range(1, n + 1):
+                interet = capital_restant * r
+                amortissement = annuite - interet
+                capital_restant -= amortissement
+                interets.append(interet)
+            return sum(interets)
+
+        elif self.amortissement.etiquette == TypeAmortissement.CAPITAL:
+            amortissement = self.base / n
+            interets = []
+            for i in range(1, n + 1):
+                capital_restant = self.base - (i - 1) * amortissement
+                interet = capital_restant * r
+                interets.append(interet)
+            return sum(interets)
+        
+        elif self.amortissement.etiquette == TypeAmortissement.BASE:
+            return self.base * r
+    
+    
+    
     def confirm_pret(self, employe):
         date_echeance = self.created_at.date()
-        montant = round(self.total() / self.nombre_modalite, 2)
         i = 0
-        while i < self.nombre_modalite:
-            i += 1
-            date_echeance += timedelta(days= self.modalite.duree())
-            Echeance.objects.create(
-                pret            = self,
-                level           = i,
-                montant_a_payer = montant,
-                date_echeance   = date_echeance,
-                status          = StatusPret.objects.get(etiquette = StatusPret.EN_COURS),
-            )
+        base = round(self.base / self.nombre_modalite, 2)
+        
+        if self.amortissement.etiquette == TypeAmortissement.BASE:
+            reste = self.base
+            while i < self.nombre_modalite:
+                date_echeance += timedelta(days= self.modalite.duree())
+                interet = round(base * self.taux / 100, 2)
+                echeance = Echeance.objects.create(
+                    pret            = self,
+                    level           = i,
+                    principal       = base,
+                    interet         = interet ,
+                    montant_a_payer = base + interet,
+                    date_echeance   = date_echeance,
+                    status          = StatusPret.objects.get(etiquette = StatusPret.EN_COURS),
+                )
+                reste -= base + interet
+                i += 1
+                
+                
+        elif self.amortissement.etiquette == TypeAmortissement.CAPITAL:
+            reste = self.base
+            while i < self.nombre_modalite:
+                date_echeance += timedelta(days= self.modalite.duree())
+                interet = round((self.base - (base * i)) * self.taux / 100, 2)
+                echeance = Echeance.objects.create(
+                    pret            = self,
+                    level           = i,
+                    principal       = base,
+                    interet         = interet ,
+                    montant_a_payer = base + interet,
+                    date_echeance   = date_echeance,
+                    status          = StatusPret.objects.get(etiquette = StatusPret.EN_COURS),
+                )
+                reste -= base + interet
+                i += 1
+                
+                
+        elif self.amortissement.etiquette == TypeAmortissement.ANNUITE:
+            r = self.taux / 100
+            n = self.nombre_modalite
+            annuite = self.base * (r * (1 + r) ** n) / ((1 + r) ** n - 1)
+            reste = self.base
+            while i < self.nombre_modalite:
+                date_echeance += timedelta(days= self.modalite.duree())
+                interet = reste * r
+                principal = round(annuite - interet, 2)
+                echeance = Echeance.objects.create(
+                    pret            = self,
+                    level           = i,
+                    principal       = principal,
+                    interet         = interet ,
+                    montant_a_payer = annuite,
+                    date_echeance   = date_echeance,
+                    status          = StatusPret.objects.get(etiquette = StatusPret.EN_COURS),
+                )
+                reste -= principal
+                i += 1
+                
+        if reste > 0:
+            echeance.interet += reste
+            echeance.montant_a_payer += reste
+            echeance.save()
             
         self.status       = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
         self.confirmateur = employe
@@ -245,46 +337,7 @@ class Pret(BaseModel):
     
     def penalites_montant(self):
         return self.echeances.exclude(status__etiquette = StatusPret.ANNULEE).aggregate(total=models.Sum('penalites__montant'))['total'] or 0
-
-
-    def appliquer_paiement(self, montant):
-        """Applique un paiement sur le prêt et sur les échéances et pénalités"""
-        # Trier les échéances par date
-        for echeance in self.echeance_set.order_by('date_echeance'):
-            if montant <= 0:
-                break
-            # Appliquer d’abord sur les pénalités
-            for penalite in echeance.penalite_set.all():
-                if montant >= penalite.montant:
-                    montant -= penalite.montant
-                    penalite.montant = 0
-                    penalite.save()
-                else:
-                    penalite.montant -= montant
-                    penalite.save()
-                    montant = 0
-            # Appliquer sur l’échéance
-            restant = echeance.montant_a_payer - echeance.montant_paye
-            if montant >= restant:
-                echeance.montant_paye = echeance.montant_a_payer
-                echeance.status = StatusPret.objects.get(nom='OK')
-                echeance.save()
-                montant -= restant
-            else:
-                echeance.montant_paye += montant
-                echeance.status = StatusPret.objects.get(nom='Partiellement payé')
-                echeance.save()
-                montant = 0
-        # Mettre à jour montant remboursé du prêt
-        self.montant_rembourse = sum(e.montant_paye for e in self.echeance_set.all())
-        # Mise à jour status du prêt
-        if self.montant_rembourse >= self.montant:
-            self.status = StatusPret.objects.get(nom='Terminé')
-        elif self.echeance_set.filter(status__nom='En retard').exists():
-            self.status = StatusPret.objects.get(nom='Retard')
-        else:
-            self.status = StatusPret.objects.get(nom='En cours')
-        self.save()
+    
 
     def calcul_penalites(self, taux=0.02):
         """Calcul automatique des pénalités sur les échéances en retard"""
@@ -306,6 +359,8 @@ class Echeance(BaseModel):
     pret            = models.ForeignKey(Pret, on_delete=models.CASCADE, related_name='echeances')
     level           = models.PositiveIntegerField(default=0)
     date_echeance   = models.DateField()
+    principal       = models.DecimalField(max_digits=12, decimal_places=2)
+    interet         = models.DecimalField(max_digits=12, decimal_places=2)
     montant_a_payer = models.DecimalField(max_digits=12, decimal_places=2)
     montant_paye    = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     status          = models.ForeignKey(StatusPret, on_delete=models.CASCADE)
@@ -355,11 +410,14 @@ class Echeance(BaseModel):
 
 
 class Garantie(BaseModel):
+    temoin    = models.CharField(max_length=50, null=True, blank=True)
+    contact   = models.CharField(max_length=50, null=True, blank=True)
     libelle   = models.CharField(max_length=50, null=True, blank=True)
-    montant    = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    montant   = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     pret      = models.ForeignKey(Pret, on_delete=models.CASCADE, related_name='garanties')
     condition = models.TextField(null=True, blank=True)
     employe   = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='garanties')
+    image     = models.ImageField(upload_to='garanties/', null=True, blank=True)
         
 
 class Penalite(BaseModel):
@@ -433,7 +491,8 @@ def sighandler(instance, created, **kwargs):
 def sighandler(instance, **kwargs):
     if instance._state.adding:
         instance.numero = GenerateTools.pretId(instance.client.agence)
-        instance.montant = instance.base + (instance.base * instance.taux / 100)
+        instance.interet = instance.calcul_interets()
+        instance.montant = instance.base + instance.interet
         instance.status = StatusPret.objects.get(etiquette = StatusPret.EN_ATTENTE)
 
     

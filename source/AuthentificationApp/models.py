@@ -15,17 +15,20 @@ class Role(BaseModel):
 
 
 class Employe(AbstractUser, BaseModel):
-    agence  = models.ForeignKey('MainApp.Agence', on_delete=models.CASCADE, null=True, blank=True)
-    address = models.TextField(null=True, blank=True, default="")
-    contact = models.CharField(max_length = 255, null = True, blank=True)
-    role    = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True)
-    brut    = models.CharField(max_length=50, null=True, blank=True)
-    is_new  = models.BooleanField(default=True)
+    agence          = models.ForeignKey('MainApp.Agence', on_delete=models.CASCADE, null=True, blank=True)
+    address         = models.TextField(null=True, blank=True, default="")
+    contact         = models.CharField(max_length = 255, null = True, blank=True)
+    role            = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True)
+    brut            = models.CharField(max_length=50, null=True, blank=True)
+    is_new          = models.BooleanField(default=True)
+    
+    phrase_secrete  = models.CharField(max_length=200, null=True, blank=True)
+    reponse_secrete = models.CharField(max_length=200, null=True, blank=True)
+    secret          = models.BooleanField(default=False)
 
     
     def __str__(self):
         return self.get_full_name()
-    
     
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
@@ -48,6 +51,13 @@ class Employe(AbstractUser, BaseModel):
     def is_chef(self):
         return self.has_role(Role.ADMINISTRATEUR) or self.has_role(Role.SUPERVISEUR)
 
+
+
+class Connexion(BaseModel):
+    employe    = models.ForeignKey(Employe, on_delete=models.CASCADE, related_name='connexions')
+    ip         = models.CharField(max_length=50, null=True, blank=True)
+    user_agent = models.CharField(max_length=200, null=True, blank=True)
+    
 
 
 @signals.pre_save(sender=Employe)

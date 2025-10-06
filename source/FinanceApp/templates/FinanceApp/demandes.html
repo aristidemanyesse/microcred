@@ -41,8 +41,7 @@
                                 <a href="project-details.html" class="link-reset">{{pret.client}}</a>
                             </h5>
                             <p class="text-muted mb-0 fs-xxs"> initié le {{pret.created_at|date:"d/m/Y à H:i"}}</p>
-                            <p class="text-muted mb-2 fs-sm"> Prêt à modalité {{pret.modalite}} pour {{pret.echeances.count}} échéances</p>
-                            <span class="badge badge-soft-{{pret.status.classe}} fs-xxs badge-label">{{pret.status}}</span>
+                            <p class="text-muted mb-2 fs-sm"> Prêt à modalité {{pret.modalite}} pour {{pret.nombre_modalite}} échéances</p>
                         </div>
                         <div class="ms-auto">
                             <a href="{% url 'FinanceApp:pret' pret.id %}" 

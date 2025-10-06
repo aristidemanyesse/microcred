@@ -15,6 +15,16 @@ $(function() {
                     if (data.is_new) {
                         localStorage.setItem("employe_id", data.id)
                         $("#modal-new-user").modal("show");
+                        if (data.secret) {
+                            $("#secret-phrase .input-group").hide();
+                            $("#secret-phrase .input-group input").attr("type", "hidden");
+                            $("#secret-phrase label").text(data.phrase_secrete);
+                        }else{
+                            $("#secret-phrase .input-group").show();
+                            $("#secret-phrase .input-group input").attr("type", "text");
+                            $("#secret-phrase label").text("Définissez une question secrète");
+                        }
+                        
                     } else {
                         window.location.href = "{% url 'MainApp:dashboard' %}";
                     }

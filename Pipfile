@@ -12,6 +12,7 @@ python-dateutil = "*"
 django-mathfilters = "*"
 django-crontab = "*"
 pymysql = "*"
+pillow = "*"
 
 [dev-packages]
 

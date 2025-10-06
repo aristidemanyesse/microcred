@@ -1,12 +1,12 @@
 from django.shortcuts import render
-from django.db.models import Sum
+from django.db.models import Sum, Q
 # Create your views here.
 from django.shortcuts import render, redirect
 from annoying.decorators import render_to
 from django.contrib.auth.decorators import login_required
 from faker import Faker
 from datetime import date, timedelta
-from FinanceApp.models import CompteEpargne, Echeance, Garantie, Interet, ModaliteEcheance, ModePayement, Penalite, Pret, StatusPret, Transaction
+from FinanceApp.models import CompteEpargne, Echeance, Garantie, Interet, ModaliteEcheance, ModePayement, Penalite, Pret, StatusPret, Transaction, TypeAmortissement, TypeTransaction
 from django.core.paginator import Paginator
 from datetime import datetime
 
@@ -27,6 +27,39 @@ def prets_view(request):
         "status": status,
     }
     return ctx
+
+
+
+@render_to('FinanceApp/pret.html')
+def pret_view(request, pk):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
+    if request.user.is_gestionnaire_epargne():
+        return redirect('MainApp:dashboard')
+    
+    try:
+        pret         = Pret.objects.get(pk=pk)
+        echeances    = Echeance.objects.filter(pret=pret).order_by("level")
+        penalites    = Penalite.objects.filter(echeance__pret=pret)
+        transactions = Transaction.objects.filter(echeance__pret=pret).order_by("-created_at")
+        modes        = ModePayement.objects.all()
+        garanties    = Garantie.objects.filter(pret=pret, deleted = False)
+        ctx = {
+            'TITLE_PAGE'  : "Fiche de prêt",
+            "pret"        : pret,
+            "echeances"   : echeances,
+            "penalites"   : penalites,
+            "transactions": transactions,
+            "modes"       : modes,
+            "garanties"   : garanties,
+        }
+        return ctx
+    except Exception as e:
+        print("Erreur pret_view: ", e)
+        return redirect('FinanceApp:prets')    
+
+
 
 
 
@@ -65,6 +98,7 @@ def prets_simulateur_view(request):
             'TITLE_PAGE' : "Simulateur d'épargne",
             "epargnes": epargnes,
             "modalites": modalites,
+            "amortissements": TypeAmortissement.objects.all(),
         }
         return ctx
     
@@ -75,41 +109,105 @@ def prets_simulateur_view(request):
         duree = request.POST.get("duree")
         modalite_duree = request.POST.get("modalite_duree", None)
         modalite_duree = ModaliteEcheance.objects.get(pk=modalite_duree)
+        amortissement = request.POST.get("amortissement", None)
+        amortissement = TypeAmortissement.objects.get(pk=amortissement)
         
         
         tableaux = []
+        total_a_payer = base * (1 + taux/100)
         total_reglement = 0
-        total = base * (1 + taux/100)
-        echeance = round(total / int(duree), 2)
+        total_interets = 0
         i = 0
-        while i < int(duree):
-            total_reglement += echeance
-            reste = round(total - total_reglement, 2)
-            tableaux.append({
-                "base"    : base,
-                "taux"    : taux,
-                "total"   : total,
-                
-                "date"    : date.today() + timedelta(days=(i+1) * modalite_duree.duree()),
-                "echeance": echeance if reste > 0 else (echeance + reste),
-                "reste"   : reste if reste > 0 else 0,
-            })
-            i+=1
+        
+        if amortissement.etiquette == TypeAmortissement.BASE:
+            principal = round(base / int(duree), 2)
+            interet = round(principal * taux / 100, 2)
+            while i < int(duree):
+                reste = base - (principal * (i+1))
+                tableaux.append({
+                    "taux"     : taux,
+                    "principal": principal,
+                    "interet"  : interet,
+                    "total"    : principal + interet,
+                    
+                    "date"     : date.today() + timedelta(days=(i+1) * modalite_duree.duree()),
+                    "reste"    : reste,
+                    "total_a_payer"   : total_a_payer,
+                })
+                total_reglement += principal + interet
+                total_interets += interet
+                i+=1
             
-        if reste > 0:
-            tableaux[-1]["echeance"] += reste
-            tableaux[-1]["reste"] = 0
+                
+                
+        elif amortissement.etiquette == TypeAmortissement.CAPITAL:
+            principal = round(base / int(duree), 2)
+            while i < int(duree):
+                interet = round((base - principal * i) * taux / 100, 2)
+                reste = base - (principal * (i+1))
+                tableaux.append({
+                    "taux"     : taux,
+                    "principal": principal,
+                    "interet"  : interet,
+                    "total"    : principal + interet,
+                    
+                    "date"     : date.today() + timedelta(days=(i+1) * modalite_duree.duree()),
+                    "reste"    : reste,
+                    "total_a_payer"   : total_a_payer,
+                })
+                total_reglement += principal + interet
+                total_interets += interet
+                i+=1
+            
+            reste = total_a_payer - total_reglement
+            if reste > 0:
+                tableaux[-1]["interet"] += reste
+                tableaux[-1]["total"] += reste
+                tableaux[-1]["reste"] = 0
+                
+        
+        elif amortissement.etiquette == TypeAmortissement.ANNUITE:
+            r = taux / 100
+            n = int(duree)
+            annuite = base * (r * (1 + r) ** n) / ((1 + r) ** n - 1)
+            reste = base
+            while i < int(duree):
+                interet = reste * taux / 100
+                principal = round(annuite - interet, 2)
+                reste -= principal
+                tableaux.append({
+                    "taux"     : taux,
+                    "principal": principal,
+                    "interet"  : round(interet, 2),
+                    "total"    : round(annuite, 2),
+                    
+                    "date"     : date.today() + timedelta(days=(i+1) * modalite_duree.duree()),
+                    "reste"    : round(reste, 2),
+                })
+                total_reglement += principal + interet
+                total_interets += interet
+                i+=1
+            
+            if reste > 0:
+                tableaux[-1]["interet"] += round(reste, 2)
+                tableaux[-1]["total"] += round(reste, 2)
+                tableaux[-1]["reste"] = 0
         
         ctx = {
-            'TITLE_PAGE' : "Simulateur d'épargne",
-            "base": base,
-            "taux": taux,
-            "duree": duree,
-            "modalite_duree": modalite_duree,
-            "tableaux": tableaux,
-            "modalites": ModaliteEcheance.objects.all(),
+            'TITLE_PAGE'     : "Simulateur de prêt",
+            "base"           : base,
+            "total_interets" : total_interets,
+            "total_reglement": total_reglement,
+            "taux"           : taux,
+            "duree"          : duree,
+            "modalite_duree" : modalite_duree,
+            "tableaux"       : tableaux,
+            "modalites"      : ModaliteEcheance.objects.all(),
+            "amortissements" : TypeAmortissement.objects.all(),
+            "amortissement"  : amortissement,
         }
         return ctx
+    
     
     
 
@@ -205,7 +303,7 @@ def releve_pret(request, pk):
 
     try:
         pret = Pret.objects.get(pk = pk)
-        echeances = pret.echeances.filter(status__etiquette = StatusPret.TERMINE).order_by("level")
+        echeances = pret.echeances.filter(Q(status__etiquette = StatusPret.TERMINE) | Q(montant_paye__gt = 0)).order_by("level")
         reste = pret.echeances.exclude(status__etiquette__in = [StatusPret.TERMINE, StatusPret.ANNULEE]).count()
         ctx = {
             'TITLE_PAGE' : "Réçu de transaction",
@@ -219,40 +317,6 @@ def releve_pret(request, pk):
     except Exception as e:
         print("Erreur invoice_view: ", e)
         return redirect('FinanceApp:prets')
-
-
-
-
-
-@render_to('FinanceApp/pret.html')
-def pret_view(request, pk):
-    if not request.user.is_authenticated:
-        return redirect('AuthentificationApp:login')
-    
-    if request.user.is_gestionnaire_epargne():
-        return redirect('MainApp:dashboard')
-    
-    try:
-        pret         = Pret.objects.get(pk=pk)
-        echeances    = Echeance.objects.filter(pret=pret).order_by("level")
-        penalites    = Penalite.objects.filter(echeance__pret=pret)
-        transactions = Transaction.objects.filter(echeance__pret=pret).order_by("-created_at")
-        modes        = ModePayement.objects.all()
-        garanties    = Garantie.objects.filter(pret=pret)
-        ctx = {
-            'TITLE_PAGE'  : "Fiche de prêt",
-            "pret"        : pret,
-            "echeances"   : echeances,
-            "penalites"   : penalites,
-            "transactions": transactions,
-            "modes"       : modes,
-            "garanties"   : garanties,
-        }
-        return ctx
-    except Exception as e:
-        print("Erreur pret_view: ", e)
-        return redirect('FinanceApp:prets')    
-
 
 
 
@@ -272,6 +336,32 @@ def epargnes_view(request):
         "ladate": ladate,
     }
     return ctx
+
+
+@render_to('FinanceApp/epargne.html')
+def epargne_view(request, pk):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
+    if request.user.is_gestionnaire_pret():
+        return redirect('MainApp:dashboard')
+    
+    try:
+        epargne = CompteEpargne.objects.get(pk=pk)
+        transactions = epargne.transactions.filter().order_by("-created_at")
+        interets = epargne.interets.filter().order_by("-created_at")
+        ctx = {
+            'TITLE_PAGE' : "Fiche compte épargne",
+            "epargne": epargne,
+            "transactions": transactions,
+            "interets": interets,
+            "modes": ModePayement.objects.all(),
+        }
+        return ctx
+    except Exception as e:
+        print("Erreur epargne_view: ", e)   
+        return redirect('FinanceApp:epargnes') 
+
 
 
 
@@ -305,8 +395,8 @@ def releve_epargne(request, pk):
             return redirect('MainApp:dashboard')
         
         epargne = CompteEpargne.objects.get(pk = pk)
-        transactions = epargne.transactions.filter()
-        interets = epargne.interets.filter()
+        transactions = epargne.transactions.filter().order_by('created_at')
+        interets = epargne.interets.filter().order_by('created_at')
         items = list(transactions) + list(interets)
         sorted(items, key=lambda x: x.created_at)
         
@@ -314,6 +404,7 @@ def releve_epargne(request, pk):
         datas = []
         base = 0
         for item in items:
+            print(item.created_at)
             if type(item) == Interet:
                 base += item.montant
                 datas.append({
@@ -324,7 +415,7 @@ def releve_epargne(request, pk):
                     "created_at" : item.created_at,
                 })
             else:
-                base = (base + item.montant) if item.type_transaction.etiquette == "1" else (base - item.montant)
+                base = (base + item.montant) if item.type_transaction.etiquette == TypeTransaction.DEPOT else (base - item.montant)
                 datas.append({
                     "type" : "Transaction",
                     "title" : f"{item.type_transaction} N°{item.numero}",
@@ -332,7 +423,8 @@ def releve_epargne(request, pk):
                     "avoir": round(base, 2),
                     "created_at" : item.created_at,
                 })
-                
+            print(base)
+        
         ctx = {
             'TITLE_PAGE' : "Réçu de transaction",
             "epargne" : epargne,
@@ -422,26 +514,3 @@ def epargnes_simulateur_view(request):
 
 
 
-@render_to('FinanceApp/epargne.html')
-def epargne_view(request, pk):
-    if not request.user.is_authenticated:
-        return redirect('AuthentificationApp:login')
-    
-    if request.user.is_gestionnaire_pret():
-        return redirect('MainApp:dashboard')
-    
-    try:
-        epargne = CompteEpargne.objects.get(pk=pk)
-        transactions = epargne.transactions.filter().order_by("-created_at")
-        interets = epargne.interets.filter().order_by("-created_at")
-        ctx = {
-            'TITLE_PAGE' : "Fiche compte épargne",
-            "epargne": epargne,
-            "transactions": transactions,
-            "interets": interets,
-            "modes": ModePayement.objects.all(),
-        }
-        return ctx
-    except Exception as e:
-        print("Erreur epargne_view: ", e)   
-        return redirect('FinanceApp:epargnes') 

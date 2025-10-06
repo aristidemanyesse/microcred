@@ -29,8 +29,10 @@
                                             <p class="mb-2 text-muted">créé le {{pret.created_at|date:"d/m/Y à H:i"}}
 
                                             </p>
-                                            <p class="pe-2 pb-2 h5 text-muted mb-2 lh-base border-bottom">Prêt à
-                                                modalité {{pret.modalite}} pour {{pret.echeances.count}} échéances</p>
+                                            <p class="pe-2 h5 text-muted ">Prêt à
+                                                modalité {{pret.modalite}} pour {{pret.nombre_modalite}} échéances</p>
+
+                                            <p class="pe-2 pb-2 h5 text-muted mb-2 lh-base border-bottom"> Prêt à {{pret.amortissement}}</p>
 
                                             <h4 class="d-flex align-items-center justify-content-between gap-2">
                                                 <small>base:</small> <span class="fw-bold">{{pret.base}}</span></h4>
@@ -146,8 +148,89 @@
                         </div> <!-- end col-->
                     </div> <!-- end row-->
                 </div>
+                {% if pret.status.etiquette == '0' %}
+                    <div data-table data-table-rows-per-page="20">
+                        <div
+                            class="card-header border-light d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="d-flex gap-2">
+                                <div class="app-search">
+                                    <input data-table-search type="search" class="form-control"
+                                        placeholder="Rechercher...">
+                                    <i data-lucide="search" class="app-search-icon text-muted"></i>
+                                </div>
+
+                                 <button data-bs-toggle="modal" data-bs-target="#modal-new-garantie" class="btn btn-light"><i
+                            class="ti ti-plus fs-lg"></i> Ajouter une garantie</button>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2">
+                                <div>
+                                    <select data-table-set-rows-per-page="20"
+                                        class="form-select form-control my-1 my-md-0">
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="">
+                            <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
+                                <thead class="bg-light align-middle bg-opacity-25 thead-sm">
+                                    <tr class="text-uppercase fs-xxs">
+                                        <th>Témoin</th>
+                                        <th>Intitulé</th>
+                                        <th>Valeur</th>
+                                        <th>Condition</th>
+                                        <th>enregistré le</th>
+                                        <th>Par</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead><!-- end table-head -->
+                                <tbody>
+                                    {% for garantie in garanties %}
+                                    <tr>
+                                        <td>
+                                            <h5 class="mb-1 d-flex align-items-center">{{garantie.temoin}}</h5>
+                                            <p class="text-muted mb-0 fs-xxs">{{garantie.contact}}</p>
+                                        </td>
+                                        <td>
+                                            <h5 class="mb-1 d-flex align-items-center">{{garantie.libelle}}</h5>
+                                        </td>
+                                        <td>{{garantie.montant}} Fcfa</td>
+                                        <td>{{garantie.condition}}</td>
+                                        <td>
+                                            {{garantie.created_at|date:"d/m/Y à H:i"}}
+                                        </td>
+                                        <td>{{garantie.employe}}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center justify-content-end gap-1">
+                                                <button class="btn btn-light btn-icon btn-sm rounded-circle" data-bs-toggle="modal" data-bs-target="#modal-edit-garantie-{{garantie.id}}"><i class="ti ti-edit fs-lg"></i></button>
+                                                <button class="btn btn-light btn-icon btn-sm rounded-circle" onclick="delete_password('Garantie','{{garantie.id}}')"><i
+                                                        class="ti ti-trash text-danger fs-lg"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+
+                                </tbody><!-- end table-body -->
+                            </table><!-- end table -->
+                        </div>
+                        <div class="card-footer border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div data-table-pagination-info="invoices"></div>
+
+                                <div data-table-pagination></div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+
+
                 {% if pret.status.etiquette != '0' %}
-                <ul class="nav nav-tabs nav-justified nav-bordered nav-bordered-primary mb-3">
+                <ul class="nav nav-tabs nav-justified nav-bordered nav-bordered-primary mb-2">
                     <li class="nav-item">
                         <a href="#garanties-b2" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
                             <i class="ti ti-file-invoice fs-lg me-md-1 align-middle"></i>
@@ -205,16 +288,22 @@
                             <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
                                 <thead class="bg-light align-middle bg-opacity-25 thead-sm">
                                     <tr class="text-uppercase fs-xxs">
+                                        <th>Témoin</th>
                                         <th>Intitulé</th>
                                         <th>Valeur</th>
                                         <th>Condition</th>
                                         <th>enregistré le</th>
                                         <th>Par</th>
+                                        <th class="text-end">Actions</th>
                                     </tr>
                                 </thead><!-- end table-head -->
                                 <tbody>
                                     {% for garantie in garanties %}
                                     <tr>
+                                        <td>
+                                            <h5 class="mb-1 d-flex align-items-center">{{garantie.temoin}}</h5>
+                                            <p class="text-muted mb-0 fs-xxs">{{garantie.contact}}</p>
+                                        </td>
                                         <td>
                                             <h5 class="mb-1 d-flex align-items-center">{{garantie.libelle}}</h5>
                                         </td>
@@ -224,6 +313,13 @@
                                             {{garantie.created_at|date:"d/m/Y à H:i"}}
                                         </td>
                                         <td>{{garantie.employe}}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center justify-content-end gap-1">
+                                                <button class="btn btn-light btn-icon btn-sm rounded-circle" data-bs-toggle="modal" data-bs-target="#modal-edit-garantie-{{garantie.id}}"><i class="ti ti-edit fs-lg"></i></button>
+                                                <button class="btn btn-light btn-icon btn-sm rounded-circle" onclick="delete_password('Garantie','{{garantie.id}}')"><i
+                                                        class="ti ti-trash text-danger fs-lg"></i></button>
+                                            </div>
+                                        </td>
                                     </tr>
                                     {% endfor %}
 
@@ -269,8 +365,10 @@
                                     <tr class="text-uppercase fs-xxs">
                                         <th>ID</th>
                                         <th>Status</th>
-                                        <th>Montant dû</th>
+                                        <th>Principal</th>
+                                        <th>Intérêt</th>
                                         <th>Pénalités</th>
+                                        <th>Montant dû</th>
                                         <th data-table-sort>Réglé</th>
                                         <th>date de reglement</th>
                                     </tr>
@@ -299,13 +397,15 @@
                                             <span
                                                 class="badge badge-label text-bg-{{echeance.status.classe}}">{{echeance.status}}</span>
                                         </td>
-                                        <td>{{echeance.montant_a_payer}} Fcfa</td>
+                                        <td>{{echeance.principal}} Fcfa</td>
+                                        <td>{{echeance.interet}} Fcfa</td>
                                         <td>
                                             {% if echeance.penalites.count > 0 %}
                                             {{echeance.penalites.count}} pénalités <br>
                                             <span class="text-danger fw-bold">{{echeance.penalites_montant}} Fcfa</span>
                                             {% endif %}
                                         </td>
+                                        <td>{{echeance.montant_a_payer}} Fcfa</td>
                                         <td>
                                             {% if echeance.montant_paye > 0 %}
                                             {{echeance.montant_paye}} Fcfa
@@ -509,7 +609,7 @@
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i
                                     class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
-                            <input type="text" class="form-control number" name="montant" id="userEmail" required>
+                            <input type="text" class="form-control number" name="montant" required>
                         </div>
                     </div>
 
@@ -566,12 +666,31 @@
                 <div class="modal-body">
                     <br />
                     <div class="mb-3">
+                        <label for="userEmail" class="form-label">Nom complet du témoin <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
+                            <input type="text" class="form-control" name="temoin" required>
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <label for="userEmail" class="form-label">Contact <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
+                            <input type="text" class="form-control" name="contact" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="userEmail" class="form-label">Intitulé <span
                                 class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i
                                     class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
-                            <input type="text" class="form-control" name="libelle" id="userEmail" required>
+                            <input type="text" class="form-control" name="libelle" required>
                         </div>
                     </div>
 
@@ -581,7 +700,7 @@
                          <div class="input-group">
                             <span class="input-group-text bg-light"><i
                                     class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
-                            <input type="text" class="form-control number" name="montant" id="userEmail" required>
+                            <input type="text" class="form-control number" name="montant" required>
                         </div>
                     </div>
 
@@ -608,6 +727,88 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+
+
+{% for garantie in garanties %}
+<div class="modal fade" id="modal-edit-garantie-{{garantie.id}}" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header modal-md bg-primary text-white">
+                <h2 class="modal-title" id="mySmallModalLabel"> Modifier la garantie</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" class="formShamman" classname="GarantieForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <br />
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Nom complet du témoin <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
+                            <input type="text" class="form-control" name="temoin" value="{{garantie.temoin}}" required>
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <label for="userEmail" class="form-label">Contact <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
+                            <input type="text" class="form-control" name="contact" value="{{garantie.contact}}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Intitulé <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
+                            <input type="text" class="form-control" name="libelle" value="{{garantie.libelle}}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword" class="form-label">Estimation de la valeur<span
+                                class="text-danger">*</span></label>
+                         <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-calendar-dollar text-muted fs-xl"></i></span>
+                            <input type="text" class="form-control number" name="montant" value="{{garantie.montant|stringformat:"s"}}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword2" class="form-label">Condition de saisie</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="ti ti-edit text-muted fs-xl"></i></span>
+                            <textarea class="form-control" name="condition" rows="4"
+                                placeholder="Condition de saisie">{{garantie.condition}}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="modal-footer d-flex justify-content-between">
+                    <input type="hidden" name="id" value="{{ garantie.id }}">
+                    <input type="hidden" name="pret" value="{{ pret.id }}">
+                    <input type="hidden" name="employe" value="{{ request.user.id }}">
+                    <button type="button" class="btn btn-default dim pull-left" data-bs-dismiss="modal">
+                        <i class="ti ti-close"></i> Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary dim pull-right"> <i class="ti ti-check"></i> Modifier
+                    </button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% endfor %}
+
+
 
 
 {% endblock %}

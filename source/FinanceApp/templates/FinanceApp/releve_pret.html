@@ -59,7 +59,7 @@
                                     <thead class="bg-light align-middle bg-opacity-25 thead-sm">
                                         <tr class="text-uppercase fs-xxs">
                                             <th class="text-start">Echéance</th>
-                                            <th>Base</th>
+                                            <th>Principal</th>
                                             <th>Pénalités</th>
                                             <th class="text-end">Total</th>
                                             <th class="text-end">Montant versé</th>
@@ -79,9 +79,7 @@
                                                 </td>
                                                 <td>{{echeance.montant_a_payer}} Fcfa</td>
                                                 <td>
-                                                    {% if echeance.penalites.count > 0 %}
                                                     <span class="text-danger fw-bold">({{echeance.penalites.count}}) {{echeance.penalites_montant}} Fcfa</span>
-                                                    {% endif %}
                                                 </td>
                                                 <td class="text-end">
                                                     {{echeance.total}} Fcfa</td>

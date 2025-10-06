@@ -1,9 +1,7 @@
 from django.shortcuts import render, redirect
 from annoying.decorators import render_to
 from django.contrib.auth.decorators import login_required
-from faker import Faker
-from datetime import date, timedelta
-from FinanceApp.models import CompteEpargne, Echeance, Interet, ModaliteEcheance, ModePayement, Penalite, Pret, StatusPret, Transaction, TypeTransaction
+from FinanceApp.models import*
 from MainApp.models import Client, Genre, TypeClient
 from django.db.models import Count, Sum, Case, When, DecimalField
 from django.utils.timezone import now
@@ -134,6 +132,7 @@ def client_view(request, pk):
             "prets": prets,
             "transactions": transactions,
             "modalites": ModaliteEcheance.objects.all(),
+            "amortissements": TypeAmortissement.objects.all(),
         }
         return ctx
     except Exception as e:

@@ -221,19 +221,23 @@
                                         <div class="d-flex justify-content-start align-items-center gap-2">
                                             <div class="avatar avatar-sm">
                                                 {% if transaction.type_transaction.etiquette == "1" %}
-                                                <a href="{% url 'FinanceApp:invoice' transaction.id %}" class="btn btn-light btn-icon btn-sm rounded-circle"><i
+                                                <a href="{% url 'FinanceApp:invoice' transaction.id %}"
+                                                    class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                                         class="ti ti-file-invoice fs-xxl text-success"></i></a>
                                                 {% elif transaction.type_transaction.etiquette == "2" %}
-                                                <a href="{% url 'FinanceApp:invoice' transaction.id %}" class="btn btn-light btn-icon btn-sm rounded-circle"><i
+                                                <a href="{% url 'FinanceApp:invoice' transaction.id %}"
+                                                    class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                                         class="ti ti-file-invoice fs-xxl text-danger"></i></a>
                                                 {% elif transaction.type_transaction.etiquette == "3" %}
-                                                <a href="{% url 'FinanceApp:invoice' transaction.id %}" class="btn btn-light btn-icon btn-sm rounded-circle"><i
+                                                <a href="{% url 'FinanceApp:invoice' transaction.id %}"
+                                                    class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                                         class="ti ti-file-invoice fs-xxl text-primary"></i></a>
                                                 {% endif %}
                                             </div>
                                             <div>
                                                 <h5 class="text-nowrap mb-0 lh-base fs-base"><a data-sort="name"
-                                                        href="{% url 'FinanceApp:invoice' transaction.id %}" class="link-reset">#{{transaction.numero}}</a></h5>
+                                                        href="{% url 'FinanceApp:invoice' transaction.id %}"
+                                                        class="link-reset">#{{transaction.numero}}</a></h5>
                                                 <p class="text-muted fs-xs mb-0">
                                                     {{transaction.created_at|date:"d/m/Y à H:i"}}</p>
                                             </div>
@@ -467,7 +471,7 @@
 
 <div class="modal fade" id="modal-new-pret" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h1 class="modal-title" id="mySmallModalLabel">Demande de prêt</h1>
@@ -488,12 +492,36 @@
                             </div>
                         </div>
                         <div class="col-sm-6">
+                            <label class="form-label">Type d'amortissement <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-settings text-muted fs-xl"></i></span>
+                                <select name="amortissement" class="form-select form-control my-1 my-md-0" required>
+                                    {% for amortissement in amortissements %}
+                                    <option value="{{ amortissement.id }}">{{ amortissement.libelle }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
                             <label class="form-label">Taux d'intéret <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i
                                         class="ti ti-percentage text-muted fs-xl"></i></span>
                                 <input type="text" class="form-control taux" name="taux" step="0.01" placeholder="2%"
                                     required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label">Taux de pénalité <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i
+                                        class="ti ti-percentage text-muted fs-xl"></i></span>
+                                <input type="text" class="form-control taux" name="taux_penalite" step="0.01"
+                                    placeholder="2%" required>
                             </div>
                         </div>
                     </div>
@@ -519,19 +547,6 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="row mb-3">
-                        <div class="col-sm-6">
-                            <label class="form-label">Taux de pénalité <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light"><i
-                                        class="ti ti-percentage text-muted fs-xl"></i></span>
-                                <input type="text" class="form-control taux" name="taux_penalite" step="0.01"
-                                    placeholder="2%" required>
                             </div>
                         </div>
                     </div>

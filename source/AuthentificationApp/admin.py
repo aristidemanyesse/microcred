@@ -13,3 +13,9 @@ class EmployeAdmin(admin.ModelAdmin):
 class RoleAdmin(admin.ModelAdmin):
     list_display = ('libelle',)
     search_fields = ('libelle',)
+    
+    
+@admin.register(Connexion)
+class ConnexionAdmin(admin.ModelAdmin):
+    list_display = ('employe', 'ip', 'user_agent')
+    search_fields = ('employe__id', 'employe__nom', 'employe__prenoms')

@@ -4,8 +4,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from faker import Faker
-from AuthentificationApp.models import Employe
-
+from AuthentificationApp.models import Connexion, Employe
+from django.contrib.auth.hashers import make_password
 
 
 def get_tokens_for_user(user):
@@ -31,14 +31,20 @@ def login_ajax(request):
                 
                 if employe.is_new:
                     request.session['user_id'] = str(employe.id)
-                    return JsonResponse({'status': True, "is_new": employe.is_new, "id": employe.id})
+                    return JsonResponse({'status': True, "is_new": employe.is_new, "id": employe.id, "secret": employe.secret, "phrase_secrete": employe.phrase_secrete})
                 
                 else:
                     login(request, employe)
                     tokens = get_tokens_for_user(employe)
                     request.session['access_token'] = tokens['access']
                     request.session.employe = employe
-                    return JsonResponse({'status': True, "is_new": employe.is_new})
+                    
+                    Connexion.objects.create(
+                        employe    = employe,
+                        ip         = request.META.get('REMOTE_ADDR'),
+                        user_agent = request.META.get('HTTP_USER_AGENT'),
+                    )
+                    return JsonResponse({'status': True })
                 
             else:
                 return JsonResponse({'status': False, 'message': "Nom d'utilisateur ou mot de passe incorrect"})
@@ -59,6 +65,9 @@ def first_user(request):
         password  = request.POST.get("password1")
         password1 = request.POST.get("password2")
         
+        pharse_secrete = request.POST.get("phrase_secrete")
+        reponse_secrete = request.POST.get("reponse_secrete")
+        
         if password == "" or username == "":
             return JsonResponse({'status': False, 'message': "Le mot de passe et l'identifiant ne peuvent pas être vides"})
         elif password != password1:
@@ -71,12 +80,44 @@ def first_user(request):
                 return JsonResponse({'status': False, 'message': "Cet identifiant est déjà utilisé"})
             else:
                 user = Employe.objects.filter(id = user_id).first()
-                user.username = username
-                user.set_password(password)
-                user.is_new = False
-                user.save()
-                login(request, user)
-                return JsonResponse({'status': True})
+                if user is not None:
+                    if not user.secret:
+                        user.username = username
+                        user.set_password(password)
+                        user.phrase_secrete = pharse_secrete
+                        user.reponse_secrete = make_password(reponse_secrete, salt=user.phrase_secrete)
+                        user.is_new = False
+                        user.secret = True
+                        user.save()
+                        
+                        login(request, user)
+                        Connexion.objects.create(
+                            employe    = user,
+                            ip         = request.META.get('REMOTE_ADDR'),
+                            user_agent = request.META.get('HTTP_USER_AGENT'),
+                        )
+                        return JsonResponse({'status': True })
+                        
+                    else:
+                        if user.reponse_secrete == make_password(reponse_secrete, salt=user.phrase_secrete):
+                            user.username = username
+                            user.set_password(password)
+                            user.is_new = False
+                            user.save()
+                            
+                            login(request, user)
+                            Connexion.objects.create(
+                                employe    = user,
+                                ip         = request.META.get('REMOTE_ADDR'),
+                                user_agent = request.META.get('HTTP_USER_AGENT'),
+                            )
+                            return JsonResponse({'status': True })
+                        
+                        else:
+                            return JsonResponse({'status': False, 'message': "La réponse à la question est incorrecte"})
+                    
+                
+                return  JsonResponse({'status': False, 'message': "L'identifiant ou le mot de passe est incorrect"})
     
     return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
 
