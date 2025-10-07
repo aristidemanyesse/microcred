@@ -98,6 +98,18 @@
             </li>
             {% endif %}
 
+
+            {% if request.user.is_chef %}
+            <li class="side-nav-title text-warning" data-lang="apps-title">Trésorerie</li>
+            <li class="side-nav-item">
+                <a href="{% url 'TresorApp:rapports' %}" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-chart-dots"></i></span>
+                    <span class="menu-text" data-lang="landing-page">Comptes & Stats</span>
+                </a>
+            </li>
+            {% endif %}
+
+
             {% if not request.user.is_employe %}
             <li class="side-nav-title text-warning" data-lang="apps-title">Administration</li>
 
@@ -121,13 +133,6 @@
                         </li>
                     </ul>
                 </div>
-            </li>
-
-            <li class="side-nav-item">
-                <a href="{% url 'TresorApp:rapports' %}" class="side-nav-link">
-                    <span class="menu-icon"><i class="ti ti-chart-dots"></i></span>
-                    <span class="menu-text" data-lang="landing-page">Rapports Stats</span>
-                </a>
             </li>
 
             <li class="side-nav-item">

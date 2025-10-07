@@ -45,8 +45,212 @@
 
     </div><!-- end row -->
 
-    <div class="col-xxl-12">
-        <div data-table data-table-rows-per-page="20" class="card">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header card-tabs d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h4 class="card-title">Statistiques des opérations du {{start}} au {{end}}</h4>
+                    </div>
+                    <div class="position-relative" style="min-width: 300px;">
+                        <div >
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="ti ti-calendar text-muted fs-xl"></i></span>
+                                <input type="text" class="form-control" name="dates" value="{{start|date:"d/m/Y"}} - {{end|date:"d/m/Y"}}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row g-0">
+                        <div class="col-xxl-8 border-end border-dashed">
+                            <div id="orders-chart" style="min-height: 405px;"></div>
+                        </div><!-- end col -->
+                        <div class="col-xxl-4">
+                            {% if penalites|length > 0 %}
+                            <div
+                                class="alert alert-warning alert-bordered border-start border-warning d-flex align-items-start gap-2">
+                                <i class="ti ti-info-circle fs-xxl"></i>
+                                <div><code>{{penalites|length}} pénalités</code> ont été générées aujourd'hui. </div>
+                            </div>
+                            {% endif %}
+                            <div class="row row-cols-1 g-1 p-1">
+                                <!-- Total Sales Widget -->
+                                <div class="col">
+                                    <div class="card rounded-0 border border-dashed mb-0">
+                                        <div class="card-body">
+                                            <div class="mb-3 d-flex justify-content-between align-items-center">
+                                                <h5 class="fs-xl mb-0">{{remboursements_montant|floatformat:2}}
+                                                    <small>Fcfa</small></h5>
+                                            </div>
+                                            <p class="text-muted mb-2"><span>remboursés</span></p>
+                                            <div class="progress progress-sm mb-0">
+                                                <div class="progress-bar bg-secondary" role="progressbar"
+                                                    style="width: 18.45%" aria-valuenow="18.45" aria-valuemin="0"
+                                                    aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- end col -->
+
+                                <!-- Number of Customers Widget -->
+                                <div class="col">
+                                    <div class="card rounded-0 border border-dashed mb-0">
+                                        <div class="card-body">
+                                            <div class="mb-3 d-flex justify-content-between align-items-center">
+                                                <h5 class="fs-xl mb-0">{{echeances_montant|floatformat:2}}
+                                                    <small>Fcfa</small></h5>
+                                                <span>{{echeances_count}}</span>
+                                            </div>
+                                            <p class="text-muted mb-2"><span>Retards d'échéances</span></p>
+                                            <div class="progress progress-sm mb-0">
+                                                <div class="progress-bar bg-secondary" role="progressbar"
+                                                    style="width: 10.35%" aria-valuenow="10.35" aria-valuemin="0"
+                                                    aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- end col -->
+
+                                <!-- Average Order Value Widget -->
+                                <div class="col">
+                                    <div class="card rounded-0 border border-dashed mb-0">
+                                        <div class="card-body">
+                                            <div class="mb-3 d-flex justify-content-between align-items-center">
+                                                <h5 class="fs-xl mb-0">{{penalites_montant|floatformat:2}}
+                                                    <small>Fcfa</small></h5>
+                                                </h5>
+                                                <span>{{penalites_count}}</span>
+                                            </div>
+                                            <p class="text-muted mb-2"><span>Pénalités ce mois</span></p>
+                                            <div class="progress progress-sm mb-0">
+                                                <div class="progress-bar bg-secondary" role="progressbar"
+                                                    style="width: 5.92%" aria-valuenow="5.92" aria-valuemin="0"
+                                                    aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- end col -->
+
+                            </div><!-- end row -->
+
+                        </div> <!-- end col-->
+                    </div> <!-- end row-->
+                </div> <!-- end card-body-->
+            </div> <!-- end card-->
+        </div> <!-- end col-->
+    </div> <!-- end row-->
+
+    <div class="row">
+        <div class="col-xxl-4">
+            <div class="card">
+                <div class="card-header justify-content-between align-items-center">
+                    <h5 class="card-title">Bilan des comptes sur cette période</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-custom table-nowrap table-hover table-centered mb-0">
+                            <thead class="bg-light bg-opacity-25 thead-sm">
+                                <tr class="text-uppercase fs-xxs">
+                                    <th class="text-muted">Compte</th>
+                                    <th class="text-muted text-end">Dépots</th>
+                                    <th class="text-muted text-end">Retraits</th>
+                                    <th class="text-muted text-end">Résultats</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for compte in comptes__ %}
+                                <tr>
+                                    <td>
+                                        <h5 class="fs-sm fw-bold">{{compte.libelle}}</h5>
+                                    </td>
+                                    <td class="text-end">{{compte.depots|floatformat:2}} <small>Fcfa</small></td>
+                                    <td class="text-end">{{compte.retraits|floatformat:2}} <small>Fcfa</small></td>
+                                    <td class="text-end">{{compte.solde|floatformat:2}} <small>Fcfa</small></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div> <!-- end table-responsive-->
+                </div> <!-- end card-body-->
+            </div> <!-- end card-->
+
+
+            <div class="card">
+                <div class="card-header justify-content-between align-items-center">
+                    <h5 class="card-title">Statistiques des prêts</h5>
+                </div>
+                <div class="card-body">
+                    <div>
+                        <div class="d-flex justify-content-between">
+                            <h5 class="fs-base mb-2">Nouveaux prêts</h5>
+                            <div>
+                                <span>{{new_comptes_pret}} prêts</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="fs-base mb-2">Total des récouvrements</h5>
+                            <div>
+                                <span>{{total_recouvrements}} Fcfa</span>
+                                <span><i class="ti ti-circle-filled text-light mx-3 fs-10"></i> {{total_recouvrements_attempts}} Fcfa</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="fs-base mb-2">Bénéfices générés</h5>
+                            <div>
+                                <span>{{total_beneficies_pret}} Fcfa</span>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- end card-body-->
+            </div> <!-- end card-->
+
+
+            <div class="card">
+                <div class="card-header justify-content-between align-items-center">
+                    <h5 class="card-title">Statistiques des épargnes</h5>
+                </div>
+                <div class="card-body">
+                    <div>
+                        <div class="d-flex justify-content-between">
+                            <h5 class="fs-base mb-2">Nouveaux prêts</h5>
+                            <div>
+                                <span>{{new_comptes_epargnes}} comptes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="fs-base mb-2">Total des mouvements</h5>
+                            <div>
+                                <span class="text-success">{{total_depots}} Fcfa</span>
+                                <span><i class="ti ti-circle-filled text-light mx-3 fs-10"></i> <span class="text-danger">{{total_retraits}} Fcfa</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="fs-base mb-2">Interêts générés</h5>
+                            <div>
+                                <span>{{total_interets}} Fcfa</span>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- end card-body-->
+            </div> <!-- end card-->
+
+        </div> <!-- end col-->
+
+        <div class="col-xxl-8 col-xl-6">
+           <div data-table data-table-rows-per-page="20" class="card">
             <div class="card-header border-light justify-content-between">
                 <div class="d-flex gap-2">
                     <div class="app-search">
@@ -153,9 +357,15 @@
                 </div>
             </div>
         </div>
-    </div><!-- end col -->
+        </div> <!-- end col-->
+    </div><!-- end row-->
 
 </div>
+
+
+
+
+
 
 <div class="modal fade" id="modal-add-compte" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
     aria-hidden="true">
@@ -268,4 +478,44 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+{% endblock %}
+
+
+
+{% block scripts %}
+<script>
+    $('input[name="dates"]').daterangepicker({
+        singleDatePicker: false,
+        showDropdowns: true,
+        locale: {
+            format : 'DD/MM/YYYY',
+            separator: ' <---> ',
+            applyLabel: 'Rechercher',
+            cancelLabel: 'Annuler',
+            customRangeLabel: 'Choisir les dates',
+            linkedCalendars: false,
+            weekLabel: 'Sem.',
+            daysOfWeek: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+            monthNames: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+            firstDay: 1
+        },
+        ranges: {
+            'Hier': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Aujourd\'hui': [moment(), moment()],
+            'La semaine dernière': [moment().subtract(1, 'week').startOf('week'), moment().subtract(1, 'week').endOf('week')],
+            'Ce mois-ci': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+            'Le mois dernier': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+            'L\'année dernière': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')], 
+            'Cette année': [moment().startOf('year'), moment().endOf('year')],
+        },
+        startDate: '{{start}}',
+        endDate: '{{end}}',
+    }, 
+    function(start, end, label) {
+        var startDate = start.format('YYYY-MM-DD');
+        var endDate = end.format('YYYY-MM-DD');
+        window.location.href = "/tresorerie/rapports/" + startDate + "/" + endDate + "/";
+    }
+  );
+</script>
 {% endblock %}

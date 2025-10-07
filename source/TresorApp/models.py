@@ -16,14 +16,20 @@ class CompteAgence(BaseModel):
         return str(self.libelle)
     
 
-    def total_depots(self):
-        return Operation.objects.filter(compte_credit=self).aggregate(total=models.Sum('montant'))['total'] or 0
+    def total_depots(self, start=None, end=None):
+        qs = Operation.objects.filter(compte_credit=self)
+        if start and end:
+            qs = qs.filter(created_at__range = [start, end])
+        return qs.aggregate(total=models.Sum('montant'))['total'] or 0
     
-    def total_retraits(self):
-        return Operation.objects.filter(compte_debit=self).aggregate(total=models.Sum('montant'))['total'] or 0
+    def total_retraits(self, start=None, end=None):
+        qs = Operation.objects.filter(compte_debit=self)
+        if start and end:
+            qs = qs.filter(created_at__range = [start, end])
+        return qs.aggregate(total=models.Sum('montant'))['total'] or 0
     
-    def solde(self):
-        return self.total_depots() + self.base - self.total_retraits()
+    def solde(self, start=None, end=None):
+        return self.total_depots(start, end) + self.base - self.total_retraits(start, end)
 
 
 
@@ -48,7 +54,7 @@ class Operation(BaseModel):
 def sighandler(instance, created, **kwargs):
     if created:
         principal = not CompteAgence.objects.filter(agence=instance, principal = True).exists()
-        libelle = f"Compte principal de {instance.libelle}" if principal else instance.libelle
+        libelle = f"Compte principal" if principal else instance.libelle
         CompteAgence.objects.create(agence=instance, principal = principal, libelle=libelle)
 
 
