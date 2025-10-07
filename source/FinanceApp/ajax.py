@@ -122,31 +122,45 @@ def stats_finance(request):
 
     # Récupération groupée
     qs = (Transaction.objects
-          .filter(created_at__gte=start_date, created_at__lte=today + timedelta(days=1))
-          .annotate(month=TruncMonth("created_at"))
-          .values("month")
-          .annotate(
-              depots=Sum(
-                  Case(
-                      When(type_transaction__etiquette=TypeTransaction.DEPOT, then="montant"),
-                      default=0,
-                      output_field=DecimalField(),
-                  )
-              ),
-              retraits=Sum(
-                  Case(
-                      When(type_transaction__etiquette=TypeTransaction.RETRAIT, then="montant"),
-                      default=0,
-                      output_field=DecimalField(),
-                  )
-              ),
-              remboursements=Sum(
-                  Case(
-                      When(type_transaction__etiquette=TypeTransaction.REMBOURSEMENT, then="montant"),
-                      default=0,
-                      output_field=DecimalField(),
-                  )
-              ),
+            .filter(created_at__gte=start_date, created_at__lte=today + timedelta(days=1))
+            .annotate(month=TruncMonth("created_at"))
+            .values("month")
+            .annotate(
+                depots=Sum(
+                    Case(
+                        When(type_transaction__etiquette=TypeTransaction.DEPOT, then="montant"),
+                        default=0,
+                        output_field=DecimalField(),
+                    )
+                ),
+                retraits=Sum(
+                    Case(
+                        When(type_transaction__etiquette=TypeTransaction.RETRAIT, then="montant"),
+                        default=0,
+                        output_field=DecimalField(),
+                    )
+                ),
+                remboursements=Sum(
+                    Case(
+                        When(type_transaction__etiquette=TypeTransaction.REMBOURSEMENT, then="montant"),
+                        default=0,
+                        output_field=DecimalField(),
+                    )
+                ),
+                depot_fidelis=Sum(
+                    Case(
+                        When(type_transaction__etiquette=TypeTransaction.DEPOT_FIDELIS, then="montant"),
+                        default=0,
+                        output_field=DecimalField(),
+                    )
+                ),
+                retrait_fidelis=Sum(
+                    Case(
+                        When(type_transaction__etiquette=TypeTransaction.RETRAIT_FIDELIS, then="montant"),
+                        default=0,
+                        output_field=DecimalField(),
+                    )
+                ),
           )
           .order_by("month")
     )
@@ -167,6 +181,8 @@ def stats_finance(request):
             "depots": float(row["depots"] if row else 0),
             "retraits": float(row["retraits"] if row else 0),
             "remboursements": float(row["remboursements"] if row else 0),
+            "depot_fidelis": float(row["depot_fidelis"] if row else 0), 
+            "retrait_fidelis": float(row["retrait_fidelis"] if row else 0),
         })
 
     return JsonResponse(results, safe=False)

@@ -19,18 +19,20 @@ class CompteAgence(BaseModel):
     def total_depots(self, start=None, end=None):
         qs = Operation.objects.filter(compte_credit=self)
         if start and end:
-            qs = qs.filter(created_at__range = [start, end])
+            qs = qs.filter(created_at__date__range = [start, end])
         return qs.aggregate(total=models.Sum('montant'))['total'] or 0
     
     def total_retraits(self, start=None, end=None):
         qs = Operation.objects.filter(compte_debit=self)
         if start and end:
-            qs = qs.filter(created_at__range = [start, end])
+            qs = qs.filter(created_at__date__range = [start, end])
         return qs.aggregate(total=models.Sum('montant'))['total'] or 0
     
     def solde(self, start=None, end=None):
-        return self.total_depots(start, end) + self.base - self.total_retraits(start, end)
-
+        total = self.total_depots(start, end) - self.total_retraits(start, end)
+        if start and start > self.created_at.date():
+            return total
+        return total + self.base
 
 
 class Operation(BaseModel):

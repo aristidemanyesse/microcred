@@ -102,8 +102,10 @@ def rapports_view(request, start=None, end=None):
     total_recouvrements = transactions.aggregate(total=Sum('montant'))['total'] or 0
     total_recouvrements_attempts = Echeance.objects.filter(date_echeance__range = [start, end]).exclude(status__etiquette = StatusPret.ANNULEE).aggregate(total=Sum('montant_a_payer'))['total'] or 0
     total_beneficies_pret = 0
+    total_penalites = 0
     for echeance in Echeance.objects.filter(id__in = transactions.values_list('echeance_id', flat=True)):
         total_beneficies_pret += echeance.interet if echeance.montant_paye > echeance.interet else echeance.montant_paye
+        total_penalites += echeance.penalites_montant()
         
         
     new_comptes_epargnes = CompteEpargne.objects.filter(created_at__date__range = [start, end]).count()
@@ -128,6 +130,8 @@ def rapports_view(request, start=None, end=None):
         "total_recouvrements": total_recouvrements,
         "total_recouvrements_attempts": total_recouvrements_attempts,
         "total_beneficies_pret" : total_beneficies_pret,
+        "total_penalites" : total_penalites,
+        "total_beneficies_net" : total_beneficies_pret + total_penalites,
         
         "new_comptes_epargnes": new_comptes_epargnes,
         "total_depots": total_depots,
@@ -137,7 +141,7 @@ def rapports_view(request, start=None, end=None):
         "new_comptes_fidelis": new_comptes_fidelis,
         "total_depots_fidelis": total_depots_fidelis,
         "total_retraits_fidelis": total_retraits_fidelis,
-        "total_beneficies_fidelis": total_benefices_fidelis,
+        "total_benefices_fidelis": total_benefices_fidelis,
         
         "start": start.strftime("%d/%m/%Y"),
         "end": end.strftime("%d/%m/%Y"),
