@@ -423,7 +423,6 @@ def releve_epargne(request, pk):
                     "avoir": round(base, 2),
                     "created_at" : item.created_at,
                 })
-            print(base)
         
         ctx = {
             'TITLE_PAGE' : "Réçu de transaction",

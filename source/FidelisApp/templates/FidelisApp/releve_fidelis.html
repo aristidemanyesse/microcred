@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load static %}
+{% load mathfilters %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="page-title-head d-flex align-items-center">
+        <div class="flex-grow-1">
+            <h4 class="fs-sm text-uppercase fw-bold m-0">{{TITLE_PAGE}}</h4>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-xxl-12">
+            <div class="row">
+                <div class="col-xl-9">
+                    <div class="card">
+                        <div class="card-body px-4">
+                            <!-- Invoice Header -->
+                            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-3">
+                                <div class="auth-brand mb-0">
+                                    <a href="#" class="logo-dark">
+                                        <img src="{% static 'dist/images/site/logo.jpeg' %}" alt="dark logo"
+                                            height="55">
+                                    </a>
+                                    <a href="#" class="logo-light">
+                                        <img src="{% static 'dist/images/site/logo.jpeg' %}" alt="logo" height="55">
+                                    </a>
+                                </div>
+                                <div class="text-end">
+                                    <h3 class="fw-bold text-dark m-0 text-uppercase">Relévé de compte</h3>
+                                    {% comment %} <p class="text-muted mb-0 fs-sm mb-2"> du
+                                        {{debut|date:"d M Y"}} au {{fin|date:"d M Y"}}</p> {% endcomment %}
+                                </div>
+                            </div>
+
+                            <!-- Invoice Info -->
+                            <div class="row">
+                                <!-- From -->
+                                <div class="col-6">
+                                    <p class="mb-1 fw-semibold">FIDELIS N°{{compte.numero}}</p>
+                                    <p class="text-muted mb-1 text-lowercase">{{compte.base}} * {{compte.nombre}} fois</p>   
+                                    <p class="text-muted mb-1">créé le {{compte.created_at|date:"d M Y à H:i:s"}}</p>
+                                    <p class="text-muted mb-0">Gestionnaire : {{compte.employe}}</p>
+                                </div>
+
+                                <!-- To -->
+                                <div class="col-6">
+                                    <p class="mb-1 fw-semibold">{{compte.client}}</p>
+                                    <p class="text-muted mb-1">{{compte.client.type_client}}</p>
+                                    <p class="text-muted mb-0">{{compte.client.adresse}}</p>
+                                </div>
+                            </div>
+
+                            <!-- Product Table -->
+                            <div class="table-responsive mt-4">
+                                <table class="table table-bordered table-nowrap text-center align-middle">
+                                    <thead class="bg-light align-middle bg-opacity-25 thead-sm">
+                                        <tr class="text-uppercase fs-xxs">
+                                            <th class="text-start">Echéance</th>
+                                            <th>Montant</th>
+                                            <th class="text-end">Nouvel avoir</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="fs-xs">
+                                        {% for item in datas %}
+                                            <tr>
+                                                <td class="text-start">
+                                                    <div class="d-flex ">
+                                                        <div>
+                                                            <strong>{{item.title}}</strong>
+                                                            <div class="text-muted small">{{item.created_at|date:"d/m/Y à H:i:s"}}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>{{item.montant}} Fcfa</td>
+                                                <td class="text-end">{{item.avoir}} Fcfa</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Summary Table -->
+                            <div class="d-flex justify-content-end">
+                                <table class="table w-auto table-borderless text-end">
+                                    <tbody>
+                                        <tr>
+                                            <td class="fw-medium">Dépots</td>
+                                            <td>{{compte.solde|floatformat:2}} Fcfa</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-medium text-danger">Frais de compte</td>
+                                            <td class="text-danger">{{compte.frais|floatformat:2}} Fcfa</td>
+                                        </tr>
+                                        <tr class="border-top pt-2 fs-5 fw-bold">
+                                            <td class="fw-medium">Solde de compte</td>
+                                            <td class="fs-xxl fw-bold">{{compte.solde|sub:compte.frais|floatformat:2}} Fcfa</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Note -->
+                            <div class="mt-lg-4 mt-2 bg-light bg-opacity-50 rounded px-3 py-2">
+                                <p class="mb-0 text-muted"><strong>Important:</strong> Pour toute question, contactez le support par
+                                    email à <a href="mailto:support@assana-services.com"
+                                        class="fw-medium">support@assana-services.com</a> ou par téléphone au 06 12 34
+                                    56 78.</p>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="d-flex mt-4  justify-content-end">
+                                <div class="mt-4 ">
+                                    <p class="fw-semibold mb-0 ">Fait à Abidjan, Côte d'Ivoire</p>
+                                    <p class="text-muted mb-0 text-center fs-xxs fst-italic">imprimé le
+                                        {{now|date:"d/m/Y à H:i:s"}}</p>
+                                    <p class="text-muted text-center fs-xxs fst-italic">par {{request.user}}</p>
+                                    <!-- <h4 class="fst-italic">WebAppLayers</h4> -->
+                                    <div style="height:50px"></div>
+                                    <p class="text-muted text-center fs-xxs fst-italic">Signature autorisée</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> <!-- end card-->
+                </div> <!-- end col-9-->
+
+                <div class="col-xl-3 d-print-none">
+                    <div class="card card-top-sticky">
+                        <div class="card-body">
+                            <div class="justify-content-center d-flex flex-column gap-2">
+                                <a href="javascript:window.print()" class="btn btn-warning"><i
+                                        class="ti ti-printer me-1"></i> Imprimer / Télécharger</a>
+                            </div>
+                        </div> <!-- end card-body-->
+                    </div> <!-- end card-->
+                </div> <!-- end col-9-->
+            </div> <!-- end row-->
+        </div> <!-- end col-10-->
+    </div> <!-- end row-->
+
+</div>
+{% endblock %}

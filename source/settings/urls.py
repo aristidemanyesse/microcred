@@ -29,5 +29,6 @@ urlpatterns = [
     path('', include('MainApp.urls')),
     path('finances/', include('FinanceApp.urls')),
     path('tresorerie/', include('TresorApp.urls')),
+    path('fidelis/', include('FidelisApp.urls')),
     path('', include('CoreApp.urls')),
 ]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

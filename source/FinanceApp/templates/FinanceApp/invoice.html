@@ -68,6 +68,18 @@
                                 </div>
                                 {% endif %}
 
+                                {% if transaction.fidelis %}
+                                <div class="col-7">
+                                    <h4 class="text-uppercase mb-0">{{transaction.fidelis.client}}</h4>
+                                    <p class="text-muted mb-0">{{transaction.fidelis.client.type_client}}</p>
+                                    <p class="text-muted mb-2">{{transaction.fidelis.client.adresse}}</p>
+
+                                    <p class="mt-4 mb-0 fw-semibold">Fidelis N°{{transaction.fidelis.numero}}</p>
+                                    <p class="text-muted mb-1">ouvert le {{transaction.fidelis.created_at|date:"d/m/Y"}}
+                                    </p>
+                                </div>
+                                {% endif %}
+
                                 <!-- To -->
                                 <div class="col-4">
                                     <h6 class="text-uppercase mb-2">Autres informations</h6>
@@ -128,6 +140,35 @@
                                                     {{transaction.montant|floatformat:2}} Fcfa</td>
                                             </tr>
                                         {% elif transaction.type_transaction.etiquette == "2" %}
+                                            <tr>
+                                                <td class="fw-bold">Montant retiré</td>
+                                                <td class="fw-bold fs-xxl text-danger">
+                                                    {{transaction.montant|floatformat:2}} Fcfa</td>
+                                            </tr>
+                                        {% endif %}
+                                        <tr class="border-top pt-2 fs-5 fw-bold">
+                                            <td>Nouvel avoir</td>
+                                            <td class="text-muted fs-xxs fst-italic">veuillez consulter votre relévé de compte</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                {% endif %}
+
+
+                                {% if transaction.fidelis %}
+                                <table class="table w-auto table-borderless text-end">
+                                    <tbody>
+                                        <tr>
+                                            <td class="fw-medium">Avoir précédent</td>
+                                            <td class="text-muted fs-xxs fst-italic">veuillez consulter votre relévé de compte</td>
+                                        </tr>
+                                        {% if transaction.type_transaction.etiquette == "4" %}
+                                            <tr>
+                                                <td class="fw-bold">Montant versé</td>
+                                                <td class="fw-bold fs-xxl text-success">
+                                                    {{transaction.montant|floatformat:2}} Fcfa</td>
+                                            </tr>
+                                        {% elif transaction.type_transaction.etiquette == "5" %}
                                             <tr>
                                                 <td class="fw-bold">Montant retiré</td>
                                                 <td class="fw-bold fs-xxl text-danger">

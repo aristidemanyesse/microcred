@@ -92,4 +92,13 @@ class GenerateTools:
             new_id = GenerateTools.increment_code(item.numero.split("-")[-1] if item else "")
             return f"TRS-{agence.code}-{new_id}"
             
+        
+    @staticmethod
+    def fidelisId(agence):
+        from FidelisApp.models import CompteFidelis
+        with transaction.atomic():
+            item = CompteFidelis.objects.filter().order_by("created_at").last()
+            new_id = GenerateTools.increment_code(item.numero.split("-")[-1] if item else "")
+            return f"FDS-{agence.code}-{new_id}"
+            
  

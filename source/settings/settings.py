@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     
     "AuthentificationApp",
     "FinanceApp",
+    "FidelisApp",
     "TresorApp",
     "MainApp",
     "StatsApp",

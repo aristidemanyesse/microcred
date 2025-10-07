@@ -8,6 +8,7 @@ from datetime import date, timedelta
 import calendar
 from TresorApp.models import Operation
 
+
 # Create your models here.
 
 
@@ -184,6 +185,8 @@ class TypeTransaction(BaseModel):
     DEPOT = "1"
     RETRAIT = "2"
     REMBOURSEMENT = "3"
+    DEPOT_FIDELIS = "4"
+    RETRAIT_FIDELIS = "5"
     libelle = models.CharField(max_length=50)  # Dépôt / Retrait
     etiquette = models.CharField(max_length=50)
 
@@ -441,6 +444,7 @@ class Transaction(BaseModel):
     client           = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='transactions')
     compte           = models.ForeignKey(CompteEpargne, null=True, blank=True, on_delete=models.CASCADE, related_name='transactions')
     echeance         = models.ForeignKey(Echeance, null=True, blank=True, on_delete=models.CASCADE, related_name='transactions')
+    fidelis          = models.ForeignKey("FidelisApp.CompteFidelis", null=True, blank=True, on_delete=models.CASCADE, related_name='transactions')
     mode             = models.ForeignKey(ModePayement, null=True, blank=True, on_delete=models.CASCADE)
     type_transaction = models.ForeignKey(TypeTransaction, on_delete=models.CASCADE)
     montant          = models.DecimalField(max_digits=12, decimal_places=2)
@@ -460,15 +464,15 @@ class Transaction(BaseModel):
 def sighandler(instance, **kwargs):
     if instance._state.adding:
         instance.status = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
-        instance.numero = GenerateTools.epargneId(instance.client.agence)
+        instance.numero = GenerateTools.epargneId(instance.employe.agence)
 
 
 @signals.pre_save(sender=Transaction)
 def sighandler(instance, **kwargs):
     if instance._state.adding:
-        code = instance.compte.client.agence if instance.compte else (instance.echeance.pret.client.agence if instance.echeance else None)
+        code = instance.employe.agence
         instance.numero = GenerateTools.transactionId(code)
-
+ 
 
 
 @signals.post_save(sender=Transaction)
@@ -477,8 +481,8 @@ def sighandler(instance, created, **kwargs):
         compte = instance.employe.agence.comptes.filter(principal=True).first()
         Operation.objects.create(
             libelle       = instance.type_transaction,
-            compte_credit = compte if instance.type_transaction.etiquette != TypeTransaction.RETRAIT else None,
-            compte_debit  = compte if instance.type_transaction.etiquette == TypeTransaction.RETRAIT else None,
+            compte_credit = compte if instance.type_transaction.etiquette in [TypeTransaction.DEPOT, TypeTransaction.DEPOT_FIDELIS, TypeTransaction.REMBOURSEMENT] else None,
+            compte_debit  = compte if instance.type_transaction.etiquette in [TypeTransaction.RETRAIT, TypeTransaction.RETRAIT_FIDELIS] else None,
             montant       = instance.montant,
             employe       = instance.employe,
             transaction   = instance,

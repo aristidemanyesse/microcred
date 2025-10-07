@@ -82,8 +82,15 @@
             </li>
             {% endif %}
 
+            
             {% if request.user.is_gestionnaire_epargne or request.user.is_chef  %}
-            <li class="side-nav-title text-warning" data-lang="menu-title">Gestion des épargnes</li>
+            <li class="side-nav-title text-warning" data-lang="menu-title">Fidelis & épargnes</li>
+            <li class="side-nav-item">
+                <a href="{% url 'FidelisApp:comptes' %}" class="side-nav-link">
+                    <span class="menu-icon"><i class="ti ti-chart-dots"></i></span>
+                    <span class="menu-text" data-lang="landing-page">Comptes Fidelis</span>
+                </a>
+            </li>
             <li class="side-nav-item">
                 <a href="{% url 'FinanceApp:epargnes' %}" class="side-nav-link">
                     <span class="menu-icon"><i class="ti ti-coins"></i></span>
@@ -124,6 +131,11 @@
                         <li class="side-nav-item">
                             <a href="{% url 'FinanceApp:archivage_prets' %}" class="side-nav-link">
                                 <span class="menu-text" data-lang="dashboard-one">Prets</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="{% url 'FidelisApp:archivage' %}" class="side-nav-link">
+                                <span class="menu-text" data-lang="dashboard-two">Comptes fidelis</span>
                             </a>
                         </li>
                         <li class="side-nav-item">

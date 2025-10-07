@@ -214,6 +214,42 @@
 
             <div class="card">
                 <div class="card-header justify-content-between align-items-center">
+                    <h5 class="card-title">Statistiques Fidelis</h5>
+                </div>
+                <div class="card-body">
+                    <div>
+                        <div class="d-flex justify-content-between">
+                            <h5 class="fs-base mb-2">Nouveaux comptes</h5>
+                            <div>
+                                <span>{{new_comptes_fidelis}} comptes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="fs-base mb-2">Total des mouvements</h5>
+                            <div>
+                                <span class="text-success">{{total_depots_fidelis}} Fcfa</span>
+                                <span><i class="ti ti-circle-filled text-light mx-3 fs-10"></i> <span class="text-danger">{{total_retraits_fidelis}} Fcfa</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="fs-base mb-2">Interêts générés</h5>
+                            <div>
+                                <span>{{total_interets_fidelis}} Fcfa</span>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- end card-body-->
+            </div> <!-- end card-->
+
+
+            <div class="card">
+                <div class="card-header justify-content-between align-items-center">
                     <h5 class="card-title">Statistiques des épargnes</h5>
                 </div>
                 <div class="card-body">
@@ -339,7 +375,7 @@
                             <td>{{operation.employe}}</td>
                             <td class="text-center">
                                 {% if operation.transaction %}
-                                <a href="{% url 'FinanceApp:pret' operation.transaction.id %}"
+                                <a href="{% url 'FinanceApp:invoice' operation.transaction.id %}"
                                     class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                         class="ti ti-eye fs-lg"></i></a>
                                 {% endif %}
@@ -518,4 +554,11 @@
     }
   );
 </script>
+
+<script>
+    {% include 'TresorApp/rapports.js' %}
+</script>
 {% endblock %}
+
+
+

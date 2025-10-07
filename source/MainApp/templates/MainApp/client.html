@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-
+{% load mathfilters %}
 {% block content %}
 
 <div class="container-fluid">
@@ -33,11 +33,15 @@
                         <div class="d-flex gap-2">
                             {% if request.user.is_chef or request.user.is_gestionnaire_pret %}
                             <button data-bs-toggle="modal" data-bs-target="#modal-new-pret" class="btn btn-primary"><i
-                                    class="ti ti-calendar-dollar fs-lg"></i> Demander un prêt</button>
+                                    class="ti ti-calendar-dollar fs-lg me-2"></i> Demander un prêt</button>
+                            {% endif %}
+                            {% if request.user.is_chef or request.user.is_gestionnaire_pret %}
+                            <button data-bs-toggle="modal" data-bs-target="#modal-new-fidelis" class="btn btn-success"><i
+                                    class="ti ti-circle-dashed-check fs-lg me-2"></i> Compte Fidélis</button>
                             {% endif %}
                             {% if request.user.is_chef or request.user.is_gestionnaire_epargne %}
                             <button data-bs-toggle="modal" data-bs-target="#modal-new-epargne" class="btn btn-purple"><i
-                                    class="ti ti-coins fs-lg"></i> Nouveau compte épargne</button>
+                                    class="ti ti-coins fs-lg me-2"></i> Nouveau compte épargne</button>
                             {% endif %}
                         </div>
                     </div>
@@ -124,6 +128,48 @@
 
         <div class="col-xl-8">
             <div class="row align-items-center">
+                {% if request.user.is_chef or request.user.is_gestionnaire_pret %}
+                {% for compte in comptesfidelis %}
+                <div class="col-6">
+                    <div class="card ">
+                        <div class="card-body">
+                            <a href="{% url 'FidelisApp:compte' compte.id %}" data-table-delete-row
+                                class="btn btn-light btn-icon btn-sm rounded-circle text-muted float-end mt-n1 fs-md">
+                                <i class="ti ti-eye "></i></a>
+                            <h5 title="Revenue Generated">
+                                <span
+                                    class="text-success">{{compte.numero}}</span>
+                                <span class="badge badge-label text-bg-{{compte.status.classe}}">{{compte.status}}</span>
+                            </h5>
+                            <div class="d-flex align-items-center gap-2 my-3">
+                                <div class="avatar-md flex-shrink-0">
+                                    <span
+                                        class="avatar-title text-bg-success rounded-circle fs-22">
+                                        <i class="ti ti-calendar-dollar"></i>
+                                    </span>
+                                </div>
+                                <h3 class="mb-0">{{compte.base|floatformat:0}} Fcfa</h3>
+                                <span
+                                    class="badge badge-soft-success fw-medium ms-2 fs-xs ms-auto">
+                                    {{compte.nombre_paye}} / {{compte.nombre}}</span>
+                            </div>
+                            <p class="mb-0">
+                                <span
+                                    class="{% if compte.status.etiquette == '0' %}text-warning{% else %}text-success{% endif %}"><i
+                                        class="ti ti-point-filled"></i></span>
+                                {% if compte.status.etiquette != '0' %}
+                                <span class="text-nowrap text-muted">Reste à payer</span>
+                                <span class="float-end"><b>{{compte.base|floatformat:2}} Fcfa * {{compte.nombre|sub:compte.nombre_paye}}</b></span>
+                                {% endif %}
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+
                 {% if request.user.is_chef or request.user.is_gestionnaire_pret %}
                 {% for pret in prets %}
                 <div class="col-6">
@@ -628,6 +674,56 @@
                         <i class="ti ti-close"></i> Annuler
                     </button>
                     <button type="submit" class="btn btn-purple dim pull-right"> <i class="ti ti-check"></i>
+                        Ouvrir le compte </button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+
+<div class="modal fade" id="modal-new-fidelis" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h1 class="modal-title" id="mySmallModalLabel">Compte Fidélis</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form method="POST" class="formShamman" classname="CompteFidelisForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Montant à verser <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-calendar text-muted fs-xl"></i></span>
+                            <input type="text" class="form-control number" name="base"  placeholder="5 000"
+                                required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Combien de fois <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i
+                                    class="ti ti-percentage text-muted fs-xl"></i></span>
+                            <input type="text" class="form-control taux" name="nombre"  placeholder="30"
+                                required>
+                        </div>
+                    </div>
+
+                </div>
+                <br>
+                <div class="modal-footer d-flex justify-content-between">
+                    <input type="hidden" name="client" value="{{ client.id }}">
+                    <input type="hidden" name="employe" value="{{ client.employe.id }}">
+                    <button type="button" class="btn btn-default dim pull-left" data-dismiss="modal">
+                        <i class="ti ti-close"></i> Annuler
+                    </button>
+                    <button type="submit" class="btn btn-success dim pull-right"> <i class="ti ti-check"></i>
                         Ouvrir le compte </button>
                 </div>
             </form>

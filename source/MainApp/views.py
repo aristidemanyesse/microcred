@@ -120,6 +120,7 @@ def client_view(request, pk):
         client = Client.objects.get(pk=pk, deleted=False)
         epargnes = CompteEpargne.objects.filter(client=client, status__etiquette = StatusPret.EN_COURS)
         prets = Pret.objects.filter(client=client, status__etiquette__in = [StatusPret.EN_COURS, StatusPret.EN_ATTENTE])
+        comptesfidelis = client.fidelis.filter(status__etiquette = StatusPret.EN_COURS)
         transactions = client.transactions.filter().order_by("-created_at")[:5]
         
         ctx = {
@@ -129,6 +130,7 @@ def client_view(request, pk):
             "particulier": TypeClient.objects.filter(etiquette = TypeClient.PARTICULIER).first(),
             "entreprise": TypeClient.objects.filter(etiquette = TypeClient.ENTREPRISE).first(),
             "epargnes": epargnes,
+            "comptesfidelis": comptesfidelis,
             "prets": prets,
             "transactions": transactions,
             "modalites": ModaliteEcheance.objects.all(),

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <div class="page-title-head d-flex align-items-center">
+        <div class="flex-grow-1">
+            <h4 class="fs-sm text-uppercase fw-bold m-0">{{TITLE_PAGE}}</h4>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-lg-12">
+            <form class="bg-light-subtle rounded border p-3">
+                <div class="row gap-3">
+                    <div class="col">
+                        <div class="row gap-3">
+                            <div class="col-lg-4">
+                                <div class="app-search">
+                                    <input type="text" id="top-search" class="form-control" placeholder="Rechercher un compte">
+                                    <i data-lucide="search" class="app-search-icon text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for compte in comptes %}
+        <div class="col-md-6 col-xxl-4 searchable-item">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex mb-4">
+                        <div>
+                            <h5 class="mb-1 d-flex align-items-center">
+                                <a href="project-details.html" class="link-reset">{{compte.client}}</a>
+                            </h5>
+                            <p class="text-muted mb-0 fs-xxs"> initié le {{compte.created_at|date:"d/m/Y à H:i"}}</p>
+                        </div>
+                        <div class="ms-auto">
+                            <a href="{% url 'FidelisApp:compte' compte.id %}" 
+                                class="btn btn-warning btn-sm btn-rounded float-end mt-n1 fs-md">
+                                <i class="ti ti-eye "></i> Détails</a>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <i class="ti ti-calendar-dollar text-muted fs-lg"></i>
+                                <h5 class="fs-base mb-0 fw-medium">{{compte.base|floatformat:0}} Fcfa</h5>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <h5 class="fs-base mb-0 fw-medium text-end">{{compte.nombre_paye|stringformat:"s"}} / {{compte.nombre|stringformat:"s"}} fois</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- end col -->
+        {% endfor %}
+
+    </div> <!-- end row-->
+
+    <ul class="pagination pagination-rounded pagination-boxed justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                <span aria-hidden="true">«</span>
+            </a>
+        </li>
+        <li class="page-item active"><a class="page-link" href="?page=1">1</a></li>
+        {% endif %}
+
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ page_obj.paginator.num_pages }}" aria-label="Next">
+                <span aria-hidden="true">»</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+
+</div>
+{% endblock %}

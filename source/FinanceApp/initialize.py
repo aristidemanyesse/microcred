@@ -10,6 +10,9 @@ def initialize():
             TypeTransaction.objects.create(libelle='Dépôt sur compte épargne', etiquette = TypeTransaction.DEPOT)
             TypeTransaction.objects.create(libelle='Retrait sur compte épargne', etiquette = TypeTransaction.RETRAIT)
             TypeTransaction.objects.create(libelle='Remboursement de prêt', etiquette = TypeTransaction.REMBOURSEMENT)
+            TypeTransaction.objects.create(libelle='Dépôt sur compte Fidélis', etiquette = TypeTransaction.DEPOT_FIDELIS)
+            TypeTransaction.objects.create(libelle='Retrait sur compte Fidélis', etiquette = TypeTransaction.RETRAIT_FIDELIS)
+            
             
         
         # Creation des genres

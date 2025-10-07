@@ -14,6 +14,7 @@ from MainApp.forms import *
 from FinanceApp.forms import *
 from AuthentificationApp.forms import *
 from TresorApp.forms import *
+from FidelisApp.forms import *
 from FinanceApp.models import StatusPret
 
 # Create your views here.
