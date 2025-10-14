@@ -38,7 +38,7 @@
                     <div class="d-flex mb-4">
                         <div>
                             <h5 class="mb-1 d-flex align-items-center">
-                                <a href="project-details.html" class="link-reset">{{compte.client}}</a>
+                                <a href="{% url 'FidelisApp:compte' compte.id %}" class="link-reset">{{compte.client}}</a>
                             </h5>
                             <p class="text-muted mb-0 fs-xxs"> initié le {{compte.created_at|date:"d/m/Y à H:i"}}</p>
                         </div>

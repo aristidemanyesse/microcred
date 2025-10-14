@@ -48,6 +48,21 @@ class ModaliteEcheance(BaseModel):
             return 180
         elif self.etiquette == ModaliteEcheance.ANNUEL:
             return 360
+        
+        
+    def duree_par_annee(self):
+        if self.etiquette == ModaliteEcheance.HEBDOMADAIRE:
+            return 52
+        elif self.etiquette == ModaliteEcheance.MENSUEL:
+            return 12
+        elif self.etiquette == ModaliteEcheance.BIMENSUEL:
+            return 6
+        elif self.etiquette == ModaliteEcheance.TRIMESTRIEL:
+            return 4
+        elif self.etiquette == ModaliteEcheance.SEMESTRIEL:
+            return 2
+        elif self.etiquette == ModaliteEcheance.ANNUEL:
+            return 1
     
     
 class ModePayement(BaseModel):
@@ -62,8 +77,7 @@ class ModePayement(BaseModel):
 
 class TypeAmortissement(BaseModel):
     BASE      = "1"
-    CAPITAL   = "2"
-    ANNUITE   = "3"
+    ANNUITE   = "2"
     libelle   = models.CharField(max_length=50)  # Espèces / Chèque / Virement
     etiquette = models.CharField(max_length=50)
     
@@ -214,24 +228,18 @@ class Pret(BaseModel):
         r = self.taux / 100
         n = self.nombre_modalite
         if self.amortissement.etiquette == TypeAmortissement.ANNUITE:
-            annuite = self.base * (r * (1 + r) ** n) / ((1 + r) ** n - 1)
-            interets = []
-            capital_restant = self.base
-            for i in range(1, n + 1):
-                interet = capital_restant * r
-                amortissement = annuite - interet
-                capital_restant -= amortissement
-                interets.append(interet)
-            return sum(interets)
-
-        elif self.amortissement.etiquette == TypeAmortissement.CAPITAL:
-            amortissement = self.base / n
-            interets = []
-            for i in range(1, n + 1):
-                capital_restant = self.base - (i - 1) * amortissement
-                interet = capital_restant * r
-                interets.append(interet)
-            return sum(interets)
+            total_interets = 0
+            i =r / self.modalite.duree_par_annee()  # taux d'intérêt par année
+            n = self.nombre_modalite           # nombre de périodes
+            r = i / (1 - (1 + i) ** -n)
+            annuite = round(self.base * r, 2)
+            
+            reste = self.base
+            for a in range(1, n + 1):
+                interet = reste * i
+                reste -= (annuite - interet)
+                total_interets += round(interet, 2)
+            return total_interets
         
         elif self.amortissement.etiquette == TypeAmortissement.BASE:
             return self.base * r
@@ -259,25 +267,7 @@ class Pret(BaseModel):
                 )
                 reste -= base + interet
                 i += 1
-                
-                
-        elif self.amortissement.etiquette == TypeAmortissement.CAPITAL:
-            reste = self.base
-            while i < self.nombre_modalite:
-                date_echeance += timedelta(days= self.modalite.duree())
-                interet = round((self.base - (base * i)) * self.taux / 100, 2)
-                echeance = Echeance.objects.create(
-                    pret            = self,
-                    level           = i,
-                    principal       = base,
-                    interet         = interet ,
-                    montant_a_payer = base + interet,
-                    date_echeance   = date_echeance,
-                    status          = StatusPret.objects.get(etiquette = StatusPret.EN_COURS),
-                )
-                reste -= base + interet
-                i += 1
-                
+
                 
         elif self.amortissement.etiquette == TypeAmortissement.ANNUITE:
             r = self.taux / 100

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker-buildx build --platform linux/amd64 -t aristidemanyesse/cred:0.0d --load --push .
+docker-buildx build --platform linux/amd64 -t aristidemanyesse/cred:0-prod --load --push .

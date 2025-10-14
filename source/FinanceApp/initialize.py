@@ -37,17 +37,16 @@ def initialize():
             
         print("Création des modes de payement ...")
         if not ModePayement.objects.filter().exists():
-            ModePayement.objects.create(libelle='Espèces', etiquette = ModePayement.ESPECE)
-            ModePayement.objects.create(libelle='Mobile Money', etiquette = ModePayement.MOBILE)
-            ModePayement.objects.create(libelle='Chèque', etiquette = ModePayement.CHEQUE)
-            ModePayement.objects.create(libelle='Virement bancaire', etiquette = ModePayement.VIREMENT)  
+            ModePayement.objects.create(libelle='En espèces', etiquette = ModePayement.ESPECE)
+            ModePayement.objects.create(libelle='Par mobile Money', etiquette = ModePayement.MOBILE)
+            ModePayement.objects.create(libelle='Par chèque', etiquette = ModePayement.CHEQUE)
+            ModePayement.objects.create(libelle='Par virement bancaire', etiquette = ModePayement.VIREMENT)  
             
             
         print("Création des types d'amortissement ...")
         if not TypeAmortissement.objects.filter().exists():
-            TypeAmortissement.objects.create(libelle='Annuité constante', etiquette = TypeAmortissement.ANNUITE)
-            TypeAmortissement.objects.create(libelle='Capital constant', etiquette = TypeAmortissement.CAPITAL)
             TypeAmortissement.objects.create(libelle='Capital et interet constants', etiquette = TypeAmortissement.BASE)
+            TypeAmortissement.objects.create(libelle='Annuité constante', etiquette = TypeAmortissement.ANNUITE)
             
             
     except Exception as e:

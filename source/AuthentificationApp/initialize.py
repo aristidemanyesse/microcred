@@ -29,33 +29,33 @@ def initialize():
             )
             
             
-        print("Enregistrement de l'administrateur du site ...")
-        if not Employe.objects.filter(is_superuser = False).exists():
-            empl = Employe.objects.create(
-                first_name = 'Jores',
-                last_name  = 'Attiékou',
-                contact    = '0612345678',
-                username   = 'administration',
-                brut       = '12345678',
-                address    = '12 rue de la gare',
-                role       = Role.objects.get(libelle='Administrateur'),
-                agence     = Agence.objects.filter(protected=True).first()
-            )
-            empl.set_password('12345678')
-            empl.save()
+        # print("Enregistrement de l'administrateur du site ...")
+        # if not Employe.objects.filter(is_superuser = False).exists():
+        #     empl = Employe.objects.create(
+        #         first_name = 'Jores',
+        #         last_name  = 'Attiékou',
+        #         contact    = '0612345678',
+        #         username   = 'administration',
+        #         brut       = '12345678',
+        #         address    = '12 rue de la gare',
+        #         role       = Role.objects.get(libelle='Administrateur'),
+        #         agence     = Agence.objects.filter(protected=True).first()
+        #     )
+        #     empl.set_password('12345678')
+        #     empl.save()
             
-            empl = Employe.objects.create(
-                first_name = 'Assana',
-                last_name  = 'Services',
-                contact    = '0612345678',
-                username   = 'assana',
-                address    = '12 rue de la gare',
-                brut       = '12345678',
-                role       = Role.objects.get(libelle='Superviseur'),
-                agence     = Agence.objects.filter(protected=True).first()
-            )
-            empl.set_password('12345678')
-            empl.save()
+        #     empl = Employe.objects.create(
+        #         first_name = 'Assana',
+        #         last_name  = 'Services',
+        #         contact    = '0612345678',
+        #         username   = 'assana',
+        #         address    = '12 rue de la gare',
+        #         brut       = '12345678',
+        #         role       = Role.objects.get(libelle='Superviseur'),
+        #         agence     = Agence.objects.filter(protected=True).first()
+        #     )
+        #     empl.set_password('12345678')
+        #     empl.save()
             
             
     except Exception as e:

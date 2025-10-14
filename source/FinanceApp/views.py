@@ -106,7 +106,7 @@ def prets_simulateur_view(request):
         base = int(request.POST.get("base").replace(" ", ""))
         taux = float(request.POST.get("taux").replace(" ", "").replace(",", "."))
         
-        duree = request.POST.get("duree")
+        duree = int(request.POST.get("duree"))
         modalite_duree = request.POST.get("modalite_duree", None)
         modalite_duree = ModaliteEcheance.objects.get(pk=modalite_duree)
         amortissement = request.POST.get("amortissement", None)
@@ -120,9 +120,9 @@ def prets_simulateur_view(request):
         i = 0
         
         if amortissement.etiquette == TypeAmortissement.BASE:
-            principal = round(base / int(duree), 2)
+            principal = round(base / duree, 2)
             interet = round(principal * taux / 100, 2)
-            while i < int(duree):
+            while i < duree:
                 reste = base - (principal * (i+1))
                 tableaux.append({
                     "taux"     : taux,
@@ -138,57 +138,32 @@ def prets_simulateur_view(request):
                 total_interets += interet
                 i+=1
             
-                
-                
-        elif amortissement.etiquette == TypeAmortissement.CAPITAL:
-            principal = round(base / int(duree), 2)
-            while i < int(duree):
-                interet = round((base - principal * i) * taux / 100, 2)
-                reste = base - (principal * (i+1))
-                tableaux.append({
-                    "taux"     : taux,
-                    "principal": principal,
-                    "interet"  : interet,
-                    "total"    : principal + interet,
-                    
-                    "date"     : date.today() + timedelta(days=(i+1) * modalite_duree.duree()),
-                    "reste"    : reste,
-                    "total_a_payer"   : total_a_payer,
-                })
-                total_reglement += principal + interet
-                total_interets += interet
-                i+=1
-            
-            reste = total_a_payer - total_reglement
-            if reste > 0:
-                tableaux[-1]["interet"] += reste
-                tableaux[-1]["total"] += reste
-                tableaux[-1]["reste"] = 0
-                
+  
         
         elif amortissement.etiquette == TypeAmortissement.ANNUITE:
-            r = taux / 100
-            n = int(duree)
-            annuite = base * (r * (1 + r) ** n) / ((1 + r) ** n - 1)
+            i = taux / 100 / modalite_duree.duree_par_annee()  # taux d'intérêt par année
+            n = duree           # nombre de périodes
+            r = i / (1 - (1 + i) ** -n)
+            annuite = round(base * r, 2)
             reste = base
-            while i < int(duree):
-                interet = reste * taux / 100
-                principal = round(annuite - interet, 2)
-                reste -= principal
+
+            for periode in range(1, n + 1):
+                interet = reste * i
+                principal = annuite - interet
+                reste = reste - principal
+
                 tableaux.append({
-                    "taux"     : taux,
-                    "principal": principal,
-                    "interet"  : round(interet, 2),
-                    "total"    : round(annuite, 2),
-                    
-                    "date"     : date.today() + timedelta(days=(i+1) * modalite_duree.duree()),
-                    "reste"    : round(reste, 2),
+                    "taux": taux,
+                    "principal": round(principal, 2),
+                    "interet": round(interet, 2),
+                    "total": round(annuite, 2),
+                    "date": date.today() + timedelta(days=periode * modalite_duree.duree()),
+                    "reste": round(reste, 2),
                 })
-                total_reglement += principal + interet
-                total_interets += interet
-                i+=1
+                total_reglement += round(annuite, 2)
+                total_interets += round(interet, 2)
             
-            if reste > 0:
+            if reste != 0:
                 tableaux[-1]["interet"] += round(reste, 2)
                 tableaux[-1]["total"] += round(reste, 2)
                 tableaux[-1]["reste"] = 0
