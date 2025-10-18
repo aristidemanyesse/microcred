@@ -87,8 +87,3 @@ function loadTransactionsChart() {
 
 // Charger le graph après le DOM
 document.addEventListener("DOMContentLoaded", loadTransactionsChart);
-
-window.addEventListener("resize", debounce(() => {
-    map.updateSize()
-},
-200))

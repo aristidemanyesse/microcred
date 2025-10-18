@@ -253,7 +253,7 @@ class Pret(BaseModel):
         
         if self.amortissement.etiquette == TypeAmortissement.BASE:
             reste = self.reste_a_payer()
-            print("Reste à payer :", reste)
+
             while i < self.nombre_modalite:
                 date_echeance += timedelta(days= self.modalite.duree())
                 interet = round(base * self.taux / 100, 2)
