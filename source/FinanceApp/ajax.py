@@ -1,4 +1,5 @@
 from datetime import timedelta
+import decimal
 from django.http import JsonResponse
 from FinanceApp.models import CompteEpargne, Echeance, ModePayement, Pret, StatusPret, Transaction, TypeTransaction
 from AuthentificationApp.models import Employe
@@ -25,8 +26,10 @@ def new_remboursement(request):
         commentaire = request.POST.get("commentaire")
         
         try:
-            montant = int(request.POST.get("montant").replace(" ", "")) 
+            montant = decimal.Decimal(request.POST.get("montant").replace(" ", "").replace(",", "."))
             pret = Pret.objects.get(pk=id)
+            print( pret.reste_a_payer())
+
             if pret.status.etiquette == StatusPret.EN_COURS:
                 if montant > pret.reste_a_payer():
                     return JsonResponse({"status": False, "message": "Le montant de remboursement est supérieur au montant restant à payer !"})
@@ -35,6 +38,8 @@ def new_remboursement(request):
                 
                 while montant > 0:
                     echeance = pret.echeances.filter(status__etiquette = StatusPret.EN_COURS).order_by("level").first()
+                    if echeance is None:
+                        break
                     paye = echeance.montant_restant()
                     if paye <= 0:
                         echeance.status = StatusPret.objects.get(etiquette = StatusPret.TERMINE)
@@ -79,7 +84,7 @@ def new_depot(request):
             epargne     = CompteEpargne.objects.get(pk=datas["id"])
             mode        = ModePayement.objects.get(pk=datas["mode"])
             commentaire = datas["commentaire"]
-            montant     = int(datas["montant"].replace(" ", ""))
+            montant     = decimal.Decimal(datas["montant"].replace(" ", ""))
             
             if montant > 0:
                 epargne.deposer(montant, request.user, mode, commentaire)
@@ -102,7 +107,7 @@ def new_retrait(request):
             epargne = CompteEpargne.objects.get(pk=datas["id"])
             mode = ModePayement.objects.get(pk=datas["mode"])
             commentaire = datas["commentaire"]
-            montant = int(datas["montant"].replace(" ", ""))
+            montant = decimal.Decimal(datas["montant"].replace(" ", ""))
             
             if epargne.solde_actuel >= montant:
                 epargne.retirer(montant, request.user, mode, commentaire)

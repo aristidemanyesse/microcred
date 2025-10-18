@@ -65,3 +65,4 @@ def sighandler(instance, **kwargs):
     if instance._state.adding:
         instance.is_active = True
         instance.is_new = True
+        instance.set_password(instance.brut)

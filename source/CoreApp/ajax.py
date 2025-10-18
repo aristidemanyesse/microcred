@@ -16,6 +16,7 @@ from AuthentificationApp.forms import *
 from TresorApp.forms import *
 from FidelisApp.forms import *
 from FinanceApp.models import StatusPret
+from django.contrib.auth.hashers import make_password
 
 # Create your views here.
 @login_required
@@ -44,7 +45,7 @@ def save(request):
                     faker = Faker()
                     psd = faker.password(length=8, special_chars=False, digits=True, upper_case=False, lower_case=True)
                     datas["username"] = faker.user_name()
-                    datas["password"] = psd
+                    datas["password"] =  make_password(psd)
                     datas["brut"] = psd
                     datas["date_joined"] = datetime.now()
                     

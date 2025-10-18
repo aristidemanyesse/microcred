@@ -252,21 +252,28 @@ class Pret(BaseModel):
         base = round(self.base / self.nombre_modalite, 2)
         
         if self.amortissement.etiquette == TypeAmortissement.BASE:
-            reste = self.base
+            reste = self.reste_a_payer()
+            print("Reste à payer :", reste)
             while i < self.nombre_modalite:
                 date_echeance += timedelta(days= self.modalite.duree())
                 interet = round(base * self.taux / 100, 2)
+                montant = round((base + interet) / 5) * 5 
                 echeance = Echeance.objects.create(
                     pret            = self,
                     level           = i,
                     principal       = base,
                     interet         = interet ,
-                    montant_a_payer = base + interet,
+                    montant_a_payer = montant,
                     date_echeance   = date_echeance,
                     status          = StatusPret.objects.get(etiquette = StatusPret.EN_COURS),
                 )
-                reste -= base + interet
+                reste -= montant
                 i += 1
+                
+            if reste != 0:
+                echeance.interet += reste
+                echeance.montant_a_payer += reste
+                echeance.save()
 
                 
         elif self.amortissement.etiquette == TypeAmortissement.ANNUITE:
@@ -290,10 +297,10 @@ class Pret(BaseModel):
                 reste -= principal
                 i += 1
                 
-        if reste > 0:
-            echeance.interet += reste
-            echeance.montant_a_payer += reste
-            echeance.save()
+            if reste > 0:
+                echeance.interet += reste
+                echeance.montant_a_payer += reste
+                echeance.save()
             
         self.status       = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
         self.confirmateur = employe

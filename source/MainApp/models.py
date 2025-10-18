@@ -37,7 +37,7 @@ class Client(BaseModel):
     adresse        = models.TextField()
     telephone      = models.CharField(max_length=20)
     email          = models.EmailField(null=True, blank=True)
-    employe      = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='clients')
+    employe        = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='clients')
     
     def __str__(self):
         return f"{self.prenoms or ''} {self.nom or ''}"

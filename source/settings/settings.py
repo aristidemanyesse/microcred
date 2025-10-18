@@ -26,8 +26,8 @@ SECRET_KEY = 'django-insecure-dw6*n0&2txrpe1il3@-a((%^hdfa75)bs$dmpwyx!l3!j4!yz'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*", 'https://www.assana-services.com']
-CSRF_TRUSTED_ORIGINS = ['https://www.assana-services.com']
+ALLOWED_HOSTS = ["*", 'https://www.assana-services.com', "https://test.assana-services.com"]
+CSRF_TRUSTED_ORIGINS = ['https://www.assana-services.com', "https://test.assana-services.com"]
 
 
 # Application definition
@@ -97,10 +97,10 @@ DATABASES = {
         'NAME'      : os.getenv("DB_NAME", "microcred"),
     },
 
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 
