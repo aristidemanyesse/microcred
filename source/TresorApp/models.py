@@ -30,7 +30,7 @@ class CompteAgence(BaseModel):
     
     def solde(self, start=None, end=None):
         total = self.total_depots(start, end) - self.total_retraits(start, end)
-        if start and start > self.created_at.date():
+        if start is None or (start and start > self.created_at.date()):
             return total
         return total + self.base
 

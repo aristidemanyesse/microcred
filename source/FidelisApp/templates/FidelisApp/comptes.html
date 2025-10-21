@@ -41,6 +41,9 @@
                                 <a href="{% url 'FidelisApp:compte' compte.id %}" class="link-reset">{{compte.client}}</a>
                             </h5>
                             <p class="text-muted mb-0 fs-xxs"> initié le {{compte.created_at|date:"d/m/Y à H:i"}}</p>
+                            {% if compte.status.etiquette == '2' and not compte.retire %}
+                            <p class="text-danger mb-0 fs-xxs"> Terminé mais pas encore retiré </p>
+                            {% endif %}
                         </div>
                         <div class="ms-auto">
                             <a href="{% url 'FidelisApp:compte' compte.id %}" 

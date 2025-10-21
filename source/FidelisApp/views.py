@@ -3,6 +3,7 @@ from annoying.decorators import render_to
 from datetime import datetime
 from FidelisApp.models import CompteFidelis
 from FinanceApp.models import ModePayement, StatusPret, TypeTransaction
+from django.db.models import Q
 # Create your views here.
 
 
@@ -14,8 +15,7 @@ def comptes(request):
     if request.user.is_gestionnaire_epargne():
         return redirect('MainApp:dashboard')
     
-    comptes = CompteFidelis.objects.filter(status__etiquette = StatusPret.EN_COURS)
-    
+    comptes = CompteFidelis.objects.filter(Q(status__etiquette = StatusPret.EN_COURS) | Q(retire=False))
     ctx = {
         'TITLE_PAGE' : "Liste des comptes Fidelis",
         "comptes": comptes,
@@ -65,9 +65,8 @@ def archivage(request):
     
     if request.user.is_gestionnaire_epargne():
         return redirect('MainApp:dashboard')
-    
-    comptes = CompteFidelis.objects.filter(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE])
-    
+
+    comptes = CompteFidelis.objects.filter(Q(status__etiquette = StatusPret.ANNULEE) | Q(status__etiquette = StatusPret.TERMINE, retire=True))
     ctx = {
         'TITLE_PAGE' : "Archives des comptes Fidelis",
         "comptes": comptes,

@@ -188,7 +188,7 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-end">
 
-                        <!-- My Profile -->
+                        {% comment %} <!-- My Profile -->
                         <a href="pages-profile.html" class="dropdown-item">
                             <i class="ti ti-user-circle me-2 fs-17 align-middle"></i>
                             <span class="align-middle">Mon profil</span>
@@ -213,7 +213,7 @@
                         <a href="auth-lock-screen.html" class="dropdown-item">
                             <i class="ti ti-lock me-2 fs-17 align-middle"></i>
                             <span class="align-middle">Changer mot de passe</span>
-                        </a>
+                        </a> {% endcomment %}
 
                         <!-- Logout -->
                         <a href="{% url 'AuthentificationApp:logout' %}" class="dropdown-item text-danger fw-semibold">

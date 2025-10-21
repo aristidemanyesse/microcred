@@ -9,42 +9,6 @@
 </div>
 
 <div class="container-fluid">
-
-    <div class="row mt-3 row-cols-md-3 row-cols-sm-2 row-cols-1 align-items-center">
-        {% for compte in comptes %}
-        <div class="col">
-            <div class="card">
-                <div class="card-body">
-                    <a href="{% url 'TresorApp:compte' compte.id %}"
-                        class="btn btn-light btn-icon btn-sm rounded-circle float-end mt-n1 fs-xl"><i
-                            class="ti ti-eye"></i></a>
-                    <h5 title="Number of Tasks">{{ compte.libelle }}</h5>
-                    <div class="d-flex align-items-center gap-2 my-3">
-                        <div class="avatar-md flex-shrink-0">
-                            <span class="avatar-title text-bg-light rounded-circle fs-22">
-                                <i class="ti ti-coins"></i>
-                            </span>
-                        </div>
-                        <h3 class="mb-0"><span data-target="{{compte.solde|stringformat:"s"}}">0</span></h3>
-                    </div>
-                    <p class="mb-0">
-                        <span class="text-muted fs-xs"><i class="ti ti-clock me-1"></i> dernière opération, il y a
-                            {{compte.update_at|timesince}}</span>
-                    </p>
-                </div> <!-- end card-body-->
-            </div> <!-- end card-->
-        </div> <!-- end col-->
-        {% endfor %}
-
-        <div class="text-center mb-3">
-            <a href="#!" data-bs-toggle="modal" data-bs-target="#modal-add-compte"
-                class="btn btn-secondary rounded-pill"><i class="ti ti-plus me-1"></i> Ajouter un compte</a>
-            <a href="#!" data-bs-toggle="modal" data-bs-target="#modal-transfert"
-                class="btn btn-warning rounded-pill"><i class="ti ti-arrows-exchange me-1"></i> Faire un transfert</a>
-        </div>
-
-    </div><!-- end row -->
-
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -65,56 +29,18 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="row g-0">
-                        <div class="col-xxl-8 border-end border-dashed">
+                        <div class="col-xxl-12 border-end border-dashed">
                             <div id="orders-chart" style="min-height: 405px;"></div>
                         </div><!-- end col -->
-                        <div class="col-xxl-4">
-
-                            <div class="card">
-                                <div class="card-header justify-content-between align-items-center">
-                                    <h5 class="card-title">Bilan des comptes sur cette période</h5>
-                                </div>
-                                <div class="card-body p-0">
-                                    <div class="table-responsive">
-                                        <table class="table table-custom table-nowrap table-hover table-centered mb-0">
-                                            <thead class="bg-light bg-opacity-25 thead-sm">
-                                                <tr class="text-uppercase fs-xxs">
-                                                    <th class="text-muted">Compte</th>
-                                                    <th class="text-muted text-end">Dépots</th>
-                                                    <th class="text-muted text-end">Retraits</th>
-                                                    <th class="text-muted text-end">Résultats</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for compte in comptes__ %}
-                                                <tr>
-                                                    <td>
-                                                        <h5 class="fs-sm fw-bold">{{compte.libelle}}</h5>
-                                                    </td>
-                                                    <td class="text-end">{{compte.depots|floatformat:2}}
-                                                        <small>Fcfa</small></td>
-                                                    <td class="text-end">{{compte.retraits|floatformat:2}}
-                                                        <small>Fcfa</small></td>
-                                                    <td class="text-end">{{compte.solde|floatformat:2}}
-                                                        <small>Fcfa</small></td>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div> <!-- end table-responsive-->
-                                </div> <!-- end card-body-->
-                            </div> <!-- end card-->
-
-                        </div> <!-- end col-->
                     </div> <!-- end row-->
                 </div> <!-- end card-body-->
             </div> <!-- end card-->
         </div> <!-- end col-->
     </div> <!-- end row-->
 
+
     <div class="row">
         <div class="col-xxl-4">
-
             <div class="card">
                 <div class="card-header justify-content-between align-items-center">
                     <h5 class="card-title text-uppercase text-primary">Statistiques des prêts</h5>
@@ -131,7 +57,7 @@
 
                     <div class="mt-4">
                         <div class="d-flex justify-content-between">
-                            <h5 class="fs-base mb-2">Total des récouvrements</h5>
+                            <h5 class="fs-base mb-2">Récouvrements / Attendus</h5>
                             <div>
                                 <span>{{total_recouvrements}} Fcfa</span>
                                 <span><i class="ti ti-circle-filled text-light mx-3 fs-10"></i>
@@ -139,8 +65,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mt-4">
-                        <div class="d-flex justify-content-between">
+                    <div class="mt-4 ">
+                        <div class="d-flex justify-content-between text-danger">
                             <h5 class="fs-base mb-2">Pénalités générés</h5>
                             <div>
                                 <span>{{total_penalites}} Fcfa</span>
@@ -149,23 +75,25 @@
                     </div>
                     <div class="mt-4">
                         <div class="d-flex justify-content-between">
-                            <h5 class="fs-base mb-2">Bénéfices bruts</h5>
+                            <h5 class="fs-base mb-2">Bénéfices prévisionnels</h5>
+                            <div>
+                                <span>{{total_beneficies_pret_previsionnels}} Fcfa</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="fs-base mb-2">Bénéfices réels</h5>
                             <div>
                                 <span>{{total_beneficies_pret}} Fcfa</span>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-4">
-                        <div class="d-flex justify-content-between">
-                            <h5 class="fs-base mb-2">Bénéfices NET</h5>
-                            <div>
-                                <span>{{total_beneficies_net}} Fcfa</span>
-                            </div>
-                        </div>
-                    </div>
                 </div> <!-- end card-body-->
             </div> <!-- end card-->
-
+            </div> <!-- end card-->
+<div class="col-xxl-4">
             <div class="card">
                 <div class="card-header justify-content-between align-items-center">
                     <h5 class="card-title text-uppercase text-success">Statistiques Fidelis</h5>
@@ -182,7 +110,7 @@
 
                     <div class="mt-4">
                         <div class="d-flex justify-content-between">
-                            <h5 class="fs-base mb-2">Total des mouvements</h5>
+                            <h5 class="fs-base mb-2">Dépôts / Retraits</h5>
                             <div>
                                 <span class="text-success">{{total_depots_fidelis}} Fcfa</span>
                                 <span><i class="ti ti-circle-filled text-light mx-3 fs-10"></i> <span
@@ -193,7 +121,16 @@
 
                     <div class="mt-4">
                         <div class="d-flex justify-content-between">
-                            <h5 class="fs-base mb-2">Interêts générés</h5>
+                            <h5 class="fs-base mb-2">Bénéfices prévisionnels</h5>
+                            <div>
+                                <span>{{total_benefices_fidelis_previsionnels}} Fcfa</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="fs-base mb-2">Bénéfices générés</h5>
                             <div>
                                 <span>{{total_benefices_fidelis}} Fcfa</span>
                             </div>
@@ -201,7 +138,8 @@
                     </div>
                 </div> <!-- end card-body-->
             </div> <!-- end card-->
-
+            </div> <!-- end card-->
+<div class="col-xxl-4">
             <div class="card">
                 <div class="card-header justify-content-between align-items-center">
                     <h5 class="card-title text-uppercase text-purple">Statistiques des épargnes</h5>
@@ -218,7 +156,7 @@
 
                     <div class="mt-4">
                         <div class="d-flex justify-content-between">
-                            <h5 class="fs-base mb-2">Total des mouvements</h5>
+                            <h5 class="fs-base mb-2">Dépôts / Retraits</h5>
                             <div>
                                 <span class="text-success">{{total_depots}} Fcfa</span>
                                 <span><i class="ti ti-circle-filled text-light mx-3 fs-10"></i> <span
@@ -226,7 +164,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="mt-4">
                         <div class="d-flex justify-content-between">
                             <h5 class="fs-base mb-2">Interêts générés</h5>
@@ -238,117 +175,6 @@
                 </div> <!-- end card-body-->
             </div> <!-- end card-->
 
-        </div> <!-- end col-->
-
-        <div class="col-xxl-8 col-xl-6">
-            <div data-table data-table-rows-per-page="20" class="card">
-                <div class="card-header border-light justify-content-between">
-                    <div class="d-flex gap-2">
-                        <div class="app-search">
-                            <input data-table-search type="text" class="form-control" placeholder="Rechercher...">
-                            <i data-lucide="search" class="app-search-icon text-muted"></i>
-                        </div>
-                    </div>
-
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="me-2 fw-semibold">Filtrer par:</span>
-
-                        <!-- Country Filter -->
-                        <div class="app-search">
-                            <select data-table-filter="debit" class="form-select form-control my-1 my-md-0">
-                                <option value="All">Tous les comptes</option>
-                                {% for compte in comptes %}
-                                <option value="{{ compte.libelle }}">{{ compte.libelle }}</option>
-                                {% endfor %}
-                            </select>
-                            <i data-lucide="globe" class="app-search-icon text-muted"></i>
-                        </div>
-
-                        <!-- Country Filter -->
-                        <div class="app-search">
-                            <select data-table-filter="credit" class="form-select form-control my-1 my-md-0">
-                                <option value="All">Tous les comptes</option>
-                                {% for compte in comptes %}
-                                <option value="{{ compte.libelle }}">{{ compte.libelle }}</option>
-                                {% endfor %}
-                            </select>
-                            <i data-lucide="globe" class="app-search-icon text-muted"></i>
-                        </div>
-
-                        <!-- Records Per Page -->
-                        <div>
-                            <select data-table-set-rows-per-page class="form-select form-control my-1 my-md-0">
-                                <option value="20">20</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-custom table-centered table-select table-hover w-100 mb-0">
-                        <thead class="bg-light bg-opacity-25 thead-sm">
-                            <tr class="text-uppercase fs-xxs">
-                                <th data-table-sort="name">Nom & Prénoms</th>
-                                <th data-table-sort data-column="debit">Compte débit</th>
-                                <th data-table-sort data-column="credit">Compte crédit</th>
-                                <th data-table-sort>Montant</th>
-                                <th data-table-sort>Effectué par</th>
-                                <th class="text-center">Actions</th>
-                            </tr>
-                        </thead><!-- end table-head -->
-                        <tbody>
-                            {% for operation in operations %}
-                            <tr>
-                                <td>
-                                    <div class="d-flex justify-content-start align-items-center gap-2">
-                                        <div>
-                                            <h5 class="text-nowrap mb-0 lh-base fs-base">{{ operation.libelle }}</h5>
-                                            <p class="text-muted fs-xs mb-0">
-                                                {{operation.created_at|date:"d/m/Y à H:i:s"}}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-start align-items-center gap-2">
-                                        <div>
-                                            <h5 class="text-nowrap mb-0 lh-base fs-base">{{ operation.compte_debit }}
-                                            </h5>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-start align-items-center gap-2">
-                                        <div>
-                                            <h5 class="text-nowrap mb-0 lh-base fs-base">
-                                                {{ operation.compte_credit }}</h5>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td> {{operation.montant}} Fcfa</td>
-                                <td>{{operation.employe}}</td>
-                                <td class="text-center">
-                                    {% if operation.transaction %}
-                                    <a href="{% url 'FinanceApp:invoice' operation.transaction.id %}"
-                                        class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                            class="ti ti-eye fs-lg"></i></a>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody><!-- end table-body -->
-                    </table><!-- end table -->
-                </div>
-                <div class="card-footer border-0">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div data-table-pagination-info="clients"></div>
-
-                        <div data-table-pagination></div>
-                    </div>
-                </div>
-            </div>
         </div> <!-- end col-->
     </div><!-- end row-->
 

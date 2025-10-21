@@ -57,10 +57,15 @@
                                                 <button data-bs-toggle="modal"
                                                     data-bs-target="#modal-new-depot" class="btn btn-success ms-3"><i
                                                         class="ti ti-coins fs-lg me-2 "></i> Faire un dépôt</button>
-                                               
-                                                <button data-bs-toggle="modal"
-                                                    data-bs-target="#modal-new-retrait" class="btn btn-danger ms-3"><i
-                                                        class="ti ti-coins fs-lg me-2"></i> Retirer et cloturer</button>
+                                                {% endif %}
+
+                                                {% if compte.status.etiquette != '-1' %}
+                                                    {% if not compte.retire %}
+                                                        <button data-bs-toggle="modal" data-bs-target="#modal-new-retrait" class="btn btn-danger ms-3"><i
+                                                            class="ti ti-coins fs-lg me-2"></i> Reverser au client et cloturer</button>
+                                                    {% else %}
+                                                        <p> Déjà retiré le {{compte.cloture_at|date:"d/m/Y à H:i"}}</p>
+                                                    {% endif %}
                                                 {% endif %}
 
                                                 <a href="{% url 'FidelisApp:releve_fidelis' compte.id %}" class="btn btn-warning ms-3">
