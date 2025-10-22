@@ -6,10 +6,17 @@ from MainApp.models import Agence
 # Create your models here.
 
 
+class TypeActivity(BaseModel):
+    PRET = "1"
+    FIDELIS = "2"
+    EPARGNE = "3"
+    libelle = models.CharField(max_length=50)
+    etiquette = models.CharField(max_length=50)
+
 class CompteAgence(BaseModel):
     libelle   = models.CharField(max_length=50, null=True, blank=True)
     agence    = models.ForeignKey(Agence, on_delete=models.CASCADE, related_name='comptes')
-    principal = models.BooleanField(default=False)
+    activity  = models.ForeignKey(TypeActivity, on_delete=models.CASCADE, related_name='comptes', null=True, blank=True)
     base      = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
 
     def __str__(self):
@@ -49,15 +56,14 @@ class Operation(BaseModel):
 
 
 
-
-
-
 @signals.post_save(sender=Agence)
 def sighandler(instance, created, **kwargs):
     if created:
-        principal = not CompteAgence.objects.filter(agence=instance, principal = True).exists()
-        libelle = f"Compte principal" if principal else instance.libelle
-        CompteAgence.objects.create(agence=instance, principal = principal, libelle=libelle)
+        for letype in TypeActivity.objects.all():
+            compte, _ = CompteAgence.objects.get_or_create(agence=instance, activity=letype, libelle=f"Compte {letype.libelle}")
+            if _:
+                compte.base = 0
+                compte.save()
 
 
 

@@ -11,6 +11,9 @@ class Command(BaseCommand):
             from AuthentificationApp.initialize import initialize
             initialize()
             
+            from TresorApp.initialize import initialize
+            initialize()
+            
             from FinanceApp.initialize import initialize
             initialize()
     

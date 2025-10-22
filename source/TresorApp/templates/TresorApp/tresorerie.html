@@ -10,6 +10,42 @@
 
 <div class="container-fluid">
 
+      <div class="row mt-3 row-cols-md-3 row-cols-sm-2 row-cols-1 align-items-center">
+        {% for compte in comptes %}
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <a href="{% url 'TresorApp:compte' compte.id %}"
+                        class="btn btn-light btn-icon btn-sm rounded-circle float-end mt-n1 fs-xl"><i
+                            class="ti ti-eye"></i></a>
+                    <h5 title="Number of Tasks">{{ compte.libelle }}</h5>
+                    <div class="d-flex align-items-center gap-2 my-3">
+                        <div class="avatar-md flex-shrink-0">
+                            <span class="avatar-title text-bg-light rounded-circle fs-22">
+                                <i class="ti ti-coins"></i>
+                            </span>
+                        </div>
+                        <h3 class="mb-0"><span data-target="{{compte.solde|stringformat:"s"}}">0</span> <small>Fcfa</small></h3>
+                    </div>
+                    <p class="mb-0">
+                        <span class="text-muted fs-xs"><i class="ti ti-clock me-1"></i> dernière opération, il y a
+                            {{compte.update_at|timesince}}</span>
+                    </p>
+                </div> <!-- end card-body-->
+            </div> <!-- end card-->
+        </div> <!-- end col-->
+        {% endfor %}
+
+        <div class="text-center mb-3">
+            <a href="#!" data-bs-toggle="modal" data-bs-target="#modal-add-compte"
+                class="btn btn-secondary rounded-pill"><i class="ti ti-plus me-1"></i> Ajouter un compte</a>
+            <a href="#!" data-bs-toggle="modal" data-bs-target="#modal-transfert"
+                class="btn btn-warning rounded-pill"><i class="ti ti-arrows-exchange me-1"></i> Faire un transfert</a>
+        </div>
+
+    </div><!-- end row -->
+
+
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -27,16 +63,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="position-relative" style="min-width: 300px;">
-                        <div class="">
-                            <a href="#!" data-bs-toggle="modal" data-bs-target="#modal-add-compte"
-                                class="btn btn-secondary rounded-pill"><i class="ti ti-plus me-1"></i> Ajouter un
-                                compte</a>
-                            <a href="#!" data-bs-toggle="modal" data-bs-target="#modal-transfert"
-                                class="btn btn-warning rounded-pill"><i class="ti ti-arrows-exchange me-1"></i> Faire un
-                                transfert</a>
-                        </div>
-                    </div>
                 </div>
                 <div class="card-body p-0">
                     <div class="row g-0">
@@ -49,11 +75,9 @@
                                             <thead class="bg-light bg-opacity-25 thead-sm">
                                                 <tr class="text-uppercase fs-xxs">
                                                     <th class="text-muted">Compte</th>
-                                                    <th class="text-muted text-satrt fw-bold">Solde actuel</th>
-                                                    <th class="text-success text-end">Dépots sur période</th>
-                                                    <th class="text-danger text-end">Retraits sur période</th>
-                                                    <th class="text-muted text-end">Résultats sur période</th>
-                                                    <th class="text-muted text-end">Actions</th>
+                                                    <th class="text-success text-end">Entées sur période</th>
+                                                    <th class="text-danger text-end">Sorties sur période</th>
+                                                    <th class="text-muted text-end">Résultat sur période</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -62,19 +86,12 @@
                                                     <td>
                                                         <h5 class="fs-sm fw-bold">{{compte.libelle}}</h5>
                                                     </td>
-                                                    <td class="text-start fw-bold">{{compte.solde|floatformat:2}}
-                                                        <small>Fcfa</small></td>
                                                     <td class="text-end text-success">{{compte.depots|floatformat:2}}
                                                         <small>Fcfa</small></td>
                                                     <td class="text-end text-danger">{{compte.retraits|floatformat:2}}
                                                         <small>Fcfa</small></td>
                                                     <td class="text-end fw-bold">{{compte.resultats|floatformat:2}}
                                                         <small>Fcfa</small></td>
-                                                    <td class="text-end">
-                                                        <a href="{% url 'TresorApp:compte' compte.id %}"
-                                                            class="btn btn-light btn-icon btn-sm rounded-circle"><i
-                                                                class="ti ti-eye fs-lg"></i></a>
-                                                    </td>
                                                 </tr>
                                                 {% endfor %}
                                             </tbody>

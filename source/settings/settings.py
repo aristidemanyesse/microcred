@@ -88,19 +88,19 @@ WSGI_APPLICATION = 'settings.wsgi.application'
 
 DATABASES = {
     
-    # 'default': {
-    #     'ENGINE'    : 'django.db.backends.mysql',
-    #     'HOST'      : os.getenv("DB_HOST", "77.237.237.101"),
-    #     'PORT'      : os.getenv("DB_PORT", 3307),
-    #     'USER'      : os.getenv("DB_USER", "root"),
-    #     'PASSWORD'  : os.getenv("DB_PASSWORD", "1sd48ds5ds45"),
-    #     'NAME'      : os.getenv("DB_NAME", "microcred"),
-    # },
-
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE'    : 'django.db.backends.mysql',
+        'HOST'      : os.getenv("DB_HOST", "77.237.237.101"),
+        'PORT'      : os.getenv("DB_PORT", 3307),
+        'USER'      : os.getenv("DB_USER", "root"),
+        'PASSWORD'  : os.getenv("DB_PASSWORD", "1sd48ds5ds45"),
+        'NAME'      : os.getenv("DB_NAME", "microcred"),
+    },
+
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
 }
 
 

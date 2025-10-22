@@ -9,6 +9,7 @@
 </div>
 
 <div class="container-fluid">
+    
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -38,34 +39,38 @@
         </div> <!-- end col-->
     </div> <!-- end row-->
 
-
     <div class="row">
         <div class="col-xxl-4">
             <div class="card">
                 <div class="card-header justify-content-between align-items-center">
-                    <h5 class="card-title text-uppercase text-primary">Statistiques des prêts</h5>
+                    <h5 class="card-title text-uppercase text-primary">Statistiques des prêts sur la période</h5>
                 </div>
                 <div class="card-body">
                     <div>
                         <div class="d-flex justify-content-between">
-                            <h5 class="fs-base mb-2">Nouveaux prêts</h5>
+                            <h5 class="fs-base mb-2">Prêts octroyés</h5>
                             <div>
                                 <span>{{new_comptes_pret}} prêts</span>
                             </div>
                         </div>
                     </div>
-
-                    <div class="mt-4">
+                    <div class="mt-2">
                         <div class="d-flex justify-content-between">
-                            <h5 class="fs-base mb-2">Récouvrements / Attendus</h5>
+                            <h5 class="fs-base mb-2">Total octroyés</h5>
                             <div>
-                                <span>{{total_recouvrements}} Fcfa</span>
-                                <span><i class="ti ti-circle-filled text-light mx-3 fs-10"></i>
-                                    {{total_recouvrements_attempts}} Fcfa</span>
+                                <span>{{total_montant_pret}} Fcfa</span>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-4 ">
+                    <div class="mt-2">
+                        <div class="d-flex text-success justify-content-between">
+                            <h5 class="fs-base mb-2">Récouvrements </h5>
+                            <div>
+                                <span>{{total_recouvrements}} Fcfa</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2">
                         <div class="d-flex justify-content-between text-danger">
                             <h5 class="fs-base mb-2">Pénalités générés</h5>
                             <div>
@@ -73,7 +78,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mt-4">
+                    <div class="mt-2">
                         <div class="d-flex justify-content-between">
                             <h5 class="fs-base mb-2">Bénéfices prévisionnels</h5>
                             <div>
@@ -82,7 +87,7 @@
                         </div>
                     </div>
 
-                    <div class="mt-4">
+                    <div class="mt-2">
                         <div class="d-flex justify-content-between">
                             <h5 class="fs-base mb-2">Bénéfices réels</h5>
                             <div>
@@ -92,11 +97,11 @@
                     </div>
                 </div> <!-- end card-body-->
             </div> <!-- end card-->
-            </div> <!-- end card-->
-<div class="col-xxl-4">
+        </div> <!-- end card-->
+        <div class="col-xxl-4">
             <div class="card">
                 <div class="card-header justify-content-between align-items-center">
-                    <h5 class="card-title text-uppercase text-success">Statistiques Fidelis</h5>
+                    <h5 class="card-title text-uppercase text-success">Statistiques Fidelis sur la période</h5>
                 </div>
                 <div class="card-body">
                     <div>
@@ -108,18 +113,25 @@
                         </div>
                     </div>
 
-                    <div class="mt-4">
-                        <div class="d-flex justify-content-between">
-                            <h5 class="fs-base mb-2">Dépôts / Retraits</h5>
+                    <div class="mt-2">
+                        <div class="d-flex text-success justify-content-between">
+                            <h5 class="fs-base mb-2">Dépôts</h5>
                             <div>
                                 <span class="text-success">{{total_depots_fidelis}} Fcfa</span>
-                                <span><i class="ti ti-circle-filled text-light mx-3 fs-10"></i> <span
-                                        class="text-danger">{{total_retraits_fidelis}} Fcfa</span></span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-4">
+                    <div class="mt-2">
+                        <div class="d-flex text-danger justify-content-between">
+                            <h5 class="fs-base mb-2"> Retraits</h5>
+                            <div>
+                                <span class="">{{total_retraits_fidelis}} Fcfa</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-2">
                         <div class="d-flex justify-content-between">
                             <h5 class="fs-base mb-2">Bénéfices prévisionnels</h5>
                             <div>
@@ -128,9 +140,9 @@
                         </div>
                     </div>
 
-                    <div class="mt-4">
+                    <div class="mt-2">
                         <div class="d-flex justify-content-between">
-                            <h5 class="fs-base mb-2">Bénéfices générés</h5>
+                            <h5 class="fs-base mb-2">Bénéfices réels</h5>
                             <div>
                                 <span>{{total_benefices_fidelis}} Fcfa</span>
                             </div>
@@ -138,11 +150,11 @@
                     </div>
                 </div> <!-- end card-body-->
             </div> <!-- end card-->
-            </div> <!-- end card-->
-<div class="col-xxl-4">
+        </div> <!-- end card-->
+        <div class="col-xxl-4">
             <div class="card">
                 <div class="card-header justify-content-between align-items-center">
-                    <h5 class="card-title text-uppercase text-purple">Statistiques des épargnes</h5>
+                    <h5 class="card-title text-uppercase text-purple">Statistiques des épargnes sur la période</h5>
                 </div>
                 <div class="card-body">
                     <div>
@@ -154,17 +166,25 @@
                         </div>
                     </div>
 
-                    <div class="mt-4">
-                        <div class="d-flex justify-content-between">
-                            <h5 class="fs-base mb-2">Dépôts / Retraits</h5>
+                    <div class="mt-2">
+                        <div class="d-flex text-success justify-content-between">
+                            <h5 class="fs-base mb-2">Dépôts</h5>
                             <div>
                                 <span class="text-success">{{total_depots}} Fcfa</span>
-                                <span><i class="ti ti-circle-filled text-light mx-3 fs-10"></i> <span
-                                        class="text-danger">{{total_retraits}} Fcfa</span></span>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-4">
+
+                    <div class="mt-2">
+                        <div class="d-flex text-danger justify-content-between">
+                            <h5 class="fs-base mb-2"> Retraits</h5>
+                            <div>
+                                <span class="">{{total_retraits}} Fcfa</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-2">
                         <div class="d-flex justify-content-between">
                             <h5 class="fs-base mb-2">Interêts générés</h5>
                             <div>
@@ -180,116 +200,6 @@
 
 </div>
 
-<div class="modal fade" id="modal-add-compte" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-md modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-purple text-white">
-                <h1 class="modal-title" id="mySmallModalLabel">Nouveau Compte d'agence</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <form method="POST" class="formShamman" classname="CompteAgenceForm">
-                {% csrf_token %}
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Nom du compte <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="ti ti-edit text-muted fs-xl"></i></span>
-                            <input type="text" class="form-control" name="libelle" placeholder="...." required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Solde actuel <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="ti ti-coins text-muted fs-xl"></i></span>
-                            <input type="text" class="form-control number" name="base" placeholder="...." required>
-                        </div>
-                    </div>
-
-                </div>
-                <br>
-                <div class="modal-footer d-flex justify-content-between">
-                    <input type="hidden" name="agence" value="{{ request.user.agence.id }}">
-                    <input type="hidden" name="employe" value="{{ request.user.id }}">
-                    <button type="button" class="btn btn-default dim pull-left" data-bs-dismiss="modal">
-                        <i class="ti ti-close"></i> Annuler
-                    </button>
-                    <button type="submit" class="btn btn-purple dim pull-right"> <i class="ti ti-check"></i>
-                        Ouvrir le compte </button>
-                </div>
-            </form>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<div class="modal fade" id="modal-transfert" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-md modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-warning text-white">
-                <h1 class="modal-title" id="mySmallModalLabel">Nouveau transfert</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <form method="POST" class="formShamman" classname="OperationForm">
-                {% csrf_token %}
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Compte à débiter <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i
-                                    class="ti ti-calendar text-muted fs-xl"></i></span>
-                            <select name="compte_debit" class="form-select form-control my-1 my-md-0" required>
-                                {% for compte in comptes %}
-                                <option value="{{ compte.id }}">{{ compte.libelle }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Compte à créditer <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i
-                                    class="ti ti-calendar text-muted fs-xl"></i></span>
-                            <select name="compte_credit" class="form-select form-control my-1 my-md-0" required>
-                                {% for compte in comptes %}
-                                <option value="{{ compte.id }}">{{ compte.libelle }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Montant à transferer <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="ti ti-coins text-muted fs-xl"></i></span>
-                            <input type="text" class="form-control number" name="montant" placeholder="...." required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="userPassword2" class="form-label">Commentaire </label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="ti ti-edit text-muted fs-xl"></i></span>
-                            <textarea class="form-control" name="commentaire" rows="4"
-                                placeholder="numero de paiement"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <br>
-                <div class="modal-footer d-flex justify-content-between">
-                    <input type="hidden" name="employe" value="{{ request.user.id }}">
-                    <input type="hidden" name="libelle" value="Transfert entre comptes">
-                    <button type="button" class="btn btn-default dim pull-left" data-bs-dismiss="modal">
-                        <i class="ti ti-close"></i> Annuler
-                    </button>
-                    <button type="submit" class="btn btn-warning dim pull-right"> <i class="ti ti-check"></i>
-                        Ouvrir le compte </button>
-                </div>
-            </form>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
 
 {% endblock %}
 

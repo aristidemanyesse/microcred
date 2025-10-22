@@ -86,8 +86,10 @@ def rapports_view(request, start=None, end=None):
     request.session["end"] = end.isoformat()
     
 
+    prets = Pret.objects.filter(created_at__date__range = [start, end]).exclude(status__etiquette__in = [StatusPret.EN_ATTENTE, StatusPret.ANNULEE])
+    new_comptes_pret = prets.count()
+    total_montant_pret = prets.aggregate(total=Sum('base'))['total'] or 0
     transactions = Transaction.objects.filter(created_at__date__range = [start, end], type_transaction__etiquette = TypeTransaction.REMBOURSEMENT)
-    new_comptes_pret = Pret.objects.filter(created_at__date__range = [start, end]).exclude(status__etiquette = StatusPret.EN_ATTENTE).count()
     total_recouvrements = transactions.aggregate(total=Sum('montant'))['total'] or 0
     total_recouvrements_attempts = Echeance.objects.filter(date_echeance__range = [start, end]).exclude(status__etiquette = StatusPret.ANNULEE).aggregate(total=Sum('montant_a_payer'))['total'] or 0
     total_beneficies_pret = 0
@@ -95,7 +97,7 @@ def rapports_view(request, start=None, end=None):
     for echeance in Echeance.objects.filter(id__in = transactions.values_list('echeance_id', flat=True)):
         total_beneficies_pret += echeance.interet if echeance.montant_paye > echeance.interet else echeance.montant_paye
     total_penalites = Penalite.objects.filter(created_at__date__range = [start, end]).aggregate(total=Sum('montant'))['total'] or 0
-    total_beneficies_pret_previsionnels = Pret.objects.filter(created_at__date__range = [start, end]).aggregate(total=Sum('interet'))['total'] or 0
+    total_beneficies_pret_previsionnels = Pret.objects.filter(created_at__date__range = [start, end]).exclude(status__etiquette__in = [StatusPret.EN_ATTENTE, StatusPret.ANNULEE]).aggregate(total=Sum('interet'))['total'] or 0
         
     new_comptes_epargnes = CompteEpargne.objects.filter(created_at__date__range = [start, end]).count()
     total_depots = Transaction.objects.filter(created_at__date__range = [start, end], type_transaction__etiquette = TypeTransaction.DEPOT).aggregate(total=Sum('montant'))['total'] or 0
@@ -112,23 +114,23 @@ def rapports_view(request, start=None, end=None):
     ctx = {
         'TITLE_PAGE' : "Rapports Stats",
         
-        "new_comptes_pret": new_comptes_pret,
-        "total_recouvrements": total_recouvrements,
-        "total_recouvrements_attempts": total_recouvrements_attempts,
-        "total_beneficies_pret" : total_beneficies_pret,
-        "total_penalites" : total_penalites,
-        "total_beneficies_net" : total_beneficies_pret + total_penalites,
+        "new_comptes_pret"                   : new_comptes_pret,
+        "total_recouvrements"                : total_recouvrements,
+        "total_montant_pret"       : total_montant_pret,
+        "total_beneficies_pret"              : total_beneficies_pret,
+        "total_penalites"                    : total_penalites,
+        "total_beneficies_net"               : total_beneficies_pret + total_penalites,
         "total_beneficies_pret_previsionnels": total_beneficies_pret_previsionnels,
         
-        "new_comptes_epargnes": new_comptes_epargnes,
-        "total_depots": total_depots,
-        "total_retraits": total_retraits,
-        "total_interets": total_interets,
+        "new_comptes_epargnes"               : new_comptes_epargnes,
+        "total_depots"                       : total_depots,
+        "total_retraits"                     : total_retraits,
+        "total_interets"                     : total_interets,
         
-        "new_comptes_fidelis": new_comptes_fidelis,
-        "total_depots_fidelis": total_depots_fidelis,
-        "total_retraits_fidelis": total_retraits_fidelis,
-        "total_benefices_fidelis": total_benefices_fidelis,
+        "new_comptes_fidelis"                : new_comptes_fidelis,
+        "total_depots_fidelis"               : total_depots_fidelis,
+        "total_retraits_fidelis"             : total_retraits_fidelis,
+        "total_benefices_fidelis"            : total_benefices_fidelis,
         "total_benefices_fidelis_previsionnels": total_benefices_fidelis_previsionnels,
         
         "start": start.strftime("%d/%m/%Y"),

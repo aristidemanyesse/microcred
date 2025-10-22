@@ -6,7 +6,7 @@ from CoreApp.models import BaseModel
 from dateutil.relativedelta import relativedelta
 from datetime import date, timedelta
 import calendar
-from TresorApp.models import Operation
+from TresorApp.models import Operation, TypeActivity
 
 
 # Create your models here.
@@ -198,9 +198,13 @@ class Interet(BaseModel):
 class TypeTransaction(BaseModel):
     DEPOT = "1"
     RETRAIT = "2"
-    REMBOURSEMENT = "3"
+    
     DEPOT_FIDELIS = "4"
     RETRAIT_FIDELIS = "5"
+    
+    REMBOURSEMENT = "3"
+    OCTROIE_PRET = "6"
+    
     libelle = models.CharField(max_length=50)  # Dépôt / Retrait
     etiquette = models.CharField(max_length=50)
 
@@ -305,6 +309,15 @@ class Pret(BaseModel):
         self.status       = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
         self.confirmateur = employe
         self.save()
+        
+        compte = self.employe.agence.comptes.filter(activity__etiquette = TypeActivity.PRET).first()
+        Operation.objects.create(
+            libelle       = "Décaissement pour le prêt N°" + str(self.numero),
+            compte_credit = None,
+            compte_debit  = compte,
+            montant       = self.base,
+            employe       = self.employe,
+        )
             
  
     def total(self):    
@@ -475,11 +488,22 @@ def sighandler(instance, **kwargs):
 @signals.post_save(sender=Transaction)
 def sighandler(instance, created, **kwargs):
     if created:
-        compte = instance.employe.agence.comptes.filter(principal=True).first()
+        if instance.type_transaction.etiquette in [TypeTransaction.DEPOT_FIDELIS, TypeTransaction.RETRAIT_FIDELIS]:
+            compte = instance.employe.agence.comptes.filter(activity__etiquette = TypeActivity.FIDELIS).first()
+            debit = instance.type_transaction.etiquette == TypeTransaction.RETRAIT_FIDELIS
+            
+        elif instance.type_transaction.etiquette in [TypeTransaction.DEPOT, TypeTransaction.RETRAIT]:
+            compte = instance.employe.agence.comptes.filter(activity__etiquette = TypeActivity.EPARGNE).first()
+            debit = instance.type_transaction.etiquette == TypeTransaction.RETRAIT
+            
+        elif instance.type_transaction.etiquette in [TypeTransaction.REMBOURSEMENT, TypeTransaction.OCTROIE_PRET]:
+            compte = instance.employe.agence.comptes.filter(activity__etiquette = TypeActivity.PRET).first()
+            debit = instance.type_transaction.etiquette == TypeTransaction.OCTROIE_PRET
+            
         Operation.objects.create(
             libelle       = instance.type_transaction,
-            compte_credit = compte if instance.type_transaction.etiquette in [TypeTransaction.DEPOT, TypeTransaction.DEPOT_FIDELIS, TypeTransaction.REMBOURSEMENT] else None,
-            compte_debit  = compte if instance.type_transaction.etiquette in [TypeTransaction.RETRAIT, TypeTransaction.RETRAIT_FIDELIS] else None,
+            compte_credit = compte if not debit else None,
+            compte_debit  = compte if debit else None,
             montant       = instance.montant,
             employe       = instance.employe,
             transaction   = instance,
