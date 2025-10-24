@@ -57,16 +57,22 @@
                                                     class="text-success fw-bold">{{pret.reste_a_payer|floatformat:2}}</span>
                                             </h2>
                                             <div class="d-flex justify-content-around align-items-center">
-                                                {% if pret.status.etiquette != '0' %}
-                                                    {% if pret.reste_a_payer > 0 %}
+                                                {% if pret.status.etiquette != '0' and pret.status.etiquette != '-1' %}
+                                                    {% if pret.reste_a_payer > 0 and pret.ready %}
                                                         <a href="#" data-bs-toggle="modal"
                                                         data-bs-target="#modal-new-remboursement" class="btn btn-primary"><i
                                                             class="ti ti-coins fs-lg"></i> Effectuer un remboursement</a>
                                                     {% endif %}
 
-                                                    <a href="{% url 'FinanceApp:releve_pret' pret.id %}" class="btn btn-warning">
-                                                    <i class="ti ti-invoice fs-lg"></i> Imprimer le relévé de compte</a>
-                                                {% else %}
+                                                    {% if not pret.ready %}
+                                                        <a href="#" onclick="decaissement('{{pret.id}}')" class="btn btn-primary"><i
+                                                            class="ti ti-coins fs-lg"></i> Faire le décaissement</a>
+                                                    {% else %}
+                                                        <a href="{% url 'FinanceApp:releve_pret' pret.id %}" class="btn btn-warning">
+                                                        <i class="ti ti-invoice fs-lg"></i> Imprimer le relévé de compte</a>
+                                                    {% endif %}
+
+                                                {% elif pret.status.etiquette == '0' %}
                                                     <a href="#" class="btn btn-warning" onclick="confirmPret('{{pret.id}}')"><i
                                                         class="ti ti-check fs-lg"></i> Valider le prêt du souscripteur</a>
                                                 {% endif %}

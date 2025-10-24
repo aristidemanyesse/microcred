@@ -72,6 +72,23 @@ def confirm_pret(request):
             print("--------------------", e)
             return JsonResponse({"status": False, "message": str(e)})
         
+
+
+def decaissement(request):
+    if request.method == "POST":
+        try:
+            if not request.user.is_chef():
+                return JsonResponse({"status": False, "message": "Vous n'avez pas le droit de valider ce prêt !"})
+            
+            datas = request.POST
+            pret  = Pret.objects.get(pk=datas["pret_id"])
+            pret.decaissement(request.user)
+            
+            return JsonResponse({"status": True, "message": "Décaissement du prêt effectué avec succès !"})
+        except Exception as e:
+            print("--------------------", e)
+            return JsonResponse({"status": False, "message": str(e)})
+        
         
 
 def new_depot(request):

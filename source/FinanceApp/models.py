@@ -224,6 +224,7 @@ class Pret(BaseModel):
     status                 = models.ForeignKey(StatusPret, on_delete=models.CASCADE, null=True, blank=True,)
     employe                = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='prets')
     confirmateur           = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='confirm_prets', null=True, blank=True)
+    ready                  = models.BooleanField(default=False)
     derniere_date_penalite = models.DateField(null=True, blank=True)
     commentaire            = models.TextField(null=True, blank=True)
     
@@ -251,6 +252,13 @@ class Pret(BaseModel):
     
     
     def confirm_pret(self, employe):
+        self.status       = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
+        self.confirmateur = employe
+        self.save()
+        
+        
+        
+    def decaissement(self, employe):
         date_echeance = self.created_at.date()
         i = 0
         base = round(self.base / self.nombre_modalite, 2)
@@ -305,19 +313,20 @@ class Pret(BaseModel):
                 echeance.interet += reste
                 echeance.montant_a_payer += reste
                 echeance.save()
-            
-        self.status       = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
-        self.confirmateur = employe
-        self.save()
-        
+                
         compte = self.employe.agence.comptes.filter(activity__etiquette = TypeActivity.PRET).first()
         Operation.objects.create(
             libelle       = "Décaissement pour le prêt N°" + str(self.numero),
             compte_credit = None,
             compte_debit  = compte,
             montant       = self.base,
-            employe       = self.employe,
+            employe       = employe,
         )
+        self.ready = True
+        self.save()
+        
+        
+        
             
  
     def total(self):    
