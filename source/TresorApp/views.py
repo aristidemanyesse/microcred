@@ -18,7 +18,7 @@ def compte_view(request, pk):
     if not request.user.is_authenticated:
         return redirect('AuthentificationApp:login')
     
-    if request.user.is_employe():
+    if not request.user.is_chef():
         return redirect('MainApp:dashboard')
     
     compte = CompteAgence.objects.get(pk = pk)
@@ -40,7 +40,7 @@ def releve_view(request, pk):
     if not request.user.is_authenticated:
         return redirect('AuthentificationApp:login')
     
-    if request.user.is_employe():
+    if not request.user.is_chef():
         return redirect('MainApp:dashboard')
     
     try:

@@ -21,10 +21,21 @@ def prets_view(request):
     
     prets = Pret.objects.filter(status__etiquette = StatusPret.EN_COURS)
     status = StatusPret.objects.all()
+    
+    total = prets.aggregate(total=Sum('montant'))['total'] or 0
+    rembourses = 0
+    for pret in prets:
+        rembourses += pret.montant_rembourse()
+        
+    reste_a_payer = total - rembourses
+    
     ctx = {
         'TITLE_PAGE' : "Liste des prêts en cours",
         "prets": prets,
         "status": status,
+        "total": total,
+        "rembourses": rembourses,
+        "reste_a_payer": reste_a_payer,
     }
     return ctx
 
@@ -195,6 +206,7 @@ def demandes_view(request):
         return redirect('MainApp:dashboard')
     
     prets = Pret.objects.filter(status__etiquette = StatusPret.EN_ATTENTE)
+    total = prets.aggregate(total=Sum('base'))['total'] or 0
     paginator = Paginator(prets, 20)
     
     page_number = request.GET.get("page")
@@ -204,6 +216,7 @@ def demandes_view(request):
         'TITLE_PAGE' : "Liste des demandes de prêts",
         "prets": page_obj,
         "page_obj": page_obj,
+        "total": total,
     }
     return ctx
 

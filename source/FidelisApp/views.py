@@ -16,9 +16,14 @@ def comptes(request):
         return redirect('MainApp:dashboard')
     
     comptes = CompteFidelis.objects.filter(Q(status__etiquette = StatusPret.EN_COURS) | Q(retire=False))
+    payes = sum([compte.nombre_paye()*compte.base for compte in comptes])
+    reste = sum([compte.nombre * compte.base for compte in comptes]) - payes
+    
     ctx = {
         'TITLE_PAGE' : "Liste des comptes Fidelis",
         "comptes": comptes,
+        "payes": payes,
+        "reste": reste,
     }
     
     return ctx

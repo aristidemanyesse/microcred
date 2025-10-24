@@ -44,9 +44,9 @@ class ModaliteEcheanceAdmin(admin.ModelAdmin):
     
 @admin.register(Pret)
 class PretAdmin(admin.ModelAdmin):  
-    list_display = ('client', 'base', 'taux', 'montant', 'modalite', 'nombre_modalite', 'status')
+    list_display = ('numero', 'client', 'base', 'taux', 'montant', 'modalite', 'nombre_modalite', 'status', 'created_at')
     search_fields = ('client__id', 'client__nom', 'client__prenoms')
-    list_filter = ('status',)
+    list_filter = ('status', 'created_at')
     
 @admin.register(Echeance)
 class EcheanceAdmin(admin.ModelAdmin):
