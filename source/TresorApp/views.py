@@ -21,8 +21,8 @@ def compte_view(request, pk):
     if not request.user.is_chef():
         return redirect('MainApp:dashboard')
     
-    compte = CompteAgence.objects.get(pk = pk)
-    operations = Operation.objects.filter(Q(compte_credit = compte) | Q(compte_debit = compte)).order_by("-created_at")
+    compte = CompteAgence.objects.get(deleted = False, pk = pk)
+    operations = Operation.objects.filter(deleted = False).filter(Q(compte_credit = compte) | Q(compte_debit = compte)).order_by("-created_at")
     agences = Agence.objects.all()
     ctx = {
         'TITLE_PAGE' : "Fiche de compte",
@@ -44,8 +44,8 @@ def releve_view(request, pk):
         return redirect('MainApp:dashboard')
     
     try:
-        compte     = CompteAgence.objects.get(pk = pk)
-        operations = Operation.objects.filter(Q(compte_credit = compte) | Q(compte_debit = compte)).order_by("created_at")
+        compte     = CompteAgence.objects.get(deleted = False, pk = pk)
+        operations = Operation.objects.filter(deleted = False).filter(Q(compte_credit = compte) | Q(compte_debit = compte)).order_by("created_at")
         
         base = compte.base
         for operation in operations:
@@ -86,30 +86,34 @@ def rapports_view(request, start=None, end=None):
     request.session["end"] = end.isoformat()
     
 
-    prets = Pret.objects.filter(created_at__date__range = [start, end]).exclude(status__etiquette__in = [StatusPret.EN_ATTENTE, StatusPret.ANNULEE])
+    prets = Pret.objects.filter(deleted = False, created_at__date__range = [start, end]).exclude(status__etiquette__in = [StatusPret.EN_ATTENTE, StatusPret.ANNULEE])
     new_comptes_pret = prets.count()
     total_montant_pret = prets.aggregate(total=Sum('base'))['total'] or 0
-    transactions = Transaction.objects.filter(created_at__date__range = [start, end], type_transaction__etiquette = TypeTransaction.REMBOURSEMENT)
+    transactions = Transaction.objects.filter(deleted = False, created_at__date__range = [start, end], type_transaction__etiquette = TypeTransaction.REMBOURSEMENT)
     total_recouvrements = transactions.aggregate(total=Sum('montant'))['total'] or 0
-    total_recouvrements_attempts = Echeance.objects.filter(date_echeance__range = [start, end]).exclude(status__etiquette = StatusPret.ANNULEE).aggregate(total=Sum('montant_a_payer'))['total'] or 0
+    total_recouvrements_attempts = Echeance.objects.filter(deleted = False, date_echeance__range = [start, end]).exclude(status__etiquette = StatusPret.ANNULEE).aggregate(total=Sum('montant_a_payer'))['total'] or 0
     total_beneficies_pret = 0
     total_penalites = 0
-    for echeance in Echeance.objects.filter(id__in = transactions.values_list('echeance_id', flat=True)):
+    for echeance in Echeance.objects.filter(deleted = False, id__in = transactions.values_list('echeance_id', flat=True)):
         total_beneficies_pret += echeance.interet if echeance.montant_paye > echeance.interet else echeance.montant_paye
-    total_penalites = Penalite.objects.filter(created_at__date__range = [start, end]).aggregate(total=Sum('montant'))['total'] or 0
-    total_beneficies_pret_previsionnels = Pret.objects.filter(created_at__date__range = [start, end]).exclude(status__etiquette__in = [StatusPret.EN_ATTENTE, StatusPret.ANNULEE]).aggregate(total=Sum('interet'))['total'] or 0
+    total_penalites = Penalite.objects.filter(deleted = False, created_at__date__range = [start, end]).aggregate(total=Sum('montant'))['total'] or 0
+    total_beneficies_pret_previsionnels = Pret.objects.filter(deleted = False, created_at__date__range = [start, end]).exclude(status__etiquette__in = [StatusPret.EN_ATTENTE, StatusPret.ANNULEE]).aggregate(total=Sum('interet'))['total'] or 0
         
-    new_comptes_epargnes = CompteEpargne.objects.filter(created_at__date__range = [start, end]).count()
-    total_depots = Transaction.objects.filter(created_at__date__range = [start, end], type_transaction__etiquette = TypeTransaction.DEPOT).aggregate(total=Sum('montant'))['total'] or 0
-    total_retraits = Transaction.objects.filter(created_at__date__range = [start, end], type_transaction__etiquette = TypeTransaction.RETRAIT).aggregate(total=Sum('montant'))['total'] or 0
-    total_interets = Interet.objects.filter(created_at__date__range = [start, end]).aggregate(total=Sum('montant'))['total'] or 0
+    new_comptes_epargnes = CompteEpargne.objects.filter(deleted = False, created_at__date__range = [start, end]).count()
+    total_depots = Transaction.objects.filter(deleted = False, created_at__date__range = [start, end], type_transaction__etiquette = TypeTransaction.DEPOT).aggregate(total=Sum('montant'))['total'] or 0
+    total_retraits = Transaction.objects.filter(deleted = False, created_at__date__range = [start, end], type_transaction__etiquette = TypeTransaction.RETRAIT).aggregate(total=Sum('montant'))['total'] or 0
+    total_interets = Interet.objects.filter(deleted = False, created_at__date__range = [start, end]).aggregate(total=Sum('montant'))['total'] or 0
     total_beneficies_pret_previsionnels += total_interets
     
-    new_comptes_fidelis = CompteFidelis.objects.filter(created_at__date__range = [start, end]).count()
-    total_depots_fidelis = Transaction.objects.filter(created_at__date__range = [start, end], type_transaction__etiquette = TypeTransaction.DEPOT_FIDELIS).aggregate(total=Sum('montant'))['total'] or 0
-    total_retraits_fidelis = Transaction.objects.filter(created_at__date__range = [start, end], type_transaction__etiquette = TypeTransaction.RETRAIT_FIDELIS).aggregate(total=Sum('montant'))['total'] or 0
-    total_benefices_fidelis = CompteFidelis.objects.filter(cloture_at__date__range = [start, end]).aggregate(total=Sum('frais'))['total'] or 0
-    total_benefices_fidelis_previsionnels = CompteFidelis.objects.filter(created_at__date__range = [start, end]).aggregate(total=Sum('frais'))['total'] or 0
+    new_comptes_fidelis = CompteFidelis.objects.filter(deleted = False, created_at__date__range = [start, end]).count()
+    
+    total_depots_fidelis = Transaction.objects.filter(deleted = False, created_at__date__range = [start, end], type_transaction__etiquette = TypeTransaction.DEPOT_FIDELIS).aggregate(total=Sum('montant'))['total'] or 0
+    
+    total_retraits_fidelis = Transaction.objects.filter(deleted = False, created_at__date__range = [start, end], type_transaction__etiquette = TypeTransaction.RETRAIT_FIDELIS).aggregate(total=Sum('montant'))['total'] or 0
+    
+    total_benefices_fidelis = CompteFidelis.objects.filter(deleted = False, cloture_at__date__range = [start, end]).aggregate(total=Sum('frais'))['total'] or 0
+    
+    total_benefices_fidelis_previsionnels = CompteFidelis.objects.filter(deleted = False, created_at__date__range = [start, end]).aggregate(total=Sum('frais'))['total'] or 0
     
     ctx = {
         'TITLE_PAGE' : "Rapports Stats",
@@ -155,8 +159,8 @@ def tresorerie(request, start=None, end=None):
     request.session["start"] = start.isoformat()
     request.session["end"] = end.isoformat()
 
-    comptes = CompteAgence.objects.filter().order_by("created_at")
-    operations = Operation.objects.filter(created_at__date__range = [start, end]).order_by("-created_at")
+    comptes = CompteAgence.objects.filter(deleted = False).order_by("created_at")
+    operations = Operation.objects.filter(deleted = False, created_at__date__range = [start, end]).order_by("-created_at")
     
     comptes__ = []
     for compte in comptes:

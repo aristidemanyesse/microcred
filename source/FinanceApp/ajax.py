@@ -71,6 +71,23 @@ def confirm_pret(request):
         except Exception as e:
             print("--------------------", e)
             return JsonResponse({"status": False, "message": str(e)})
+                
+
+
+def decline_pret(request):
+    if request.method == "POST":
+        try:
+            if not request.user.is_chef():
+                return JsonResponse({"status": False, "message": "Vous n'avez pas le droit de valider ce prêt !"})
+            
+            datas = request.POST
+            pret  = Pret.objects.get(pk=datas["pret_id"])
+            pret.decline_pret(request.user)
+            
+            return JsonResponse({"status": True, "message": "Prêt validé avec succès !"})
+        except Exception as e:
+            print("--------------------", e)
+            return JsonResponse({"status": False, "message": str(e)})
         
 
 

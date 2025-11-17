@@ -27,13 +27,13 @@ class CompteFidelis(BaseModel):
     
     
     def nombre_paye(self):
-        return self.cases.filter(status__etiquette = StatusPret.TERMINE).count()
+        return self.cases.filter(status__etiquette = StatusPret.TERMINE, deleted = False).count()
 
     def total_payes(self):
         return self.nombre_paye() *  self.base
     
     def total_retire(self):
-        return self.transactions.filter(type_transaction__etiquette = TypeTransaction.RETRAIT_FIDELIS).aggregate(total=Sum('montant'))['total'] or 0
+        return self.transactions.filter(type_transaction__etiquette = TypeTransaction.RETRAIT_FIDELIS, deleted = False).aggregate(total=Sum('montant'))['total'] or 0
     
     def solde(self):
         if self.retire : return 0
@@ -41,7 +41,7 @@ class CompteFidelis(BaseModel):
     
     
     def deposer(self, employe, mode, commentaire):
-        case = self.cases.filter(status__etiquette=StatusPret.EN_COURS).first()
+        case = self.cases.filter(status__etiquette=StatusPret.EN_COURS, deleted = False).first()
         if case is not None:
             Transaction.objects.create(
                 client           = self.client,

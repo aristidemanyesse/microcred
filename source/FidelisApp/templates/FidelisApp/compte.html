@@ -70,6 +70,12 @@
 
                                                 <a href="{% url 'FidelisApp:releve_fidelis' compte.id %}" class="btn btn-warning ms-3">
                                                         <i class="ti ti-invoice fs-lg me-2"></i> Imprimer le relévé de compte</a>
+
+                                                {% if request.user.is_chef %}
+                                                    <button onclick="delete_password('CompteFidelis','{{compte.id}}')"
+                                                    class="btn btn-light btn-icon btn-md "><i
+                                                            class="ti ti-trash fs-lg text-danger"></i></button>
+                                                {% endif %}
                                                
                                             </div>
                                         </div>

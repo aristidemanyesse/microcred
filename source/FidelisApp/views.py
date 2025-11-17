@@ -15,7 +15,7 @@ def comptes(request):
     if request.user.is_gestionnaire_epargne():
         return redirect('MainApp:dashboard')
     
-    comptes = CompteFidelis.objects.filter(Q(status__etiquette = StatusPret.EN_COURS) | Q(retire=False))
+    comptes = CompteFidelis.objects.filter(deleted = False).filter(Q(status__etiquette = StatusPret.EN_COURS) | Q(retire=False))
     payes = sum([compte.nombre_paye()*compte.base for compte in comptes])
     reste = sum([compte.nombre * compte.base for compte in comptes]) - payes
     
@@ -39,9 +39,9 @@ def compte_view(request, pk):
         if request.user.is_gestionnaire_epargne():
             return redirect('MainApp:dashboard')
         
-        compte       = CompteFidelis.objects.get(pk = pk)
-        transactions = compte.transactions.filter()
-        cases        = compte.cases.filter(status__etiquette = StatusPret.TERMINE)
+        compte       = CompteFidelis.objects.get(pk = pk, deleted = False)
+        transactions = compte.transactions.filter(deleted = False)
+        cases        = compte.cases.filter(status__etiquette = StatusPret.TERMINE, deleted = False)
         payes        = range(compte.nombre_paye())
         data         = range(compte.nombre - compte.nombre_paye())
         
@@ -71,7 +71,7 @@ def archivage(request):
     if request.user.is_gestionnaire_epargne():
         return redirect('MainApp:dashboard')
 
-    comptes = CompteFidelis.objects.filter(Q(status__etiquette = StatusPret.ANNULEE) | Q(status__etiquette = StatusPret.TERMINE, retire=True))
+    comptes = CompteFidelis.objects.filter(deleted = False).filter(Q(status__etiquette = StatusPret.ANNULEE) | Q(status__etiquette = StatusPret.TERMINE, retire=True))
     ctx = {
         'TITLE_PAGE' : "Archives des comptes Fidelis",
         "comptes": comptes,
@@ -91,8 +91,8 @@ def releve_view(request, pk):
         if request.user.is_gestionnaire_epargne():
             return redirect('FidelisApp:comptes')
     
-        compte = CompteFidelis.objects.get(pk = pk)
-        transactions = compte.transactions.filter().order_by('created_at')
+        compte = CompteFidelis.objects.get(pk = pk, deleted = False)
+        transactions = compte.transactions.filter(deleted = False).order_by('created_at')
         
         
         datas = []
