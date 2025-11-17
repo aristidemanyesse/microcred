@@ -92,7 +92,6 @@ def dashboard_view(request):
 
 
 @login_required()
-@permission_classes([IsAuthenticated])
 @render_to('MainApp/clients.html')
 def clients_view(request):
     if not request.user.is_authenticated:
@@ -110,6 +109,7 @@ def clients_view(request):
     return ctx
 
 
+
 @login_required()
 @render_to('MainApp/client.html')
 def client_view(request, pk):
@@ -117,23 +117,23 @@ def client_view(request, pk):
         return redirect('AuthentificationApp:login')
     
     try:
-        client = Client.objects.get(pk=pk, deleted=False)
-        epargnes = CompteEpargne.objects.filter(deleted = False, client=client, status__etiquette = StatusPret.EN_COURS)
-        prets = Pret.objects.filter(deleted = False, client=client, status__etiquette__in = [StatusPret.EN_COURS, StatusPret.EN_ATTENTE])
+        client         = Client.objects.get(pk=pk, deleted=False)
+        epargnes       = CompteEpargne.objects.filter(deleted = False, client=client, status__etiquette = StatusPret.EN_COURS)
+        prets          = Pret.objects.filter(deleted = False, client=client, status__etiquette__in = [StatusPret.EN_COURS, StatusPret.EN_ATTENTE])
         comptesfidelis = client.fidelis.filter(deleted = False, status__etiquette = StatusPret.EN_COURS)
-        transactions = client.transactions.filter(deleted = False).order_by("-created_at")[:5]
+        transactions   = client.transactions.filter(deleted = False).order_by("-created_at")[:5]
         
         ctx = {
-            'TITLE_PAGE' : "Fiche client",
-            "client": client,
-            "genres": Genre.objects.all(),
-            "particulier": TypeClient.objects.filter(etiquette = TypeClient.PARTICULIER).first(),
-            "entreprise": TypeClient.objects.filter(etiquette = TypeClient.ENTREPRISE).first(),
-            "epargnes": epargnes,
+            'TITLE_PAGE'    : "Fiche client",
+            "client"        : client,
+            "genres"        : Genre.objects.all(),
+            "particulier"   : TypeClient.objects.filter(etiquette = TypeClient.PARTICULIER).first(),
+            "entreprise"    : TypeClient.objects.filter(etiquette = TypeClient.ENTREPRISE).first(),
+            "epargnes"      : epargnes,
             "comptesfidelis": comptesfidelis,
-            "prets": prets,
-            "transactions": transactions,
-            "modalites": ModaliteEcheance.objects.all(),
+            "prets"         : prets,
+            "transactions"  : transactions,
+            "modalites"     : ModaliteEcheance.objects.all(),
             "amortissements": TypeAmortissement.objects.all(),
         }
         return ctx

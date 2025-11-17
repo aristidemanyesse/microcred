@@ -25,7 +25,7 @@ def users_view(request):
     if not request.user.is_authenticated:
         return redirect('AuthentificationApp:login')
     
-    if request.user.is_employe():
+    if not request.user.is_chef():
         return redirect('MainApp:dashboard')
     
     roles = Role.objects.all().order_by('etiquette')
