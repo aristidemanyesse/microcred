@@ -91,6 +91,12 @@
                             <a href="{% url 'FinanceApp:pret' pret.id %}" 
                                 class="btn btn-warning btn-sm btn-rounded float-end mt-n1 fs-md">
                                 <i class="ti ti-eye "></i> Détails</a>
+
+                                {% if request.user.is_chef %}
+                                    <button onclick="delete_password('Pret','{{pret.id}}')"
+                                    class="btn btn-light btn-icon btn-sm  mt-n1 me-1"><i
+                                        class="ti ti-trash fs-lg text-danger"></i></button>
+                                {% endif %}
                         </div>
                     </div>
 

@@ -19,7 +19,7 @@ def prets_view(request):
     if request.user.is_gestionnaire_epargne():
         return redirect('MainApp:dashboard')
     
-    prets = Pret.objects.filter(status__etiquette = StatusPret.EN_COURS)
+    prets = Pret.objects.filter(status__etiquette = StatusPret.EN_COURS, deleted = False)
     status = StatusPret.objects.all()
     
     total = prets.aggregate(total=Sum('montant'))['total'] or 0
@@ -50,10 +50,10 @@ def pret_view(request, pk):
         return redirect('MainApp:dashboard')
     
     try:
-        pret         = Pret.objects.get(pk=pk)
-        echeances    = Echeance.objects.filter(pret=pret).order_by("level")
-        penalites    = Penalite.objects.filter(echeance__pret=pret)
-        transactions = Transaction.objects.filter(echeance__pret=pret).order_by("-created_at")
+        pret         = Pret.objects.get(pk=pk, deleted = False)
+        echeances    = Echeance.objects.filter(pret=pret, deleted = False).order_by("level")
+        penalites    = Penalite.objects.filter(echeance__pret=pret, deleted = False)
+        transactions = Transaction.objects.filter(echeance__pret=pret, deleted = False).order_by("-created_at")
         modes        = ModePayement.objects.all()
         garanties    = Garantie.objects.filter(pret=pret, deleted = False)
         ctx = {
@@ -82,7 +82,7 @@ def archivage_prets(request):
     if request.user.is_gestionnaire_epargne():
         return redirect('MainApp:dashboard')
     
-    prets = Pret.objects.filter(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE])
+    prets = Pret.objects.filter(deleted = False, status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE])
     status = StatusPret.objects.all()
     ctx = {
         'TITLE_PAGE' : "Archives des prêts en cours",
@@ -103,7 +103,7 @@ def prets_simulateur_view(request):
         return redirect('MainApp:dashboard')
     
     if request.method == "GET":
-        epargnes = CompteEpargne.objects.filter(status__etiquette = StatusPret.EN_COURS)
+        epargnes = CompteEpargne.objects.filter(deleted = False, status__etiquette = StatusPret.EN_COURS)
         modalites = ModaliteEcheance.objects.all()
         ctx = {
             'TITLE_PAGE' : "Simulateur d'épargne",
@@ -205,7 +205,7 @@ def demandes_view(request):
     if request.user.is_gestionnaire_epargne():
         return redirect('MainApp:dashboard')
     
-    prets = Pret.objects.filter(status__etiquette = StatusPret.EN_ATTENTE)
+    prets = Pret.objects.filter(deleted = False, status__etiquette = StatusPret.EN_ATTENTE)
     total = prets.aggregate(total=Sum('base'))['total'] or 0
     paginator = Paginator(prets, 20)
     
@@ -230,7 +230,7 @@ def echeances_view(request):
         return redirect('MainApp:dashboard')
     
     today = date.today()
-    echeances = Echeance.objects.filter(date_echeance__range = [today - timedelta(days=5), today + timedelta(days=5)]).exclude(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE]).order_by("date_echeance")
+    echeances = Echeance.objects.filter(deleted = False, date_echeance__range = [today - timedelta(days=5), today + timedelta(days=5)]).exclude(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE]).order_by("date_echeance")
     status = StatusPret.objects.all()
     ctx = {
         'TITLE_PAGE' : "Liste des rétards d'échéances",
@@ -256,7 +256,7 @@ def invoice(request, pk):
                 return redirect('MainApp:dashboard')
             
             penalite = transaction.echeance.penalites_montant()
-            avance = transaction.echeance.transactions.filter(created_at__lt = transaction.created_at).aggregate(total=Sum('montant'))['total'] or 0
+            avance = transaction.echeance.transactions.filter(deleted = False, created_at__lt = transaction.created_at).aggregate(total=Sum('montant'))['total'] or 0
             total = transaction.echeance.montant_a_payer + penalite - avance
             reste = total - transaction.montant
         else:
@@ -291,8 +291,8 @@ def releve_pret(request, pk):
 
     try:
         pret = Pret.objects.get(pk = pk)
-        echeances = pret.echeances.filter(Q(status__etiquette = StatusPret.TERMINE) | Q(montant_paye__gt = 0)).order_by("level")
-        reste = pret.echeances.exclude(status__etiquette__in = [StatusPret.TERMINE, StatusPret.ANNULEE]).count()
+        echeances = pret.echeances.filter(deleted = False).filter(Q(status__etiquette = StatusPret.TERMINE) | Q(montant_paye__gt = 0)).order_by("level")
+        reste = pret.echeances.filter(deleted = False).exclude(status__etiquette__in = [StatusPret.TERMINE, StatusPret.ANNULEE]).count()
         ctx = {
             'TITLE_PAGE' : "Réçu de transaction",
             "pret" : pret,
@@ -316,7 +316,7 @@ def epargnes_view(request):
     if request.user.is_gestionnaire_pret():
         return redirect('MainApp:dashboard')
         
-    epargnes = CompteEpargne.objects.filter(status__etiquette = StatusPret.EN_COURS)
+    epargnes = CompteEpargne.objects.filter(deleted = False, status__etiquette = StatusPret.EN_COURS)
     ladate = date.today() - timedelta(days=3)
     ctx = {
         'TITLE_PAGE' : "Liste des comptes épargnes",
@@ -335,9 +335,9 @@ def epargne_view(request, pk):
         return redirect('MainApp:dashboard')
     
     try:
-        epargne = CompteEpargne.objects.get(pk=pk)
-        transactions = epargne.transactions.filter().order_by("-created_at")
-        interets = epargne.interets.filter().order_by("-created_at")
+        epargne = CompteEpargne.objects.get(deleted = False, pk=pk)
+        transactions = epargne.transactions.filter(deleted = False).order_by("-created_at")
+        interets = epargne.interets.filter(deleted = False).order_by("-created_at")
         ctx = {
             'TITLE_PAGE' : "Fiche compte épargne",
             "epargne": epargne,
@@ -361,7 +361,7 @@ def archivage_epargnes(request):
     if request.user.is_gestionnaire_pret():
         return redirect('MainApp:dashboard')
         
-    epargnes = CompteEpargne.objects.filter(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE])
+    epargnes = CompteEpargne.objects.filter(deleted = False, status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE])
     ladate = date.today() - timedelta(days=3)
     ctx = {
         'TITLE_PAGE' : "Archives des comptes épargnes",
@@ -382,9 +382,9 @@ def releve_epargne(request, pk):
         if request.user.is_gestionnaire_pret():
             return redirect('MainApp:dashboard')
         
-        epargne = CompteEpargne.objects.get(pk = pk)
-        transactions = epargne.transactions.filter().order_by('created_at')
-        interets = epargne.interets.filter().order_by('created_at')
+        epargne = CompteEpargne.objects.get(deleted = False, pk = pk)
+        transactions = epargne.transactions.filter(deleted = False).order_by('created_at')
+        interets = epargne.interets.filter(deleted = False).order_by('created_at')
         items = list(transactions) + list(interets)
         sorted(items, key=lambda x: x.created_at)
         
@@ -435,7 +435,7 @@ def epargnes_simulateur_view(request):
         return redirect('MainApp:dashboard')
     
     if request.method == "GET":
-        epargnes = CompteEpargne.objects.filter(status__etiquette = StatusPret.EN_COURS)
+        epargnes = CompteEpargne.objects.filter(deleted = False, status__etiquette = StatusPret.EN_COURS)
         modalites = ModaliteEcheance.objects.all()
         ctx = {
             'TITLE_PAGE' : "Simulateur d'épargne",

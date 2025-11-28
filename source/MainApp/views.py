@@ -19,13 +19,13 @@ def dashboard_view(request):
     start_month = today.replace(day=1)
     
     
-    prets = Pret.objects.filter(status__etiquette = StatusPret.EN_COURS)
-    epargnes = CompteEpargne.objects.filter(status__etiquette = StatusPret.EN_COURS)
-    comptes_mois = CompteEpargne.objects.filter(status__etiquette = StatusPret.EN_COURS, created_at__date__year=start_month.year, created_at__date__month=start_month.month).count()
-    clients = Client.objects.filter()
+    prets = Pret.objects.filter(deleted = False, status__etiquette = StatusPret.EN_COURS)
+    epargnes = CompteEpargne.objects.filter(deleted = False, status__etiquette = StatusPret.EN_COURS)
+    comptes_mois = CompteEpargne.objects.filter(deleted = False, status__etiquette = StatusPret.EN_COURS, created_at__date__year=start_month.year, created_at__date__month=start_month.month).count()
+    clients = Client.objects.filter(deleted = False)
     
     echeances = (Echeance.objects
-        .filter(date_echeance__lte=today, status__etiquette = StatusPret.RETARD)
+        .filter(deleted = False, date_echeance__lte=today, status__etiquette = StatusPret.RETARD)
         .aggregate(
             nombre=Count("id"),
             montant_total=Sum("montant_a_payer")
@@ -34,7 +34,7 @@ def dashboard_view(request):
     
 
     penalites = (Penalite.objects
-        .filter(created_at__date__gte=start_month, created_at__date__lte=today)
+        .filter(deleted = False, created_at__date__gte=start_month, created_at__date__lte=today)
         .aggregate(
             nombre=Count("id"),
             montant_total=Sum("montant")
@@ -42,7 +42,7 @@ def dashboard_view(request):
     )
     
     stats = (Transaction.objects
-        .filter(created_at__date__gte=start_month, created_at__date__lte=today)
+        .filter(deleted = False, created_at__date__gte=start_month, created_at__date__lte=today)
         .aggregate(
             # Remboursements
             remboursements_total=Sum(
@@ -92,7 +92,6 @@ def dashboard_view(request):
 
 
 @login_required()
-@permission_classes([IsAuthenticated])
 @render_to('MainApp/clients.html')
 def clients_view(request):
     if not request.user.is_authenticated:
@@ -110,6 +109,7 @@ def clients_view(request):
     return ctx
 
 
+
 @login_required()
 @render_to('MainApp/client.html')
 def client_view(request, pk):
@@ -117,23 +117,23 @@ def client_view(request, pk):
         return redirect('AuthentificationApp:login')
     
     try:
-        client = Client.objects.get(pk=pk, deleted=False)
-        epargnes = CompteEpargne.objects.filter(client=client, status__etiquette = StatusPret.EN_COURS)
-        prets = Pret.objects.filter(client=client, status__etiquette__in = [StatusPret.EN_COURS, StatusPret.EN_ATTENTE])
-        comptesfidelis = client.fidelis.filter(status__etiquette = StatusPret.EN_COURS)
-        transactions = client.transactions.filter().order_by("-created_at")[:5]
+        client         = Client.objects.get(pk=pk, deleted=False)
+        epargnes       = CompteEpargne.objects.filter(deleted = False, client=client, status__etiquette = StatusPret.EN_COURS)
+        prets          = Pret.objects.filter(deleted = False, client=client, status__etiquette__in = [StatusPret.EN_COURS, StatusPret.EN_ATTENTE])
+        comptesfidelis = client.fidelis.filter(deleted = False, status__etiquette = StatusPret.EN_COURS)
+        transactions   = client.transactions.filter(deleted = False).order_by("-created_at")[:5]
         
         ctx = {
-            'TITLE_PAGE' : "Fiche client",
-            "client": client,
-            "genres": Genre.objects.all(),
-            "particulier": TypeClient.objects.filter(etiquette = TypeClient.PARTICULIER).first(),
-            "entreprise": TypeClient.objects.filter(etiquette = TypeClient.ENTREPRISE).first(),
-            "epargnes": epargnes,
+            'TITLE_PAGE'    : "Fiche client",
+            "client"        : client,
+            "genres"        : Genre.objects.all(),
+            "particulier"   : TypeClient.objects.filter(etiquette = TypeClient.PARTICULIER).first(),
+            "entreprise"    : TypeClient.objects.filter(etiquette = TypeClient.ENTREPRISE).first(),
+            "epargnes"      : epargnes,
             "comptesfidelis": comptesfidelis,
-            "prets": prets,
-            "transactions": transactions,
-            "modalites": ModaliteEcheance.objects.all(),
+            "prets"         : prets,
+            "transactions"  : transactions,
+            "modalites"     : ModaliteEcheance.objects.all(),
             "amortissements": TypeAmortissement.objects.all(),
         }
         return ctx

@@ -81,6 +81,54 @@ $(function() {
 
 
 
+        declinePret = function(pretId) {
+            Swal.fire({
+                title: "Êtes-vous sûr de vouloir décliner ce prêt ?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Oui, décliner le prêt",
+                cancelButtonText: "Non, annuler",
+                }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                        Loader.start()
+                        var token = $(".footer").find("input[name=csrfmiddlewaretoken]").val()
+                        $.ajax({
+                            url: "{% url 'FinanceApp:decline_pret' %}",     
+                            type: "POST",
+                            data: {
+                                pret_id: pretId,
+                                csrfmiddlewaretoken:token
+                            },
+                            success: function(data) {
+                                if (data.status) {
+                                    Loader.stop()
+                                    Swal.fire({
+                                        title: "Le prêt a été décliné avec succès !",
+                                        icon: "success",
+                                        showConfirmButton: true,
+                                        showDenyButton: false,
+                                        confirmButtonText: "Ok, c'est compris !",
+                                        }).then((result) => {
+                                            /* Read more about isConfirmed, isDenied below */
+                                            if (result.isConfirmed) {
+                                                window.location.reload()
+                                            } 
+                                    });
+                                } else {
+                                    Alerter.error('Erreur !', data.message);
+                                }
+                            }
+                        })
+                    } else if (result.isDenied) {
+                        Swal.fire("Annulation", "Vous avez annulé la validation du prêt", "error");
+                    }
+                });
+        }   
+
+
+
+
         decaissement = function(pretId) {
             Swal.fire({
                 title: "Êtes-vous sûr de vouloir faire le décaissement du prêt ?",

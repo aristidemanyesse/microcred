@@ -102,6 +102,12 @@
                                     <a href="{% url 'MainApp:client' client.id %}"
                                         class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                             class="ti ti-eye fs-lg"></i></a>
+
+                                        {% if request.user.is_chef %}
+                                            <button onclick="delete_password('Client','{{client.id}}')"
+                                            class="btn btn-light btn-icon btn-sm rounded-circle"><i
+                                                class="ti ti-trash fs-lg text-danger"></i></button>
+                                        {% endif %}
                                 </div>
                             </td>
                         </tr>

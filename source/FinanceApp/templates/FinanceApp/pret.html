@@ -75,6 +75,15 @@
                                                 {% elif pret.status.etiquette == '0' %}
                                                     <a href="#" class="btn btn-warning" onclick="confirmPret('{{pret.id}}')"><i
                                                         class="ti ti-check fs-lg"></i> Valider le prêt du souscripteur</a>
+
+                                                        <a href="#" class="btn btn-danger" onclick="declinePret('{{pret.id}}')"><i
+                                                        class="ti ti-check fs-lg"></i> Décliner le prêt du souscripteur</a>
+                                                {% endif %}
+
+                                                {% if request.user.is_chef %}
+                                                    <button onclick="delete_password('Pret','{{pret.id}}')"
+                                                    class="btn btn-light btn-icon btn-md "><i
+                                                            class="ti ti-trash fs-lg text-danger"></i></button>
                                                 {% endif %}
                                             </div>
                                         </div>

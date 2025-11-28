@@ -15,9 +15,15 @@
         <div class="col">
             <div class="card">
                 <div class="card-body">
+                    {% if request.user.is_chef %}
+                        <button onclick="delete_password('CompteAgence','{{compte.id}}')"
+                        class="btn btn-light btn-icon btn-sm rounded-circle float-end mt-n1 fs-xl ms-1"><i
+                            class="ti ti-trash fs-lg text-danger"></i></button>
+                    {% endif %}
                     <a href="{% url 'TresorApp:compte' compte.id %}"
                         class="btn btn-light btn-icon btn-sm rounded-circle float-end mt-n1 fs-xl"><i
                             class="ti ti-eye"></i></a>
+                            
                     <h5 title="Number of Tasks">{{ compte.libelle }}</h5>
                     <div class="d-flex align-items-center gap-2 my-3">
                         <div class="avatar-md flex-shrink-0">
@@ -203,6 +209,11 @@
                                     <a href="{% url 'FinanceApp:invoice' operation.transaction.id %}"
                                         class="btn btn-light btn-icon btn-sm rounded-circle"><i
                                             class="ti ti-eye fs-lg"></i></a>
+                                    {% endif %}
+                                    {% if request.user.is_chef %}
+                                        <button onclick="delete_password('Client','{{client.id}}')"
+                                        class="btn btn-light btn-icon btn-sm rounded-circle"><i
+                                            class="ti ti-trash fs-lg text-danger"></i></button>
                                     {% endif %}
                                 </td>
                             </tr>

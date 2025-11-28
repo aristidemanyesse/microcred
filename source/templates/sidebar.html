@@ -152,14 +152,14 @@
         </li>
         {% endif %}
         
-        {% if not request.user.is_chef %}
+        {% if request.user.is_chef %}
             <li class="side-nav-item">
                 <a href="{% url 'AuthentificationApp:users' %}" class="side-nav-link">
                     <span class="menu-icon"><i class="ti ti-user-shield"></i></span>
                     <span class="menu-text" data-lang="landing-page">Gestion des utilisateurs</span>
                 </a>
             </li>
-            {% endif %}
+        {% endif %}
 
         </ul>
     </div>

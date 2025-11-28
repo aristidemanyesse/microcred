@@ -257,6 +257,12 @@ class Pret(BaseModel):
         self.confirmateur = employe
         self.date_confirmation = datetime.now()
         self.save()
+    
+    
+    def decline_pret(self, employe):
+        self.status       = StatusPret.objects.get(etiquette = StatusPret.ANNULEE)
+        self.confirmateur = employe
+        self.save()
         
         
         
@@ -336,7 +342,7 @@ class Pret(BaseModel):
     
     
     def montant_rembourse(self):
-        return Transaction.objects.filter(echeance__pret=self, type_transaction__etiquette = TypeTransaction.REMBOURSEMENT).aggregate(total=models.Sum('montant'))['total'] or 0
+        return Transaction.objects.filter(echeance__pret=self, type_transaction__etiquette = TypeTransaction.REMBOURSEMENT, deleted = False).aggregate(total=models.Sum('montant'))['total'] or 0
     
     
     def reste_a_payer(self):
@@ -344,7 +350,7 @@ class Pret(BaseModel):
     
     
     def echeances_success(self):
-        echeances = self.echeances.filter(status__etiquette = StatusPret.TERMINE)
+        echeances = self.echeances.filter(status__etiquette = StatusPret.TERMINE, deleted = False)
         return echeances
     
     
@@ -356,17 +362,17 @@ class Pret(BaseModel):
         return round((success / total) * 100)
     
     def penalites(self):
-        datas = self.echeances.exclude(status__etiquette = StatusPret.ANNULEE).aggregate(total=models.Count('penalites'))['total'] or 0
+        datas = self.echeances.exclude(status__etiquette = StatusPret.ANNULEE, deleted = False).aggregate(total=models.Count('penalites'))['total'] or 0
         return datas
     
     def penalites_montant(self):
-        return self.echeances.exclude(status__etiquette = StatusPret.ANNULEE).aggregate(total=models.Sum('penalites__montant'))['total'] or 0
+        return self.echeances.exclude(status__etiquette = StatusPret.ANNULEE, deleted = False).aggregate(total=models.Sum('penalites__montant'))['total'] or 0
     
 
     def calcul_penalites(self, taux=0.02):
         """Calcul automatique des pénalités sur les échéances en retard"""
         from datetime import date
-        for echeance in self.echeance_set.all():
+        for echeance in self.echeance_set.filter(deleted = False):
             if echeance.date_echeance < date.today() and echeance.montant_paye < echeance.montant_a_payer:
                 # calcul par semaine de retard
                 semaines_retard = (date.today() - echeance.date_echeance).days // 7
@@ -396,15 +402,12 @@ class Echeance(BaseModel):
         return self.total() - self.montant_paye
     
     def penalites_montant(self):
-        return self.penalites.aggregate(total=models.Sum('montant'))['total'] or 0
+        return self.penalites.filter(deleted = False).aggregate(total=models.Sum('montant'))['total'] or 0
     
     
     def calculer_penalite(self):
         return self.montant_a_payer * self.pret.taux_penalite / 100
-        # today = date.today()
-        # jours_retard = (today - self.date_echeance).days
-        # montant_penalite = (self.pret.taux_penalite * self.montant_restant())
-        # return (montant_penalite * jours_retard) / self.pret.modalite.duree()
+    
     
     def regler(self, montant, employe, mode, commentaire):
         if montant > self.montant_restant():

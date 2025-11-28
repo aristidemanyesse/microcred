@@ -50,7 +50,12 @@
 
                                                 <a href="{% url 'FinanceApp:releve_epargne' epargne.id %}" class="btn btn-warning">
                                                         <i class="ti ti-invoice fs-lg"></i> Imprimer le relévé de compte</a>
-                                               
+
+                                                {% if request.user.is_chef %}
+                                                    <button onclick="delete_password('CompteEpargne','{{epargne.id}}')"
+                                                    class="btn btn-light btn-icon btn-md "><i
+                                                            class="ti ti-trash fs-lg text-danger"></i></button>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>

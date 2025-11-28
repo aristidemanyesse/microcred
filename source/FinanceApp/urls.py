@@ -22,6 +22,7 @@ urlpatterns = [
     
     path('remboursement/', ajax.new_remboursement, name='new_remboursement'),
     path('confirm_pret/', ajax.confirm_pret, name='confirm_pret'),
+    path('decline_pret/', ajax.decline_pret, name='decline_pret'),
     path('decaissement/', ajax.decaissement, name='decaissement'),
     path('new_depot/', ajax.new_depot, name='new_depot'),
     path('new_retrait/', ajax.new_retrait, name='new_retrait'),
