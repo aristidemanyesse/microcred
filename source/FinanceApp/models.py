@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 from datetime import date, timedelta
 import calendar
 from TresorApp.models import Operation, TypeActivity
-
+from datetime import datetime
 
 # Create your models here.
 
@@ -224,6 +224,7 @@ class Pret(BaseModel):
     status                 = models.ForeignKey(StatusPret, on_delete=models.CASCADE, null=True, blank=True,)
     employe                = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='prets')
     confirmateur           = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='confirm_prets', null=True, blank=True)
+    date_confirmation      = models.DateTimeField(null=True, blank=True)
     ready                  = models.BooleanField(default=False)
     derniere_date_penalite = models.DateField(null=True, blank=True)
     commentaire            = models.TextField(null=True, blank=True)
@@ -254,12 +255,13 @@ class Pret(BaseModel):
     def confirm_pret(self, employe):
         self.status       = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
         self.confirmateur = employe
+        self.date_confirmation = datetime.now()
         self.save()
         
         
         
     def decaissement(self, employe):
-        date_echeance = self.created_at.date()
+        date_echeance = self.date_confirmation.date()
         i = 0
         base = round(self.base / self.nombre_modalite, 2)
         
