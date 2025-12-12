@@ -225,6 +225,7 @@ class Pret(BaseModel):
     employe                = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='prets')
     confirmateur           = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='confirm_prets', null=True, blank=True)
     date_confirmation      = models.DateTimeField(null=True, blank=True)
+    date_decaissement      = models.DateTimeField(null=True, blank=True)
     ready                  = models.BooleanField(default=False)
     derniere_date_penalite = models.DateField(null=True, blank=True)
     commentaire            = models.TextField(null=True, blank=True)
@@ -267,7 +268,8 @@ class Pret(BaseModel):
         
         
     def decaissement(self, employe):
-        date_echeance = self.date_confirmation.date()
+        self.date_decaissement = datetime.now()
+        date_echeance = datetime.now()
         i = 0
         base = round(self.base / self.nombre_modalite, 2)
         

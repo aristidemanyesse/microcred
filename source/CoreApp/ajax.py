@@ -128,7 +128,7 @@ def supprimer(request):
             if "password" in datas and not request.user.check_password(datas["password"]):
                 return JsonResponse({"status":False, "message": _("Le mot de passe est incorrect !")})
             
-            if request.user.is_employe():
+            if not request.user.is_chef():
                 return JsonResponse({"status": False, "message": "Vous n'avez pas le droit de supprimer cet élément !"})
 
             obj = MyModel.objects.get(pk=datas["id"])
