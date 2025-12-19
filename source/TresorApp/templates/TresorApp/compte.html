@@ -121,23 +121,28 @@
                                     <td>
                                         <div class="d-flex justify-content-start align-items-center gap-2">
                                             <div>
-                                                <h5 class="text-nowrap mb-0 lh-base fs-base">
-                                                    {{ operation.compte_debit.agence }}
+                                                {% if operation.compte_debit %}
+                                                <h5 class="text-nowrap mb-0 lh-base fs-base">{{ operation.compte_debit }}
                                                 </h5>
-                                                <p class="text-muted fs-xs mb-0">{{operation.compte_debit}}</p>
+                                                <small class="text-muted d-block">Avant: {{operation.debit_amount_before}} Fcfa</small>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="d-flex justify-content-start align-items-center gap-2">
                                             <div>
+                                                {% if operation.compte_credit %}
                                                 <h5 class="text-nowrap mb-0 lh-base fs-base">
-                                                    {{ operation.compte_credit.agence }}</h5>
-                                                <p class="text-muted fs-xs mb-0">{{operation.compte_credit}}</p>
+                                                    {{ operation.compte_credit }}</h5>
+                                                <small class="text-muted d-block">Avant: {{operation.credit_amount_before}} Fcfa</small>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{operation.montant}} Fcfa</td>
+                                    <td>
+                                        {{operation.montant}} Fcfa
+                                    </td>
                                     <td>{{operation.employe}}</td>
                                     <td class="text-center">
                                         {% if operation.transaction %}

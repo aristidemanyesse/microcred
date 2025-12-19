@@ -2,6 +2,7 @@ from django.db import models
 from annoying.decorators import signals
 from CoreApp.models import BaseModel
 from MainApp.models import Agence
+from datetime import datetime
 
 # Create your models here.
 
@@ -23,21 +24,27 @@ class CompteAgence(BaseModel):
         return str(self.libelle)
     
 
-    def total_depots(self, start=None, end=None):
+    def total_depots(self, start:datetime=None, end:datetime=None):
+        start = start or self.created_at
+        end = end or datetime.now()
         qs = Operation.objects.filter(compte_credit=self)
         if start and end:
-            qs = qs.filter(created_at__date__range = [start, end])
+            qs = qs.filter(created_at__range = [start, end])
         return qs.aggregate(total=models.Sum('montant'))['total'] or 0
     
-    def total_retraits(self, start=None, end=None):
+    def total_retraits(self, start:datetime=None, end:datetime=None):
+        start = start or self.created_at
+        end = end or datetime.now()
         qs = Operation.objects.filter(compte_debit=self)
         if start and end:
-            qs = qs.filter(created_at__date__range = [start, end])
+            qs = qs.filter(created_at__range = [start, end])
         return qs.aggregate(total=models.Sum('montant'))['total'] or 0
     
-    def solde(self, start=None, end=None):
+    def solde(self, start:datetime=None, end:datetime=None):
+        start = start or self.created_at
+        end = end or datetime.now()
         total = self.total_depots(start, end) - self.total_retraits(start, end)
-        if start is None or (start and start > self.created_at.date()):
+        if start is None or (start and start > self.created_at):
             return total
         return total + self.base
 
@@ -50,6 +57,15 @@ class Operation(BaseModel):
     transaction   = models.ForeignKey('FinanceApp.Transaction', on_delete=models.CASCADE, related_name='operations', null=True, blank=True)
     employe       = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='operations')
     commentaire   = models.TextField(null=True, blank=True)
+    
+    def __str__(self):
+        return str(self.libelle)
+    
+    def debit_amount_before(self):
+        return self.compte_debit.solde(end=self.created_at) if self.compte_debit else 0
+    
+    def credit_amount_before(self):
+        return self.compte_credit.solde(end=self.created_at) if self.compte_credit else 0
     
 
 

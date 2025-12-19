@@ -225,6 +225,7 @@
             ranges: {
                 'Hier': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
                 'Aujourd\'hui': [moment(), moment()],
+                'Cette semaine': [moment().startOf('week'), moment()],
                 'La semaine dernière': [moment().subtract(1, 'week').startOf('week'), moment().subtract(1, 'week')
                     .endOf('week')
                 ],

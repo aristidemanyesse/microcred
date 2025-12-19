@@ -8,6 +8,7 @@ urlpatterns = [
     path('compte/<uuid:pk>/releve/', views.releve_view, name='releve_compte'),
     path('rapports/<str:start>/<str:end>/', views.rapports_view, name='rapports_date'),
     path('rapports/', views.rapports_view, name='rapports'),
+    path('tresorerie/<str:start>/<str:end>/', views.tresorerie, name='tresorerie_date'),
     path('tresorerie/', views.tresorerie, name='tresorerie'),
     
     path('api/stats-finance/', ajax.stats_finance, name='stats_finance'),

@@ -7,9 +7,10 @@ from MainApp.models import Agence
 from TresorApp.models import CompteAgence, Operation
 from django.db.models import Q, Sum
 from datetime import datetime, date, timedelta
-
 from FinanceApp.models import CompteEpargne, Echeance, Interet, Penalite, Pret, StatusPret, Transaction, TypeTransaction
 from FidelisApp.models import CompteFidelis
+import pytz
+utc=pytz.UTC
 
 
 @login_required()
@@ -80,8 +81,10 @@ def rapports_view(request, start=None, end=None):
     if not request.user.is_chef():
         return redirect('MainApp:dashboard')
     
-    start = datetime.strptime(start, '%Y-%m-%d').date() if start else date.today() - timedelta(days=7)
-    end = datetime.strptime(end, '%Y-%m-%d').date() if end else date.today()
+    start = datetime.strptime(start, '%Y-%m-%d') if start else datetime.strptime(str(date.today()), '%Y-%m-%d') - timedelta(days=7)
+    start = utc.localize(start)
+    end = datetime.strptime(end, '%Y-%m-%d') + timedelta(days=1) if end else datetime.now()
+    end = utc.localize(end)
     request.session["start"] = start.isoformat()
     request.session["end"] = end.isoformat()
     
@@ -118,23 +121,23 @@ def rapports_view(request, start=None, end=None):
     ctx = {
         'TITLE_PAGE' : "Rapports Stats",
         
-        "new_comptes_pret"                   : new_comptes_pret,
-        "total_recouvrements"                : total_recouvrements,
-        "total_montant_pret"       : total_montant_pret,
-        "total_beneficies_pret"              : total_beneficies_pret,
-        "total_penalites"                    : total_penalites,
-        "total_beneficies_net"               : total_beneficies_pret + total_penalites,
-        "total_beneficies_pret_previsionnels": total_beneficies_pret_previsionnels,
+        "new_comptes_pret"                     : new_comptes_pret,
+        "total_recouvrements"                  : total_recouvrements,
+        "total_montant_pret"                   : total_montant_pret,
+        "total_beneficies_pret"                : total_beneficies_pret,
+        "total_penalites"                      : total_penalites,
+        "total_beneficies_net"                 : total_beneficies_pret + total_penalites,
+        "total_beneficies_pret_previsionnels"  : total_beneficies_pret_previsionnels,
         
-        "new_comptes_epargnes"               : new_comptes_epargnes,
-        "total_depots"                       : total_depots,
-        "total_retraits"                     : total_retraits,
-        "total_interets"                     : total_interets,
+        "new_comptes_epargnes"                 : new_comptes_epargnes,
+        "total_depots"                         : total_depots,
+        "total_retraits"                       : total_retraits,
+        "total_interets"                       : total_interets,
         
-        "new_comptes_fidelis"                : new_comptes_fidelis,
-        "total_depots_fidelis"               : total_depots_fidelis,
-        "total_retraits_fidelis"             : total_retraits_fidelis,
-        "total_benefices_fidelis"            : total_benefices_fidelis,
+        "new_comptes_fidelis"                  : new_comptes_fidelis,
+        "total_depots_fidelis"                 : total_depots_fidelis,
+        "total_retraits_fidelis"               : total_retraits_fidelis,
+        "total_benefices_fidelis"              : total_benefices_fidelis,
         "total_benefices_fidelis_previsionnels": total_benefices_fidelis_previsionnels,
         
         "start": start.strftime("%d/%m/%Y"),
@@ -154,8 +157,10 @@ def tresorerie(request, start=None, end=None):
     if not request.user.is_chef():
         return redirect('MainApp:dashboard')
     
-    start = datetime.strptime(start, '%Y-%m-%d').date() if start else date.today() - timedelta(days=7)
-    end = datetime.strptime(end, '%Y-%m-%d').date() if end else date.today()
+    start = datetime.strptime(start, '%Y-%m-%d') if start else datetime.strptime(str(date.today()), '%Y-%m-%d') - timedelta(days=7)
+    start = utc.localize(start)
+    end = datetime.strptime(end, '%Y-%m-%d') + timedelta(days=1) if end else datetime.now()
+    end = utc.localize(end)
     request.session["start"] = start.isoformat()
     request.session["end"] = end.isoformat()
 
@@ -165,11 +170,11 @@ def tresorerie(request, start=None, end=None):
     comptes__ = []
     for compte in comptes:
         comptes__.append({
-            "id": compte.id,
-            "libelle": compte.libelle,
-            "solde": compte.solde(),
-            "depots": compte.total_depots(start, end),
-            "retraits": compte.total_retraits(start, end),
+            "id"       : compte.id,
+            "libelle"  : compte.libelle,
+            "solde"    : compte.solde(),
+            "depots"   : compte.total_depots(start, end),
+            "retraits" : compte.total_retraits(start, end),
             "resultats": compte.solde(start, end),
         })
     

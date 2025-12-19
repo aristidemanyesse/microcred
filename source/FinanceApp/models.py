@@ -267,7 +267,7 @@ class Pret(BaseModel):
         
         
     def decaissement(self, employe):
-        date_echeance = self.date_confirmation.date()
+        date_echeance = datetime.now()
         i = 0
         base = round(self.base / self.nombre_modalite, 2)
         
