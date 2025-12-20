@@ -2,7 +2,7 @@ from django.db import models
 from annoying.decorators import signals
 from CoreApp.models import BaseModel
 from MainApp.models import Agence
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Create your models here.
 
@@ -43,8 +43,9 @@ class CompteAgence(BaseModel):
     def solde(self, start:datetime=None, end:datetime=None):
         start = start or self.created_at
         end = end or datetime.now()
+        print("SOLDE COMPUTE", start, end)
         total = self.total_depots(start, end) - self.total_retraits(start, end)
-        if start is None or (start and start > self.created_at):
+        if start is None or (start and start >= self.created_at):
             return total
         return total + self.base
 
@@ -62,10 +63,10 @@ class Operation(BaseModel):
         return str(self.libelle)
     
     def debit_amount_before(self):
-        return self.compte_debit.solde(end=self.created_at) if self.compte_debit else 0
+        return self.compte_debit.solde(end=self.created_at - timedelta(seconds=1)) if self.compte_debit else 0
     
     def credit_amount_before(self):
-        return self.compte_credit.solde(end=self.created_at) if self.compte_credit else 0
+        return self.compte_credit.solde(end=self.created_at - timedelta(seconds=1)) if self.compte_credit else 0
     
 
 
