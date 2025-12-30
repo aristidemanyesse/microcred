@@ -6,10 +6,10 @@ from FidelisApp.models import CompteFidelis, FidelisCase
 
 @admin.register(CompteFidelis)
 class CompteFidelisAdmin(admin.ModelAdmin):
-    list_display = ('numero', 'client', 'base', 'nombre', 'frais', 'retire', 'status', 'employe')
+    list_display = ('numero', 'client', 'base', 'nombre', 'frais', 'retire', 'status', 'employe', 'created_at', "deleted")
     search_fields = ('numero', 'client__nom', 'client__prenom', 'client')
     
 @admin.register(FidelisCase)
 class FidelisCaseAdmin(admin.ModelAdmin):
-    list_display = ('fidelis', 'level', 'status')
+    list_display = ('fidelis', 'level', 'status', 'created_at', "deleted")
     search_fields = ('fidelis__libelle', 'fidelis__numero')

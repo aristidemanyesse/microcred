@@ -282,7 +282,7 @@ class Pret(BaseModel):
                 montant = round((base + interet) / 5) * 5 
                 echeance = Echeance.objects.create(
                     pret            = self,
-                    level           = i,
+                    level           = i + 1,
                     principal       = base,
                     interet         = interet ,
                     montant_a_payer = montant,
@@ -309,7 +309,7 @@ class Pret(BaseModel):
                 principal = round(annuite - interet, 2)
                 echeance = Echeance.objects.create(
                     pret            = self,
-                    level           = i,
+                    level           = i + 1,
                     principal       = principal,
                     interet         = interet ,
                     montant_a_payer = annuite,
@@ -396,6 +396,9 @@ class Echeance(BaseModel):
     montant_a_payer = models.DecimalField(max_digits=12, decimal_places=2)
     montant_paye    = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     status          = models.ForeignKey(StatusPret, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f"Echeance N°{self.level} // {self.pret.numero}"
     
     def total(self):
         return self.montant_a_payer + self.penalites_montant()
