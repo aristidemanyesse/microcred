@@ -134,14 +134,17 @@ def prets_simulateur_view(request):
             principal = round(base / duree, 2)
             interet = round(principal * taux / 100, 2)
             while i < duree:
+                date_echeance = date.today()
+                for _ in range(i+1):
+                    date_echeance += modalite_duree.duree()
+                    
                 reste = base - (principal * (i+1))
                 tableaux.append({
                     "taux"     : taux,
                     "principal": principal,
                     "interet"  : interet,
                     "total"    : principal + interet,
-                    
-                    "date"     : date.today() + timedelta(days=(i+1) * modalite_duree.duree()),
+                    "date"     : date_echeance,
                     "reste"    : reste,
                     "total_a_payer"   : total_a_payer,
                 })
@@ -162,13 +165,17 @@ def prets_simulateur_view(request):
                 interet = reste * i
                 principal = annuite - interet
                 reste = reste - principal
+                
+                date_echeance = date.today()
+                for _ in range(periode):
+                    date_echeance += modalite_duree.duree()
 
                 tableaux.append({
                     "taux": taux,
                     "principal": round(principal, 2),
                     "interet": round(interet, 2),
                     "total": round(annuite, 2),
-                    "date": date.today() + timedelta(days=periode * modalite_duree.duree()),
+                    "date": date_echeance,
                     "reste": round(reste, 2),
                 })
                 total_reglement += round(annuite, 2)
@@ -230,11 +237,30 @@ def echeances_view(request):
         return redirect('MainApp:dashboard')
     
     today = date.today()
-    echeances = Echeance.objects.filter(deleted = False, date_echeance__range = [today - timedelta(days=5), today + timedelta(days=5)]).exclude(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE]).order_by("date_echeance")
+    echeances = Echeance.objects.filter(deleted = False, date_echeance__range = [today, today + timedelta(days=7)]).exclude(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE]).order_by("date_echeance")
     status = StatusPret.objects.all()
     ctx = {
-        'TITLE_PAGE' : "Liste des rétards d'échéances",
+        'TITLE_PAGE' : "Liste des échéances à venir",
         "echeances": echeances,
+        "status": status,
+    }
+    return ctx
+
+
+@render_to('FinanceApp/impayes.html')
+def impayes_view(request):
+    if not request.user.is_authenticated:
+        return redirect('AuthentificationApp:login')
+    
+    if request.user.is_gestionnaire_epargne():
+        return redirect('MainApp:dashboard')
+    
+    today = date.today()
+    impayes = Echeance.objects.filter(deleted = False, date_echeance__lt = today).exclude(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE]).order_by("date_echeance")
+    status = StatusPret.objects.all()
+    ctx = {
+        'TITLE_PAGE' : "Liste des impayés",
+        "impayes": impayes,
         "status": status,
     }
     return ctx
@@ -459,9 +485,9 @@ def epargnes_simulateur_view(request):
         modalite_regulier = request.POST.get("modalite_regulier")
         modalite_regulier = ModaliteEcheance.objects.get(pk=modalite_regulier)
         
-        duree_echeance = modalite.duree()
-        duree_epargne = int(duree) * modalite_duree.duree()
-        duree_approvisonnement = modalite_regulier.duree()
+        duree_echeance = (date.today() - date.today() + modalite.duree()).days
+        duree_epargne = int(duree) * (date.today() - date.today() + modalite_duree.duree()).days
+        duree_approvisonnement = (date.today() - date.today() + modalite_regulier.duree()).days 
         
         start = date.today()
         next = date.today() + timedelta(days=duree_approvisonnement)

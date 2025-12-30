@@ -8,7 +8,7 @@ from datetime import date, timedelta
 import calendar
 from TresorApp.models import Operation, TypeActivity
 from datetime import datetime
-
+from dateutil.relativedelta import relativedelta
 # Create your models here.
 
 
@@ -37,17 +37,17 @@ class ModaliteEcheance(BaseModel):
     
     def duree(self):
         if self.etiquette == ModaliteEcheance.HEBDOMADAIRE:
-            return 7
+            return timedelta(weeks=1)
         elif self.etiquette == ModaliteEcheance.MENSUEL:
-            return 30
+            return relativedelta(months=1)
         elif self.etiquette == ModaliteEcheance.BIMENSUEL:
-            return 60
+            return relativedelta(months=2)
         elif self.etiquette == ModaliteEcheance.TRIMESTRIEL:
-            return 90
+            return relativedelta(months=3)
         elif self.etiquette == ModaliteEcheance.SEMESTRIEL:
-            return 180
+            return relativedelta(months=6)
         elif self.etiquette == ModaliteEcheance.ANNUEL:
-            return 360
+            return relativedelta(years=1)
         
         
     def duree_par_annee(self):
@@ -277,7 +277,7 @@ class Pret(BaseModel):
             reste = self.reste_a_payer()
 
             while i < self.nombre_modalite:
-                date_echeance += timedelta(days= self.modalite.duree())
+                date_echeance += self.modalite.duree()
                 interet = round(base * self.taux / 100, 2)
                 montant = round((base + interet) / 5) * 5 
                 echeance = Echeance.objects.create(
@@ -304,7 +304,7 @@ class Pret(BaseModel):
             annuite = self.base * (r * (1 + r) ** n) / ((1 + r) ** n - 1)
             reste = self.base
             while i < self.nombre_modalite:
-                date_echeance += timedelta(days= self.modalite.duree())
+                date_echeance += self.modalite.duree()
                 interet = reste * r
                 principal = round(annuite - interet, 2)
                 echeance = Echeance.objects.create(

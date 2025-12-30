@@ -12,6 +12,7 @@ urlpatterns = [
     path('pret/<uuid:pk>/releve/', views.releve_pret, name='releve_pret'),
     
     path('echeances/', views.echeances_view, name='echeances'),
+    path('impayes/', views.impayes_view, name='impayes'),
     path('transactions/invoice/<uuid:pk>/', views.invoice, name='invoice'),
  
     path('epargnes/', views.epargnes_view, name='epargnes'),
