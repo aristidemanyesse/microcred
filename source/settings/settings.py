@@ -87,7 +87,6 @@ WSGI_APPLICATION = 'settings.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    
     'default': {
         'ENGINE'    : 'django.db.backends.mysql',
         'HOST'      : os.getenv("DB_HOST", "77.237.237.101"),

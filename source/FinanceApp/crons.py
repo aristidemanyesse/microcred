@@ -14,9 +14,10 @@ def generer_penalites():
     echeances = Echeance.objects.filter(date_echeance__lt=today).exclude(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE]).order_by("date_echeance")
     with transaction.atomic():
         for echeance in echeances:
-            if echeance.derniere_date_penalite and (today - echeance.derniere_date_penalite).days < echeance.pret.modalite.duree():
+            prochaine_penalite = echeance.derniere_date_penalite + echeance.pret.modalite.duree()
+            if echeance.derniere_date_penalite and today < prochaine_penalite:
                 continue
-            
+
             penalite, created = Penalite.objects.get_or_create(
                 echeance=echeance,
                 defaults={
