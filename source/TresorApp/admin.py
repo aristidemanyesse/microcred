@@ -10,11 +10,11 @@ class TypeActivityAdmin(admin.ModelAdmin):
 
 @admin.register(CompteAgence)
 class CompteAgenceAdmin(admin.ModelAdmin):
-    list_display = ('libelle', 'activity', 'base', 'created_at')
+    list_display = ('libelle', 'activity', 'base', 'created_at', "deleted")
     list_filter = ('activity',)
 
 @admin.register(Operation)
 class OperationAdmin(admin.ModelAdmin):
-    list_display = ('libelle', 'montant', 'compte_debit', 'compte_credit', 'employe', 'created_at')
+    list_display = ('libelle', 'montant', 'compte_debit', 'compte_credit', 'employe', 'created_at', "deleted")
     list_filter = ('employe', 'created_at')
     search_fields = ('employe',)
