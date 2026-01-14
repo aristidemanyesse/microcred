@@ -47,13 +47,12 @@ class PretAdmin(admin.ModelAdmin):
     list_display = ('numero', 'client', 'base', 'taux', 'montant', 'modalite', 'nombre_modalite', 'status', 'created_at')
     search_fields = ('client__id', 'client__nom', 'client__prenoms')
     list_filter = ('status', 'created_at')
-    
+
 @admin.register(Echeance)
 class EcheanceAdmin(admin.ModelAdmin):
     list_display = ('pret', 'date_echeance', 'montant_a_payer', 'montant_paye', 'status')
     search_fields = ('pret__id', 'pret__client__id', 'pret__client__nom', 'pret__client__prenoms')
     list_filter = ('status',)
-    
 
 @admin.register(Garantie)
 class GarantieAdmin(admin.ModelAdmin):
