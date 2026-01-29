@@ -1,6 +1,8 @@
 from django.contrib import admin
 
 from MainApp.models import *
+from FidelisApp.admin import CompteFidelisInline
+from FinanceApp.admin import CompteEpargneInline, PretInline
 
 # Register your models here.
 
@@ -27,3 +29,4 @@ class ClientAdmin(admin.ModelAdmin):
     list_display = ('agence', 'type_client', 'nom', 'prenoms', 'genre', 'date_naissance', 'adresse', 'telephone', 'email')
     search_fields = ('agence__id', 'agence__libelle', 'nom', 'prenoms', 'genre__libelle', 'genre__etiquette', 'type_client__libelle', 'type_client__etiquette')
     list_filter = ('type_client', 'genre')
+    inlines = [PretInline, CompteEpargneInline, CompteFidelisInline]

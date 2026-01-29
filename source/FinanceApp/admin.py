@@ -4,6 +4,35 @@ from FinanceApp.models import *
 
 # Register your models here.
 
+class TransactionInline(admin.TabularInline):  # ou StackedInline
+    model = Transaction
+    extra = 0
+    can_delete = False
+    fields = ("numero", "mode", "type_transaction", "montant", "created_at", "deleted")
+    readonly_fields = ("numero", "mode", "type_transaction", "montant", "created_at", "deleted")
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+    
+
+class PretInline(admin.TabularInline):
+    model = Pret
+    extra = 0
+    can_delete = False
+    fields = ("numero", "base", "taux", "taux_penalite", "modalite", "nombre_modalite", "amortissement", "interet", "montant", "status", "created_at", "deleted")
+    readonly_fields = ("numero", "base", "taux", "taux_penalite", "modalite", "nombre_modalite", "amortissement", "interet", "montant", "status", "created_at", "deleted")
+
+class CompteEpargneInline(admin.TabularInline):
+    model = CompteEpargne
+    extra = 0
+    can_delete = False
+    fields = ("numero", "client", "solde", "taux", "modalite", "status", "created_at", "deleted")
+    readonly_fields = ("numero", "client", "solde", "taux", "modalite", "status", "created_at", "deleted")
+    
+
 @admin.register(TypeTransaction)
 class TypeTransactionAdmin(admin.ModelAdmin):
     list_display = ('libelle', 'etiquette')
@@ -25,6 +54,7 @@ class PenaliteAdmin(admin.ModelAdmin):
 class CompteEpargneAdmin(admin.ModelAdmin):
     list_display = ('client', 'solde', 'created_at', "deleted")
     search_fields = ('client__id', 'client__nom', 'client__prenoms')
+    inlines = [TransactionInline]
 
 
 @admin.register(Interet)
@@ -32,6 +62,8 @@ class InteretAdmin(admin.ModelAdmin):
     list_display = ('compte', 'montant', 'description', 'created_at', "deleted")
     search_fields = ('compte__id', 'description')
 
+
+    
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
     list_display = ('type_transaction', 'montant', 'compte', 'echeance', 'fidelis',  'mode', 'employe', 'created_at', "deleted")
@@ -53,6 +85,8 @@ class EcheanceAdmin(admin.ModelAdmin):
     list_display = ('pret', 'date_echeance', 'montant_a_payer', 'montant_paye', 'status', 'created_at', "deleted")
     search_fields = ('pret__id', 'pret__client__id', 'pret__client__nom', 'pret__client__prenoms')
     list_filter = ('status',)
+    inlines = [TransactionInline]
+    
 
 @admin.register(Garantie)
 class GarantieAdmin(admin.ModelAdmin):
