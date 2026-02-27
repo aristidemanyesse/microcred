@@ -7,6 +7,7 @@ from dateutil.relativedelta import relativedelta
 from datetime import date, timedelta
 import calendar
 from TresorApp.models import Operation, TypeActivity
+from django.db import transaction as db_transaction
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 # Create your models here.
@@ -19,6 +20,8 @@ class StatusPret(BaseModel):
     EN_COURS = "1"
     TERMINE = "2"
     RETARD = "3"
+    VALIDE = "5"
+    
     libelle   = models.CharField(max_length=50)  # En cours / Terminé / Retard
     etiquette = models.CharField(max_length=50)
     classe    = models.CharField(max_length=50) 
@@ -194,20 +197,6 @@ class Interet(BaseModel):
     montant       = models.DecimalField(max_digits=12, decimal_places=2)
     description   = models.TextField(null=True, blank=True)
 
-
-class TypeTransaction(BaseModel):
-    DEPOT = "1"
-    RETRAIT = "2"
-    
-    DEPOT_FIDELIS = "4"
-    RETRAIT_FIDELIS = "5"
-    
-    REMBOURSEMENT = "3"
-    OCTROIE_PRET = "6"
-    
-    libelle = models.CharField(max_length=50)  # Dépôt / Retrait
-    etiquette = models.CharField(max_length=50)
-
     
 
 class Pret(BaseModel):
@@ -229,6 +218,9 @@ class Pret(BaseModel):
     ready                  = models.BooleanField(default=False)
     derniere_date_penalite = models.DateField(null=True, blank=True)
     commentaire            = models.TextField(null=True, blank=True)
+    
+    def __str__(self):
+        return str(self.numero)
     
     
     def calcul_interets(self):
@@ -254,7 +246,7 @@ class Pret(BaseModel):
     
     
     def confirm_pret(self, employe):
-        self.status       = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
+        self.status       = StatusPret.objects.get(etiquette = StatusPret.VALIDE)
         self.confirmateur = employe
         self.date_confirmation = datetime.now()
         self.save()
@@ -269,6 +261,7 @@ class Pret(BaseModel):
         
     def decaissement(self, employe):
         self.date_decaissement = datetime.now()
+        self.status  = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
         date_echeance = datetime.now()
         i = 0
         base = round(self.base / self.nombre_modalite, 2)
@@ -324,18 +317,18 @@ class Pret(BaseModel):
                 echeance.montant_a_payer += reste
                 echeance.save()
                 
-        compte = self.employe.agence.comptes.filter(activity__etiquette = TypeActivity.PRET).first()
-        Operation.objects.create(
-            libelle       = "Décaissement pour le prêt N°" + str(self.numero),
-            compte_credit = None,
-            compte_debit  = compte,
-            montant       = self.base,
-            employe       = employe,
+        Transaction.objects.create(
+            client           = self.client,
+            echeance         = None,
+            mode             = ModePayement.objects.get(etiquette=ModePayement.ESPECE),
+            type_transaction = TypeTransaction.objects.get(etiquette=TypeTransaction.OCTROIE_PRET),
+            pret             = self,
+            montant          = self.base,
+            commentaire      = f"Décaissement pour le prêt N°{self.numero}",
+            employe          = employe
         )
         self.ready = True
         self.save()
-        
-        
         
             
  
@@ -395,6 +388,9 @@ class Echeance(BaseModel):
     interet         = models.DecimalField(max_digits=12, decimal_places=2)
     montant_a_payer = models.DecimalField(max_digits=12, decimal_places=2)
     montant_paye    = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    principal_paye   = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    interet_paye     = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    penalites_payees = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     status          = models.ForeignKey(StatusPret, on_delete=models.CASCADE)
     
     def __str__(self):
@@ -406,8 +402,11 @@ class Echeance(BaseModel):
     def montant_restant(self):
         return self.total() - self.montant_paye
     
-    def penalites_montant(self):
-        return self.penalites.filter(deleted = False).aggregate(total=models.Sum('montant'))['total'] or 0
+    def penalites_montant(self, date = None):
+        datas = self.penalites.filter(deleted = False)
+        if date is not None:
+            datas = datas.filter(created_at__lte = date)
+        return datas.aggregate(total=models.Sum('montant'))['total'] or 0
     
     
     def calculer_penalite(self):
@@ -415,29 +414,92 @@ class Echeance(BaseModel):
     
     
     def regler(self, montant, employe, mode, commentaire):
-        if montant > self.montant_restant():
-            raise ValueError("Le montant de remboursement est supérieur au montant restant à payer !")
+        """
+        Remboursement d'une échéance avec ventilation :
+        1) Pénalités
+        2) Intérêts
+        3) Principal
+        """
+        if montant is None:
+            raise ValueError("Le montant est requis.")
         if montant <= 0:
             raise ValueError("Le montant de remboursement doit être supérieur à 0 !")
-        self.montant_paye += montant
-        if self.montant_paye >= self.montant_a_payer:
-            self.status = StatusPret.objects.get(etiquette = StatusPret.TERMINE)
-        self.save()
 
-        transaction = Transaction.objects.create(
-            echeance         = self,
-            client           = self.pret.client,
-            mode             = mode,
-            type_transaction = TypeTransaction.objects.get(etiquette = TypeTransaction.REMBOURSEMENT),
-            commentaire      = f"Remboursement échéance N°{self.level} du prêt N°{self.pret.numero} --- {commentaire}",
-            montant          = montant,
-            employe          = employe
-        )
+        with db_transaction.atomic():
+            # verrouiller l'échéance (concurrence)
+            echeance = (
+                Echeance.objects
+                .select_for_update()
+                .select_related("pret", "pret__client")
+                .get(pk=self.pk)
+            )
 
-        if transaction:
-            if self.pret.reste_a_payer() == 0:
-                self.pret.status = StatusPret.objects.get(etiquette = StatusPret.TERMINE)
-                self.pret.save()
+            # total restant (inclut pénalités via total())
+            restant_total = echeance.montant_restant()
+            if montant > restant_total:
+                raise ValueError("Le montant est supérieur au restant à payer !")
+
+            st_termine = StatusPret.objects.get(etiquette=StatusPret.TERMINE)
+            t_remb = TypeTransaction.objects.get(etiquette=TypeTransaction.REMBOURSEMENT)
+
+            # --- Restants par composante ---
+            penalites_total = echeance.penalites_montant()
+            penalites_restantes = max(penalites_total - echeance.penalites_payees, 0)
+
+            interet_restant = max(echeance.interet - (echeance.interet_paye or 0), 0)
+            principal_restant = max(echeance.principal - (echeance.principal_paye or 0), 0)
+
+            # --- Ventilation du paiement ---
+            reste = montant
+
+            penalite_part = min(reste, penalites_restantes)
+            reste -= penalite_part
+
+            interet_part = min(reste, interet_restant)
+            reste -= interet_part
+
+            principal_part = min(reste, principal_restant)
+            reste -= principal_part
+
+            # Par sécurité : on ne devrait pas avoir de reste > 0, vu le check restant_total
+            # mais si arrondi, on force sur l'intérêt (ou sur principal) selon ta politique.
+            if reste > 0:
+                # on pousse le résiduel sur l'intérêt (option)
+                interet_part += reste
+                reste = 0
+
+            # --- Mise à jour des montants payés sur l'échéance ---
+            echeance.montant_paye = (echeance.montant_paye or 0) + montant
+            echeance.interet_paye = (echeance.interet_paye or 0) + interet_part
+            echeance.principal_paye = (echeance.principal_paye or 0) + principal_part
+            echeance.penalites_payees = (echeance.penalites_payees or 0) + penalite_part
+
+            # Statut : TERMINE si tout soldé (principal+intérêt+penalités)
+            if restant_total - montant <= 0:
+                echeance.status = st_termine
+
+            update_fields = ["montant_paye", "interet_paye", "principal_paye", "penalites_payees", "status", "update_at"]
+            echeance.save(update_fields=update_fields)
+
+            # --- Créer la transaction ventilée ---
+            Transaction.objects.create(
+                echeance         = echeance,
+                client           = echeance.pret.client,
+                mode             = mode,
+                type_transaction = t_remb,
+                commentaire      = f"Remboursement échéance N°{echeance.level} du prêt N°{echeance.pret.numero} --- {commentaire}",
+                montant          = montant,
+                principal_part   = principal_part,
+                interet_part     = interet_part,
+                penalite_part    = penalite_part,
+                employe          = employe,
+            )
+
+            # --- Clôture prêt si soldé ---
+            pret = Pret.objects.select_for_update().get(pk=echeance.pret.id)
+            if pret.reste_a_payer() == 0:
+                pret.status = st_termine
+                pret.save(update_fields=["status", "update_at"])
 
 
 
@@ -467,6 +529,20 @@ class Penalite(BaseModel):
         return montant
 
 
+class TypeTransaction(BaseModel):
+    DEPOT = "1"
+    RETRAIT = "2"
+    
+    DEPOT_FIDELIS = "4"
+    RETRAIT_FIDELIS = "5"
+    
+    REMBOURSEMENT = "3"
+    OCTROIE_PRET = "6"
+    
+    libelle = models.CharField(max_length=50)  # Dépôt / Retrait
+    etiquette = models.CharField(max_length=50)
+
+
 
 class Transaction(BaseModel):
     numero           = models.CharField(max_length=50)
@@ -474,11 +550,19 @@ class Transaction(BaseModel):
     compte           = models.ForeignKey(CompteEpargne, null=True, blank=True, on_delete=models.CASCADE, related_name='transactions')
     echeance         = models.ForeignKey(Echeance, null=True, blank=True, on_delete=models.CASCADE, related_name='transactions')
     fidelis          = models.ForeignKey("FidelisApp.CompteFidelis", null=True, blank=True, on_delete=models.CASCADE, related_name='transactions')
+    pret            = models.ForeignKey(Pret, null=True, blank=True, on_delete=models.CASCADE, related_name='transactions')
     mode             = models.ForeignKey(ModePayement, null=True, blank=True, on_delete=models.CASCADE)
     type_transaction = models.ForeignKey(TypeTransaction, on_delete=models.CASCADE)
     montant          = models.DecimalField(max_digits=12, decimal_places=2)
     commentaire      = models.TextField(null=True, blank=True)
     employe          = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='transactions')
+    
+    principal_part   = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    interet_part     = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    penalite_part   = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    
+    def __str__(self):
+        return str(self.numero)
 
 
    
@@ -519,6 +603,11 @@ def sighandler(instance, created, **kwargs):
             compte = instance.employe.agence.comptes.filter(activity__etiquette = TypeActivity.PRET).first()
             debit = instance.type_transaction.etiquette == TypeTransaction.OCTROIE_PRET
             
+        
+        pret = None
+        if instance.echeance_id:
+            pret = instance.echeance.pret
+            
         Operation.objects.create(
             libelle       = instance.type_transaction,
             compte_credit = compte if not debit else None,
@@ -526,6 +615,8 @@ def sighandler(instance, created, **kwargs):
             montant       = instance.montant,
             employe       = instance.employe,
             transaction   = instance,
+            commentaire   = instance.commentaire,
+            pret          = pret
         )
 
 
@@ -534,10 +625,10 @@ def sighandler(instance, created, **kwargs):
 @signals.pre_save(sender=Pret)
 def sighandler(instance, **kwargs):
     if instance._state.adding:
-        instance.numero = GenerateTools.pretId(instance.client.agence)
+        instance.numero  = GenerateTools.pretId(instance.client.agence)
         instance.interet = instance.calcul_interets()
         instance.montant = instance.base + instance.interet
-        instance.status = StatusPret.objects.get(etiquette = StatusPret.EN_ATTENTE)
+        instance.status  = StatusPret.objects.get(etiquette = StatusPret.EN_ATTENTE)
 
     
 

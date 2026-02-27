@@ -68,6 +68,7 @@ class InteretAdmin(admin.ModelAdmin):
 class TransactionAdmin(admin.ModelAdmin):
     list_display = ('type_transaction', 'montant', 'compte', 'echeance', 'fidelis',  'mode', 'employe', 'created_at', "deleted")
     search_fields = ('compte__id', 'type_transaction__libelle', 'commentaire')
+    list_filter = ('type_transaction', 'mode', 'created_at')
     
 @admin.register(ModaliteEcheance)
 class ModaliteEcheanceAdmin(admin.ModelAdmin):  
@@ -82,7 +83,7 @@ class PretAdmin(admin.ModelAdmin):
 
 @admin.register(Echeance)
 class EcheanceAdmin(admin.ModelAdmin):
-    list_display = ('pret', 'date_echeance', 'montant_a_payer', 'montant_paye', 'status', 'created_at', "deleted")
+    list_display = ('pret', 'date_echeance', 'montant_a_payer', 'montant_paye', 'status', "principal_paye", "interet_paye", "penalites_payees", 'created_at', "deleted")
     search_fields = ('pret__id', 'pret__client__id', 'pret__client__nom', 'pret__client__prenoms')
     list_filter = ('status',)
     inlines = [TransactionInline]

@@ -21,6 +21,7 @@ def initialize():
         if not StatusPret.objects.filter().exists():
             StatusPret.objects.create(libelle='Annulé', etiquette = StatusPret.ANNULEE, classe="danger")
             StatusPret.objects.create(libelle='En attente', etiquette = StatusPret.EN_ATTENTE, classe="light")
+            StatusPret.objects.create(libelle='Validé', etiquette = StatusPret.VALIDE, classe="secondary")
             StatusPret.objects.create(libelle='En cours', etiquette = StatusPret.EN_COURS, classe="primary")
             StatusPret.objects.create(libelle='Terminé', etiquette = StatusPret.TERMINE, classe="success")
             StatusPret.objects.create(libelle='Retard', etiquette = StatusPret.RETARD, classe="warning")

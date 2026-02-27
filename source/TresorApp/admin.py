@@ -17,4 +17,4 @@ class CompteAgenceAdmin(admin.ModelAdmin):
 class OperationAdmin(admin.ModelAdmin):
     list_display = ('libelle', 'montant', 'compte_debit', 'compte_credit', 'employe', 'created_at', "deleted")
     list_filter = ('employe', 'created_at')
-    search_fields = ('employe',)
+    search_fields = ('libelle', 'employe__first_name', 'employe__last_name', "transaction__type_transaction__libelle")

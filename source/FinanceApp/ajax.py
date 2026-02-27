@@ -28,7 +28,6 @@ def new_remboursement(request):
         try:
             montant = decimal.Decimal(request.POST.get("montant").replace(" ", "").replace(",", "."))
             pret = Pret.objects.get(pk=id)
-            print( pret.reste_a_payer())
 
             if pret.status.etiquette == StatusPret.EN_COURS:
                 if montant > pret.reste_a_payer():

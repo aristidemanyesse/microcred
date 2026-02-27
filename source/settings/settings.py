@@ -93,7 +93,7 @@ DATABASES = {
         'PORT'      : os.getenv("DB_PORT", 3307),
         'USER'      : os.getenv("DB_USER", "root"),
         'PASSWORD'  : os.getenv("DB_PASSWORD", "1sd48ds5ds45"),
-        'NAME'      : os.getenv("DB_NAME", "microcred"),
+        'NAME'      : os.getenv("DB_NAME", "microcred_dev"),
     },
 
     # 'default': {
@@ -173,3 +173,8 @@ CRONJOBS = [
     # ('* * * * *', 'FinanceApp.crons.generer_penalites', '>> {}'.format(os.path.join(BASE_DIR, "logs/penelites.txt" ))),
     # ('* * * * *', 'FinanceApp.crons.generer_interets_epargnes', '>> {}'.format(os.path.join(BASE_DIR, "logs/interets.txt" ))),
 ]
+
+
+# mariadb-dump -u root -p microcred > backup_file.sql
+# mariadb -u root -p microcred_dev < backup_file.sql
+# mariadb-dump -h 77.237.237.101:3307 -u root -p microcred > backup_file.sql

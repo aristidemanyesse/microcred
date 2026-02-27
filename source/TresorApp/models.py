@@ -55,6 +55,7 @@ class Operation(BaseModel):
     montant       = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     compte_debit  = models.ForeignKey(CompteAgence, on_delete=models.CASCADE, related_name='debits', null=True, blank=True)
     compte_credit = models.ForeignKey(CompteAgence, on_delete=models.CASCADE, related_name='credits', null=True, blank=True)
+    pret          = models.ForeignKey('FinanceApp.Pret', on_delete=models.CASCADE, related_name='operations', null=True, blank=True)
     transaction   = models.ForeignKey('FinanceApp.Transaction', on_delete=models.CASCADE, related_name='operations', null=True, blank=True)
     employe       = models.ForeignKey('AuthentificationApp.Employe', on_delete=models.CASCADE, related_name='operations')
     commentaire   = models.TextField(null=True, blank=True)

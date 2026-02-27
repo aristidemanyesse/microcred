@@ -1,5 +1,9 @@
 from django.shortcuts import render
 from django.db.models import Sum, Q
+from django.db.models.functions import Coalesce
+from decimal import Decimal
+
+
 # Create your views here.
 from django.shortcuts import render, redirect
 from annoying.decorators import render_to
@@ -26,14 +30,39 @@ def prets_view(request):
     rembourses = 0
     for pret in prets:
         rembourses += pret.montant_rembourse()
-        
     reste_a_payer = total - rembourses
+    
+    cash = (
+    Transaction.objects
+        .filter(
+            type_transaction__etiquette__in=[TypeTransaction.REMBOURSEMENT, TypeTransaction.OCTROIE_PRET],
+            deleted=False
+        )
+        .aggregate(
+            enc=Coalesce(Sum("montant", filter=Q(type_transaction__etiquette=TypeTransaction.REMBOURSEMENT)), Decimal("0.00")),
+            dec=Coalesce(Sum("montant", filter=Q(type_transaction__etiquette=TypeTransaction.OCTROIE_PRET)),  Decimal("0.00")),
+        )
+    )
+    cash_net = cash["enc"] - cash["dec"]
+    print("CASH NET: ", cash_net)
+    
+    profit = (
+        Transaction.objects
+        .filter(type_transaction__etiquette=TypeTransaction.REMBOURSEMENT, deleted=False)
+        .aggregate(
+            interets=Coalesce(Sum("interet_part"), Decimal("0.00")),
+            penalites=Coalesce(Sum("penalite_part"), Decimal("0.00")),
+        )
+    )
+    profit_reel = profit["interets"] + profit["penalites"]
+    print("PROFIT REEL: ", profit_reel)
+
     
     ctx = {
         'TITLE_PAGE' : "Liste des prêts en cours",
         "prets": prets,
         "status": status,
-        "total": total,
+        "profit_reel": profit_reel,
         "rembourses": rembourses,
         "reste_a_payer": reste_a_payer,
     }
