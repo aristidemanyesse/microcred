@@ -14,6 +14,15 @@ class Command(BaseCommand):
         try:
             
             with transaction.atomic():
+                for pret in Pret.objects.filter(deleted=False, status__etiquette=StatusPret.EN_COURS).order_by("created_at"):
+                    if pret.echeances.filter(deleted=False, status__etiquette=StatusPret.EN_COURS).exists():
+                        pret.status = StatusPret.objects.get(etiquette=StatusPret.EN_COURS)
+                    else:
+                        pret.status = StatusPret.objects.get(etiquette=StatusPret.VALIDE)
+                    pret.save(update_fields=["status"])
+                    
+                    
+                    
                 for pret in Pret.objects.filter(deleted=False, status__etiquette__in=[StatusPret.EN_COURS, StatusPret.TERMINE]).order_by("created_at"):
                     if not Transaction.objects.filter(pret=pret, type_transaction__etiquette=TypeTransaction.OCTROIE_PRET).exists():
                         print(pret.numero)

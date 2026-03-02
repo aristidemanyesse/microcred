@@ -14,6 +14,8 @@ from FinanceApp.models import CompteEpargne, Echeance, Garantie, Interet, Modali
 from django.core.paginator import Paginator
 from datetime import datetime
 
+from TresorApp.models import CompteAgence, TypeActivity
+
 
 @render_to('FinanceApp/prets.html')
 def prets_view(request):
@@ -24,6 +26,7 @@ def prets_view(request):
         return redirect('MainApp:dashboard')
     
     prets = Pret.objects.filter(status__etiquette = StatusPret.EN_COURS, deleted = False)
+    valides = Pret.objects.filter(status__etiquette = StatusPret.VALIDE, deleted = False)
     status = StatusPret.objects.all()
     
     total = prets.aggregate(total=Sum('montant'))['total'] or 0
@@ -55,16 +58,24 @@ def prets_view(request):
         )
     )
     profit_reel = profit["interets"] + profit["penalites"]
-    print("PROFIT REEL: ", profit_reel)
-
+    print("PROFIT REEL: ", profit_reel, request.user.agence)
     
+    comptes = CompteAgence.objects.filter(activity__etiquette=TypeActivity.PRET)
+    if request.user.agence:
+        comptes = comptes.filter(agence=request.user.agence)
+    compte = comptes.first()
+    
+    today = date.today()
+    impayes = Echeance.objects.filter(deleted = False, date_echeance__lt = today).exclude(status__etiquette__in = [StatusPret.ANNULEE, StatusPret.TERMINE]).order_by("date_echeance")
+
     ctx = {
         'TITLE_PAGE' : "Liste des prêts en cours",
-        "prets": prets,
+        "prets": valides.union(prets),
         "status": status,
         "profit_reel": profit_reel,
-        "rembourses": rembourses,
+        "solde": compte.solde() if compte else 0,
         "reste_a_payer": reste_a_payer,
+        "impayes": impayes.aggregate(total=Sum('montant_a_payer') - Sum('montant_paye'))['total'] or 0,
     }
     return ctx
 
