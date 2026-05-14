@@ -1,4 +1,6 @@
 -i https://pypi.org/simple
+gunicorn==23.0.0
+whitenoise==6.9.0
 asgiref==3.9.2; python_version >= '3.9'
 django==4.2.25; python_version >= '3.8'
 django-annoying==0.10.8; python_version >= '3.0'

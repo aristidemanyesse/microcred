@@ -5,7 +5,7 @@ from CoreApp.models import BaseModel
 from annoying.decorators import signals
 from CoreApp.tools import GenerateTools
 from FinanceApp.models import StatusPret, Transaction, TypeTransaction
-from datetime import datetime
+from django.utils import timezone
 from django.db.models import Sum
 # Create your models here.
 
@@ -56,7 +56,7 @@ class CompteFidelis(BaseModel):
             case.save()
             if not self.cases.filter(status__etiquette=StatusPret.EN_COURS).exists():
                 self.status = StatusPret.objects.get(etiquette=StatusPret.TERMINE)
-                self.cloture_at = datetime.now()
+                self.cloture_at = timezone.now()
                 self.save()
                 
     
@@ -80,7 +80,7 @@ class CompteFidelis(BaseModel):
 
         self.status     = StatusPret.objects.get(etiquette=StatusPret.TERMINE)
         self.retire     = True
-        self.cloture_at = datetime.now() if self.cloture_at is None else self.cloture_at
+        self.cloture_at = timezone.now() if self.cloture_at is None else self.cloture_at
         self.save()
         
         

@@ -5,7 +5,8 @@ from MainApp.models import Client
 from CoreApp.tools import GenerateTools
 from CoreApp.models import BaseModel
 from dateutil.relativedelta import relativedelta
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
+from django.utils import timezone
 import calendar
 from TresorApp.models import Operation, TypeActivity
 from django.db import transaction as db_transaction
@@ -174,7 +175,7 @@ class CompteEpargne(BaseModel):
         prorata = jours_ecoules / jours_periode
 
         # ---- Intérêt ----
-        interet = self.solde() * (float(self.taux) / 100) * prorata
+        interet = float(self.solde()) * float(self.taux) / 100 * prorata
         return round(interet, 2)
     
     
@@ -226,31 +227,31 @@ class Pret(BaseModel):
     
     
     def calcul_interets(self):
-        r = self.taux / 100
-        n = self.nombre_modalite
+        from decimal import Decimal as D
+        base = D(str(self.base))
+        r    = D(str(self.taux)) / D('100')
+        n    = self.nombre_modalite
         if self.amortissement.etiquette == TypeAmortissement.ANNUITE:
-            total_interets = 0
-            i =r / self.modalite.duree_par_annee()  # taux d'intérêt par année
-            n = self.nombre_modalite           # nombre de périodes
-            r = i / (1 - (1 + i) ** -n)
-            annuite = round(self.base * r, 2)
-            
-            reste = self.base
+            total_interets = D('0')
+            i = float(r) / self.modalite.duree_par_annee()
+            r_coef  = i / (1 - (1 + i) ** -n)
+            annuite = round(base * D(str(r_coef)), 2)
+            reste   = base
             for a in range(1, n + 1):
-                interet = reste * i
-                reste -= (annuite - interet)
+                interet = reste * D(str(i))
+                reste  -= (annuite - interet)
                 total_interets += round(interet, 2)
             return total_interets
-        
+
         elif self.amortissement.etiquette == TypeAmortissement.BASE:
-            return self.base * r
+            return base * r
     
     
     
     def confirm_pret(self, employe):
         self.status       = StatusPret.objects.get(etiquette = StatusPret.VALIDE)
         self.confirmateur = employe
-        self.date_confirmation = datetime.now()
+        self.date_confirmation = timezone.now()
         self.save()
     
     
@@ -266,9 +267,9 @@ class Pret(BaseModel):
             raise ValueError(f"Le prêt N°{self.numero} a déjà été décaissé.")
 
         with db_transaction.atomic():
-            self.date_decaissement = datetime.now()
+            self.date_decaissement = timezone.now()
             self.status = StatusPret.objects.get(etiquette=StatusPret.EN_COURS)
-            date_echeance = datetime.now()
+            date_echeance = timezone.now()
             i = 0
             base = round(self.base / self.nombre_modalite, 2)
             st_en_cours = StatusPret.objects.get(etiquette=StatusPret.EN_COURS)
@@ -630,9 +631,10 @@ def post_save_transaction(instance, created, **kwargs):
 @signals.pre_save(sender=Pret)
 def pre_save_pret(instance, **kwargs):
     if instance._state.adding:
+        from decimal import Decimal as D
         instance.numero  = GenerateTools.pretId(instance.client.agence)
         instance.interet = instance.calcul_interets()
-        instance.montant = instance.base + instance.interet
+        instance.montant = D(str(instance.base)) + D(str(instance.interet))
         instance.status  = StatusPret.objects.get(etiquette=StatusPret.EN_ATTENTE)
 
 

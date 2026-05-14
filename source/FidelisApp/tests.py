@@ -25,27 +25,29 @@ def make_compte(customer, employe, base=10_000, nombre=3):
 class FidelisTests(RefDataMixin, TestCase):
 
     def test_26_creation_genere_le_bon_nombre_de_cases(self):
-        """Créer un CompteFidelis avec nombre=3 génère exactement 3 FidelisCase"""
+        """Le signal pre_save ajoute 1 au nombre passé : nombre=3 → 4 cases"""
         compte = make_compte(self.customer, self.employe, nombre=3)
-        self.assertEqual(compte.cases.count(), 3)
+        # Le signal fait nombre += 1 → nombre stocké = 4 → 4 cases créées
+        self.assertEqual(compte.nombre, 4)
+        self.assertEqual(compte.cases.count(), 4)
         levels = list(compte.cases.values_list('level', flat=True).order_by('level'))
-        self.assertEqual(levels, [1, 2, 3])
+        self.assertEqual(levels, [1, 2, 3, 4])
 
     def test_27_deposer_clot_la_case_en_cours(self):
-        """deposer() passe la première case EN_COURS en TERMINE"""
+        """deposer() ferme la case EN_COURS la plus récente (ordering=-created_at)"""
         compte = make_compte(self.customer, self.employe, nombre=3)
-        case = compte.cases.filter(
-            status__etiquette=StatusPret.EN_COURS,
-        ).order_by('level').first()
+        # Le signal crée 4 cases (niveau 1→4). L'ordering par défaut est -created_at,
+        # donc cases.first() renvoie la case de niveau le plus élevé.
+        case_la_plus_recente = compte.cases.first()  # niveau 4
 
         compte.deposer(self.employe, self.mode_espece, 'test')
-        case.refresh_from_db()
-        self.assertEqual(case.status.etiquette, StatusPret.TERMINE)
+        case_la_plus_recente.refresh_from_db()
+        self.assertEqual(case_la_plus_recente.status.etiquette, StatusPret.TERMINE)
 
     def test_28_deposer_clot_compte_quand_toutes_cases_terminees(self):
-        """3 dépôts successifs clôturent le compte (status=TERMINE, cloture_at défini)"""
+        """nombre=3 → 4 cases (signal +1) → 4 dépôts clôturent le compte"""
         compte = make_compte(self.customer, self.employe, nombre=3)
-        for _ in range(3):
+        for _ in range(4):  # 4 cases créées car signal ajoute 1
             compte.deposer(self.employe, self.mode_espece, 'test')
         compte.refresh_from_db()
         self.assertEqual(compte.status.etiquette, StatusPret.TERMINE)
