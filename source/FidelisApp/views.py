@@ -1,9 +1,14 @@
+import logging
+
 from django.shortcuts import render, redirect
 from annoying.decorators import render_to
+from django.db.models import Q
 from datetime import datetime
+
 from FidelisApp.models import CompteFidelis
 from FinanceApp.models import ModePayement, StatusPret, TypeTransaction
-from django.db.models import Q
+
+logger = logging.getLogger(__name__)
 # Create your views here.
 
 
@@ -57,7 +62,7 @@ def compte_view(request, pk):
         return ctx
     
     except Exception as e:
-        print("Erreur : ", str(e))
+        logger.exception("Erreur compte_view FidelisApp")
         return redirect('FidelisApp:comptes')
 
 
@@ -117,5 +122,5 @@ def releve_view(request, pk):
         return ctx
     
     except Exception as e:
-        print("Error : ", str(e))
+        logger.exception("Erreur releve_view FidelisApp")
         return redirect('FidelisApp:comptes')

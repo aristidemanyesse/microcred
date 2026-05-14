@@ -1,8 +1,10 @@
-from django.http import JsonResponse
-from FinanceApp.models import  ModePayement
-from django.http import JsonResponse
+import logging
 
+from django.http import JsonResponse
+from FinanceApp.models import ModePayement
 from FidelisApp.models import CompteFidelis
+
+logger = logging.getLogger(__name__)
 
 def new_depot(request):
     if request.method == "POST":
@@ -19,7 +21,7 @@ def new_depot(request):
             return JsonResponse({"status": True, "message": "Dépot effectué avec succès !"})
         
         except Exception as e:
-            print("--------------------", e)
+            logger.exception("Erreur ajax FidelisApp")
             return JsonResponse({"status": False, "message": str(e)})
         
         
@@ -39,7 +41,7 @@ def new_retrait(request):
             return JsonResponse({"status": True, "message": "Retrait effectué avec succès !"})
         
         except Exception as e:
-            print("--------------------", e)
+            logger.exception("Erreur ajax FidelisApp")
             return JsonResponse({"status": False, "message": str(e)})
         
         

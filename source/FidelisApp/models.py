@@ -61,20 +61,26 @@ class CompteFidelis(BaseModel):
                 
     
     def retirer(self, employe, mode, commentaire):
+        if self.retire:
+            raise ValueError(f"Le compte Fidélis N°{self.numero} a déjà été retiré.")
+
+        montant = self.solde() - self.frais
+        if montant <= 0:
+            raise ValueError("Le solde disponible est insuffisant pour effectuer le retrait.")
+
         Transaction.objects.create(
             client           = self.client,
             fidelis          = self,
-            type_transaction = TypeTransaction.objects.get(etiquette = TypeTransaction.RETRAIT_FIDELIS),
+            type_transaction = TypeTransaction.objects.get(etiquette=TypeTransaction.RETRAIT_FIDELIS),
             mode             = mode,
             commentaire      = f"Fin de Fidélis N°{self.numero} // {commentaire}",
-            montant          = self.solde() - self.frais,
+            montant          = montant,
             employe          = employe,
         )
 
-        self.status = StatusPret.objects.get(etiquette = StatusPret.TERMINE)
-        self.retire = True
+        self.status     = StatusPret.objects.get(etiquette=StatusPret.TERMINE)
+        self.retire     = True
         self.cloture_at = datetime.now() if self.cloture_at is None else self.cloture_at
-        
         self.save()
         
         

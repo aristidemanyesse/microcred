@@ -1,7 +1,11 @@
+import logging
+
 from django.shortcuts import render, redirect
 from annoying.decorators import render_to
 from django.contrib.auth.decorators import login_required
-from FinanceApp.models import*
+from FinanceApp.models import *
+
+logger = logging.getLogger(__name__)
 from MainApp.models import Client, Genre, TypeClient
 from django.db.models import Count, Sum, Case, When, DecimalField
 from django.utils.timezone import now
@@ -138,5 +142,5 @@ def client_view(request, pk):
         }
         return ctx
     except Exception as e:
-        print("Erreur client_view: ", e)
+        logger.exception("Erreur client_view MainApp")
         return redirect('MainApp:clients')

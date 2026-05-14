@@ -116,34 +116,5 @@ class Command(BaseCommand):
                         echeance.save(update_fields=["penalites_payees", "interet_paye", "principal_paye"])
                         
                 
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                                
-            # 
-            # for echeance in Echeance.objects.filter(deleted=False):
-                # t_remb = TypeTransaction.objects.get(etiquette=TypeTransaction.REMBOURSEMENT)
-                # penalites_deja_payees = (
-                    # Transaction.objects
-                    # .filter(echeance=echeance, type_transaction=t_remb, deleted=False)
-                    # .aggregate(s=Sum("penalite_part"))["s"] or 0
-                # )
-                # echeance.penalites_payees = penalites_deja_payees
-                # echeance.save()
-            
-            # print(prets.count())
-            # for pret in prets:
-            #     print(f"{pret}\t{pret.echeances.filter().count()}\t{pret.base}\t{pret.taux}\t{pret.interet}\t{pret.montant_rembourse()}\t{pret.created_at.date()}\t{pret.client}")
-                # for echeance in pret.echeances.filter():
-                #     print(echeance.montant_paye)
-                
         except Exception as e:
             print("Erreur patch: ", e)

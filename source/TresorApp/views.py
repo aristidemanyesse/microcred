@@ -1,16 +1,19 @@
+import logging
 
-# Create your views here.
 from django.shortcuts import render, redirect
 from annoying.decorators import render_to
 from django.contrib.auth.decorators import login_required
-from MainApp.models import Agence
-from TresorApp.models import CompteAgence, Operation
 from django.db.models import Q, Sum
 from datetime import datetime, date, timedelta
+import pytz
+
+from MainApp.models import Agence
+from TresorApp.models import CompteAgence, Operation
 from FinanceApp.models import CompteEpargne, Echeance, Interet, Penalite, Pret, StatusPret, Transaction, TypeTransaction
 from FidelisApp.models import CompteFidelis
-import pytz
-utc=pytz.UTC
+
+utc = pytz.UTC
+logger = logging.getLogger(__name__)
 
 
 @login_required()
@@ -66,7 +69,7 @@ def releve_view(request, pk):
         return ctx
     
     except Exception as e:
-        print("Erreur invoice_view: ", e)
+        logger.exception("Erreur releve_compte TresorApp")
         return redirect('TresorApp:rapports')
     
     

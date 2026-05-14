@@ -1,0 +1,9 @@
+source/.env
+**/.env
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/.DS_Store
+source/staticfiles/
+source/logs/
+*.log

@@ -47,13 +47,21 @@ class Client(BaseModel):
         return self.transactions.filter(created_at__gte = ladate).exists()
     
     def total_epargne(self):
-        return sum(compte.solde for compte in self.epargnes.all())
+        return sum(compte.solde() for compte in self.epargnes.all())
 
     def total_prets_en_cours(self):
-        return sum(pret.montant - pret.montant_rembourse for pret in self.pret_set.all() if pret.status.li.lower() == 'en cours')
+        return sum(
+            pret.montant - pret.montant_rembourse()
+            for pret in self.prets.all()
+            if pret.status and pret.status.libelle.lower() == 'en cours'
+        )
 
     def total_penalites(self):
-        return sum(penalite.montant for pret in self.pret_set.all() for penalite in pret.penalite_set.all())
+        from FinanceApp.models import Penalite
+        return Penalite.objects.filter(
+            echeance__pret__client=self,
+            deleted=False,
+        ).aggregate(total=models.Sum('montant'))['total'] or 0
 
 
 

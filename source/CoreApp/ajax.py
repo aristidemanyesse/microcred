@@ -1,15 +1,18 @@
+import logging
+import json
+import uuid
+from datetime import datetime
+
 from django.shortcuts import render
 from django.contrib.contenttypes.models import ContentType
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required, permission_required
-from django.http import JsonResponse
-import json, uuid
+from django.http import HttpResponse, JsonResponse
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from settings import settings as parametres
 from django.utils.translation import gettext as _
-from datetime import datetime
 from faker import Faker
 import CoreApp.tools as tools
+
+logger = logging.getLogger(__name__)
 from MainApp.forms import *
 from FinanceApp.forms import *
 from AuthentificationApp.forms import *
@@ -80,8 +83,8 @@ def save(request):
                 
             # return JsonResponse({"status":False, "message": _("Le formulaire n'est pas valide !")})
         except Exception as e:
-            print("erreur save eryu :", e)
-            return JsonResponse({"status":False, "message": _("Erreur lors du processus. Veuillez recommencer : ")+str(e)})
+            logger.exception("Erreur save CoreApp.ajax")
+            return JsonResponse({"status": False, "message": _("Erreur lors du processus. Veuillez recommencer : ") + str(e)})
 
 
 
@@ -111,7 +114,7 @@ def mise_a_jour(request):
                 return JsonResponse({"status": True})
 
         except Exception as e:
-            print("--------------------", e)
+            logger.exception("Erreur mise_a_jour CoreApp.ajax")
             return JsonResponse({"status": False, "message": _("Une erreur s'est produite lors de l'opération, veuillez recommencer !")})
 
 
@@ -143,8 +146,8 @@ def supprimer(request):
             return JsonResponse({"status":True, "message": _("Suppression effectuée avec succes !")})
 
         except Exception as e:
-            print("erreur save :", e)
-            return JsonResponse({"status":False, "message": _("Erreur lors du processus. Veuillez recommencer : ")+str(e)})
+            logger.exception("Erreur supprimer CoreApp.ajax")
+            return JsonResponse({"status": False, "message": _("Erreur lors du processus. Veuillez recommencer : ") + str(e)})
 
 
 
@@ -178,8 +181,8 @@ def change_active(request):
             return JsonResponse({"status":True, "message": _("Suppression effectuée avec succes !")})
 
         except Exception as e:
-            print("erreur save :", e)
-            return JsonResponse({"status":False, "message": _("Erreur lors du processus. Veuillez recommencer : ")+str(e)})
+            logger.exception("Erreur change_active CoreApp.ajax")
+            return JsonResponse({"status": False, "message": _("Erreur lors du processus. Veuillez recommencer : ") + str(e)})
 
 
 
@@ -204,5 +207,5 @@ def refresh_password(request):
             employe.save()
             return JsonResponse({"status": True})
         except Exception as e:
-            print("Erreur refresh_password : ", e)
+            logger.exception("Erreur refresh_password CoreApp.ajax")
             return JsonResponse({"status": False, "message": _("Une erreur s'est produite lors de l'opération, veuillez recommencer !")})

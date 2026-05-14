@@ -1,16 +1,19 @@
-from datetime import timedelta
+import logging
 import decimal
-from django.http import JsonResponse
-from FinanceApp.models import CompteEpargne, Echeance, ModePayement, Pret, StatusPret, Transaction, TypeTransaction
-from AuthentificationApp.models import Employe
-from django.db.models import Sum
-from rest_framework.decorators import api_view
+import calendar
+from datetime import timedelta
+
 from django.http import JsonResponse
 from django.db.models import Sum, Case, When, DecimalField
 from django.db.models.functions import TruncMonth
 from django.utils.timezone import now
 from dateutil.relativedelta import relativedelta
-import calendar
+from rest_framework.decorators import api_view
+
+from FinanceApp.models import CompteEpargne, Echeance, ModePayement, Pret, StatusPret, Transaction, TypeTransaction
+from AuthentificationApp.models import Employe
+
+logger = logging.getLogger(__name__)
 
     
 def new_remboursement(request):
@@ -36,7 +39,9 @@ def new_remboursement(request):
                     return JsonResponse({"status": False, "message": "Le montant de remboursement doit être supérieur à 0 !"})
                 
                 while montant > 0:
-                    echeance = pret.echeances.filter(status__etiquette = StatusPret.EN_COURS).order_by("level").first()
+                    echeance = pret.echeances.filter(
+                        status__etiquette__in=[StatusPret.EN_COURS, StatusPret.RETARD]
+                    ).order_by("level").first()
                     if echeance is None:
                         break
                     paye = echeance.montant_restant()
@@ -51,7 +56,7 @@ def new_remboursement(request):
                 return JsonResponse({"status": True, "message": "Remboursement effectué avec succès !"})
             
         except Exception as e:
-            print("--------------------", e)
+            logger.exception("Erreur ajax FinanceApp")
             return JsonResponse({"status": False, "message": str(e)})
                 
 
@@ -68,7 +73,7 @@ def confirm_pret(request):
             
             return JsonResponse({"status": True, "message": "Prêt validé avec succès !"})
         except Exception as e:
-            print("--------------------", e)
+            logger.exception("Erreur ajax FinanceApp")
             return JsonResponse({"status": False, "message": str(e)})
                 
 
@@ -85,7 +90,7 @@ def decline_pret(request):
             
             return JsonResponse({"status": True, "message": "Prêt validé avec succès !"})
         except Exception as e:
-            print("--------------------", e)
+            logger.exception("Erreur ajax FinanceApp")
             return JsonResponse({"status": False, "message": str(e)})
         
 
@@ -102,7 +107,7 @@ def decaissement(request):
             
             return JsonResponse({"status": True, "message": "Décaissement du prêt effectué avec succès !"})
         except Exception as e:
-            print("--------------------", e)
+            logger.exception("Erreur ajax FinanceApp")
             return JsonResponse({"status": False, "message": str(e)})
         
         
@@ -125,7 +130,7 @@ def new_depot(request):
             else:
                 return JsonResponse({"status": False, "message": "Le montant de dépot doit être supérieur à 0."})
         except Exception as e:
-            print("--------------------", e)
+            logger.exception("Erreur ajax FinanceApp")
             return JsonResponse({"status": False, "message": str(e)})
         
         
@@ -148,7 +153,7 @@ def new_retrait(request):
             else:
                 return JsonResponse({"status": False, "message": "Le solde du compte est insuffisant pour ce retrait."})
         except Exception as e:
-            print("--------------------", e)
+            logger.exception("Erreur ajax FinanceApp")
             return JsonResponse({"status": False, "message": str(e)})
         
         

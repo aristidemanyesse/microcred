@@ -1,15 +1,16 @@
+import logging
 from django.db import models
 from annoying.decorators import signals
 from MainApp.models import Client
 from CoreApp.tools import GenerateTools
 from CoreApp.models import BaseModel
 from dateutil.relativedelta import relativedelta
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 import calendar
 from TresorApp.models import Operation, TypeActivity
 from django.db import transaction as db_transaction
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
+
+logger = logging.getLogger(__name__)
 # Create your models here.
 
 
@@ -167,12 +168,13 @@ class CompteEpargne(BaseModel):
             jours_periode = 366 if calendar.isleap(today.year) else 365
 
         # ---- Prorata si compte ouvert après le début de la période ----
-        debut_effectif = max(self.created_at, debut_periode)
+        created_date = self.created_at.date() if hasattr(self.created_at, 'date') else self.created_at
+        debut_effectif = max(created_date, debut_periode)
         jours_ecoules = (today - debut_effectif).days + 1
         prorata = jours_ecoules / jours_periode
 
         # ---- Intérêt ----
-        interet = self.solde * (float(self.taux) / 100) * prorata
+        interet = self.solde() * (float(self.taux) / 100) * prorata
         return round(interet, 2)
     
     
@@ -260,75 +262,80 @@ class Pret(BaseModel):
         
         
     def decaissement(self, employe):
-        self.date_decaissement = datetime.now()
-        self.status  = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
-        date_echeance = datetime.now()
-        i = 0
-        base = round(self.base / self.nombre_modalite, 2)
-        
-        if self.amortissement.etiquette == TypeAmortissement.BASE:
-            reste = self.reste_a_payer()
+        if self.ready:
+            raise ValueError(f"Le prêt N°{self.numero} a déjà été décaissé.")
 
-            while i < self.nombre_modalite:
-                date_echeance += self.modalite.duree()
-                interet = round(base * self.taux / 100, 2)
-                montant = round((base + interet) / 5) * 5 
-                echeance = Echeance.objects.create(
-                    pret            = self,
-                    level           = i + 1,
-                    principal       = base,
-                    interet         = interet ,
-                    montant_a_payer = montant,
-                    date_echeance   = date_echeance,
-                    status          = StatusPret.objects.get(etiquette = StatusPret.EN_COURS),
-                )
-                reste -= montant
-                i += 1
-                
-            if reste != 0:
-                echeance.interet += reste
-                echeance.montant_a_payer += reste
-                echeance.save()
+        with db_transaction.atomic():
+            self.date_decaissement = datetime.now()
+            self.status = StatusPret.objects.get(etiquette=StatusPret.EN_COURS)
+            date_echeance = datetime.now()
+            i = 0
+            base = round(self.base / self.nombre_modalite, 2)
+            st_en_cours = StatusPret.objects.get(etiquette=StatusPret.EN_COURS)
 
-                
-        elif self.amortissement.etiquette == TypeAmortissement.ANNUITE:
-            r = self.taux / 100
-            n = self.nombre_modalite
-            annuite = self.base * (r * (1 + r) ** n) / ((1 + r) ** n - 1)
-            reste = self.base
-            while i < self.nombre_modalite:
-                date_echeance += self.modalite.duree()
-                interet = reste * r
-                principal = round(annuite - interet, 2)
-                echeance = Echeance.objects.create(
-                    pret            = self,
-                    level           = i + 1,
-                    principal       = principal,
-                    interet         = interet ,
-                    montant_a_payer = annuite,
-                    date_echeance   = date_echeance,
-                    status          = StatusPret.objects.get(etiquette = StatusPret.EN_COURS),
-                )
-                reste -= principal
-                i += 1
-                
-            if reste > 0:
-                echeance.interet += reste
-                echeance.montant_a_payer += reste
-                echeance.save()
-                
-        Transaction.objects.create(
-            client           = self.client,
-            echeance         = None,
-            mode             = ModePayement.objects.get(etiquette=ModePayement.ESPECE),
-            type_transaction = TypeTransaction.objects.get(etiquette=TypeTransaction.OCTROIE_PRET),
-            pret             = self,
-            montant          = self.base,
-            commentaire      = f"Décaissement pour le prêt N°{self.numero}",
-            employe          = employe
-        )
-        self.ready = True
-        self.save()
+            if self.amortissement.etiquette == TypeAmortissement.BASE:
+                reste = self.reste_a_payer()
+
+                while i < self.nombre_modalite:
+                    date_echeance += self.modalite.duree()
+                    interet = round(base * self.taux / 100, 2)
+                    montant = round((base + interet) / 5) * 5
+                    echeance = Echeance.objects.create(
+                        pret            = self,
+                        level           = i + 1,
+                        principal       = base,
+                        interet         = interet,
+                        montant_a_payer = montant,
+                        date_echeance   = date_echeance,
+                        status          = st_en_cours,
+                    )
+                    reste -= montant
+                    i += 1
+
+                if reste != 0:
+                    echeance.interet += reste
+                    echeance.montant_a_payer += reste
+                    echeance.save()
+
+            elif self.amortissement.etiquette == TypeAmortissement.ANNUITE:
+                taux_periodique = (self.taux / 100) / self.modalite.duree_par_annee()
+                n = self.nombre_modalite
+                annuite = self.base * taux_periodique * (1 + taux_periodique) ** n / ((1 + taux_periodique) ** n - 1)
+                reste = self.base
+
+                while i < self.nombre_modalite:
+                    date_echeance += self.modalite.duree()
+                    interet = reste * taux_periodique
+                    principal = round(annuite - interet, 2)
+                    echeance = Echeance.objects.create(
+                        pret            = self,
+                        level           = i + 1,
+                        principal       = principal,
+                        interet         = interet,
+                        montant_a_payer = annuite,
+                        date_echeance   = date_echeance,
+                        status          = st_en_cours,
+                    )
+                    reste -= principal
+                    i += 1
+
+                if reste > 0:
+                    echeance.interet += reste
+                    echeance.montant_a_payer += reste
+                    echeance.save()
+
+            Transaction.objects.create(
+                client           = self.client,
+                echeance         = None,
+                mode             = ModePayement.objects.get(etiquette=ModePayement.ESPECE),
+                type_transaction = TypeTransaction.objects.get(etiquette=TypeTransaction.OCTROIE_PRET),
+                pret             = self,
+                montant          = self.base,
+                commentaire      = f"Décaissement pour le prêt N°{self.numero}",
+                employe          = employe,
+            )
+            self.ready = True
+            self.save()
         
             
  
@@ -350,30 +357,29 @@ class Pret(BaseModel):
     
     
     def progress(self):
-        total = self.echeances.count()
+        total = self.echeances.filter(deleted=False).count()
         if total == 0:
             return 0
         success = self.echeances_success().count()
         return round((success / total) * 100)
     
     def penalites(self):
-        datas = self.echeances.exclude(status__etiquette = StatusPret.ANNULEE, deleted = False).aggregate(total=models.Count('penalites'))['total'] or 0
-        return datas
-    
+        return self.echeances.filter(deleted=False).exclude(
+            status__etiquette=StatusPret.ANNULEE
+        ).aggregate(total=models.Count('penalites'))['total'] or 0
+
     def penalites_montant(self):
-        return self.echeances.exclude(status__etiquette = StatusPret.ANNULEE, deleted = False).aggregate(total=models.Sum('penalites__montant'))['total'] or 0
+        return self.echeances.filter(deleted=False).exclude(
+            status__etiquette=StatusPret.ANNULEE
+        ).aggregate(total=models.Sum('penalites__montant'))['total'] or 0
     
 
     def calcul_penalites(self, taux=0.02):
-        """Calcul automatique des pénalités sur les échéances en retard"""
-        from datetime import date
-        for echeance in self.echeance_set.filter(deleted = False):
+        for echeance in self.echeances.filter(deleted=False):
             if echeance.date_echeance < date.today() and echeance.montant_paye < echeance.montant_a_payer:
-                # calcul par semaine de retard
                 semaines_retard = (date.today() - echeance.date_echeance).days // 7
                 montant_penalite = echeance.montant_a_payer * taux * semaines_retard
-                # créer ou mettre à jour la pénalité
-                penalite, created = Penalite.objects.get_or_create(pret=self, echeance=echeance)
+                penalite, created = Penalite.objects.get_or_create(echeance=echeance)
                 penalite.montant = montant_penalite
                 penalite.save()
 
@@ -381,17 +387,18 @@ class Pret(BaseModel):
     
 
 class Echeance(BaseModel):
-    pret            = models.ForeignKey(Pret, on_delete=models.CASCADE, related_name='echeances')
-    level           = models.PositiveIntegerField(default=0)
-    date_echeance   = models.DateField()
-    principal       = models.DecimalField(max_digits=12, decimal_places=2)
-    interet         = models.DecimalField(max_digits=12, decimal_places=2)
-    montant_a_payer = models.DecimalField(max_digits=12, decimal_places=2)
-    montant_paye    = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    principal_paye   = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
-    interet_paye     = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
-    penalites_payees = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
-    status          = models.ForeignKey(StatusPret, on_delete=models.CASCADE)
+    pret                   = models.ForeignKey(Pret, on_delete=models.CASCADE, related_name='echeances')
+    level                  = models.PositiveIntegerField(default=0)
+    date_echeance          = models.DateField()
+    principal              = models.DecimalField(max_digits=12, decimal_places=2)
+    interet                = models.DecimalField(max_digits=12, decimal_places=2)
+    montant_a_payer        = models.DecimalField(max_digits=12, decimal_places=2)
+    montant_paye           = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    principal_paye         = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    interet_paye           = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    penalites_payees       = models.DecimalField(max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    derniere_date_penalite = models.DateField(null=True, blank=True)
+    status                 = models.ForeignKey(StatusPret, on_delete=models.CASCADE)
     
     def __str__(self):
         return f"Echeance N°{self.level} // {self.pret.numero}"
@@ -574,40 +581,40 @@ class Transaction(BaseModel):
    
    
 @signals.pre_save(sender=CompteEpargne)
-def sighandler(instance, **kwargs):
+def pre_save_compte_epargne(instance, **kwargs):
     if instance._state.adding:
-        instance.status = StatusPret.objects.get(etiquette = StatusPret.EN_COURS)
+        instance.status = StatusPret.objects.get(etiquette=StatusPret.EN_COURS)
         instance.numero = GenerateTools.epargneId(instance.employe.agence)
 
 
 @signals.pre_save(sender=Transaction)
-def sighandler(instance, **kwargs):
+def pre_save_transaction(instance, **kwargs):
     if instance._state.adding:
-        code = instance.employe.agence
-        instance.numero = GenerateTools.transactionId(code)
- 
+        instance.numero = GenerateTools.transactionId(instance.employe.agence)
 
 
 @signals.post_save(sender=Transaction)
-def sighandler(instance, created, **kwargs):
+def post_save_transaction(instance, created, **kwargs):
     if created:
         if instance.type_transaction.etiquette in [TypeTransaction.DEPOT_FIDELIS, TypeTransaction.RETRAIT_FIDELIS]:
-            compte = instance.employe.agence.comptes.filter(activity__etiquette = TypeActivity.FIDELIS).first()
+            compte = instance.employe.agence.comptes.filter(activity__etiquette=TypeActivity.FIDELIS).first()
             debit = instance.type_transaction.etiquette == TypeTransaction.RETRAIT_FIDELIS
-            
+
         elif instance.type_transaction.etiquette in [TypeTransaction.DEPOT, TypeTransaction.RETRAIT]:
-            compte = instance.employe.agence.comptes.filter(activity__etiquette = TypeActivity.EPARGNE).first()
+            compte = instance.employe.agence.comptes.filter(activity__etiquette=TypeActivity.EPARGNE).first()
             debit = instance.type_transaction.etiquette == TypeTransaction.RETRAIT
-            
+
         elif instance.type_transaction.etiquette in [TypeTransaction.REMBOURSEMENT, TypeTransaction.OCTROIE_PRET]:
-            compte = instance.employe.agence.comptes.filter(activity__etiquette = TypeActivity.PRET).first()
+            compte = instance.employe.agence.comptes.filter(activity__etiquette=TypeActivity.PRET).first()
             debit = instance.type_transaction.etiquette == TypeTransaction.OCTROIE_PRET
-            
-        
+
+        else:
+            return
+
         pret = None
         if instance.echeance_id:
             pret = instance.echeance.pret
-            
+
         Operation.objects.create(
             libelle       = instance.type_transaction,
             compte_credit = compte if not debit else None,
@@ -620,32 +627,27 @@ def sighandler(instance, created, **kwargs):
         )
 
 
-
-
 @signals.pre_save(sender=Pret)
-def sighandler(instance, **kwargs):
+def pre_save_pret(instance, **kwargs):
     if instance._state.adding:
         instance.numero  = GenerateTools.pretId(instance.client.agence)
         instance.interet = instance.calcul_interets()
         instance.montant = instance.base + instance.interet
-        instance.status  = StatusPret.objects.get(etiquette = StatusPret.EN_ATTENTE)
-
-    
+        instance.status  = StatusPret.objects.get(etiquette=StatusPret.EN_ATTENTE)
 
 
 @signals.post_save(sender=Interet)
-def sighandler(instance, created, **kwargs):
+def post_save_interet(instance, created, **kwargs):
     if created:
         instance.compte.solde_actuel = instance.compte.solde()
-        instance.compte.derniere_date_interet = instance.created_at
+        instance.compte.derniere_date_interet = instance.created_at.date()
         instance.compte.save()
-    
 
 
 @signals.post_save(sender=Penalite)
-def sighandler(instance, created, **kwargs):
+def post_save_penalite(instance, created, **kwargs):
     if created:
-        instance.echeance.status = StatusPret.objects.get(etiquette = StatusPret.RETARD)
-        instance.echeance.derniere_date_penalite = instance.created_at
-        instance.echeance.save()
-    
+        echeance = instance.echeance
+        echeance.status = StatusPret.objects.get(etiquette=StatusPret.RETARD)
+        echeance.derniere_date_penalite = instance.created_at.date() if hasattr(instance.created_at, 'date') else instance.created_at
+        echeance.save(update_fields=["status", "derniere_date_penalite", "update_at"])

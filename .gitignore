@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Environnement virtuel
+.venv/
+venv/
+env/
+Pipfile.lock
+
+# Variables d'environnement
+.env
+.env.*
+!.env.example
+
+# Base de données
+*.sqlite3
+source/backup_file.sql
+
+# Django
+source/media/
+source/static/dist/
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+source/logs/*.log
+source/logs/*.txt

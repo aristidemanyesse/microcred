@@ -1,20 +1,22 @@
-from django.shortcuts import render
+import logging
+from decimal import Decimal
+from datetime import date, datetime, timedelta
+
+from django.shortcuts import render, redirect
 from django.db.models import Sum, Q
 from django.db.models.functions import Coalesce
-from decimal import Decimal
-
-
-# Create your views here.
-from django.shortcuts import render, redirect
-from annoying.decorators import render_to
-from django.contrib.auth.decorators import login_required
-from faker import Faker
-from datetime import date, timedelta
-from FinanceApp.models import CompteEpargne, Echeance, Garantie, Interet, ModaliteEcheance, ModePayement, Penalite, Pret, StatusPret, Transaction, TypeAmortissement, TypeTransaction
 from django.core.paginator import Paginator
-from datetime import datetime
+from django.contrib.auth.decorators import login_required
+from annoying.decorators import render_to
 
+from FinanceApp.models import (
+    CompteEpargne, Echeance, Garantie, Interet, ModaliteEcheance,
+    ModePayement, Penalite, Pret, StatusPret, Transaction,
+    TypeAmortissement, TypeTransaction,
+)
 from TresorApp.models import CompteAgence, TypeActivity
+
+logger = logging.getLogger(__name__)
 
 
 @render_to('FinanceApp/prets.html')
@@ -47,8 +49,7 @@ def prets_view(request):
         )
     )
     cash_net = cash["enc"] - cash["dec"]
-    print("CASH NET: ", cash_net)
-    
+
     profit = (
         Transaction.objects
         .filter(type_transaction__etiquette=TypeTransaction.REMBOURSEMENT, deleted=False)
@@ -58,7 +59,6 @@ def prets_view(request):
         )
     )
     profit_reel = profit["interets"] + profit["penalites"]
-    print("PROFIT REEL: ", profit_reel, request.user.agence)
     
     comptes = CompteAgence.objects.filter(activity__etiquette=TypeActivity.PRET)
     if request.user.agence:
@@ -107,8 +107,8 @@ def pret_view(request, pk):
         }
         return ctx
     except Exception as e:
-        print("Erreur pret_view: ", e)
-        return redirect('FinanceApp:prets')    
+        logger.exception("Erreur pret_view pk=%s", pk)
+        return redirect('FinanceApp:prets')
 
 
 
@@ -341,35 +341,37 @@ def invoice(request, pk):
         return ctx
     
     except Exception as e:
-        print("Erreur invoice_view: ", e)
+        logger.exception("Erreur invoice pk=%s", pk)
         return redirect('FinanceApp:prets')
-
-
 
 
 @render_to('FinanceApp/releve_pret.html')
 def releve_pret(request, pk):
     if not request.user.is_authenticated:
         return redirect('AuthentificationApp:login')
-    
+
     if request.user.is_gestionnaire_epargne():
         return redirect('MainApp:dashboard')
 
     try:
-        pret = Pret.objects.get(pk = pk)
-        echeances = pret.echeances.filter(deleted = False).filter(Q(status__etiquette = StatusPret.TERMINE) | Q(montant_paye__gt = 0)).order_by("level")
-        reste = pret.echeances.filter(deleted = False).exclude(status__etiquette__in = [StatusPret.TERMINE, StatusPret.ANNULEE]).count()
+        pret = Pret.objects.get(pk=pk)
+        echeances = pret.echeances.filter(deleted=False).filter(
+            Q(status__etiquette=StatusPret.TERMINE) | Q(montant_paye__gt=0)
+        ).order_by("level")
+        reste = pret.echeances.filter(deleted=False).exclude(
+            status__etiquette__in=[StatusPret.TERMINE, StatusPret.ANNULEE]
+        ).count()
         ctx = {
-            'TITLE_PAGE' : "Réçu de transaction",
-            "pret" : pret,
-            "echeances": echeances,
-            "reste": reste,
-            "now": datetime.now(),
+            'TITLE_PAGE': "Réçu de transaction",
+            "pret":       pret,
+            "echeances":  echeances,
+            "reste":      reste,
+            "now":        datetime.now(),
         }
         return ctx
-    
+
     except Exception as e:
-        print("Erreur invoice_view: ", e)
+        logger.exception("Erreur releve_pret pk=%s", pk)
         return redirect('FinanceApp:prets')
 
 
@@ -413,8 +415,8 @@ def epargne_view(request, pk):
         }
         return ctx
     except Exception as e:
-        print("Erreur epargne_view: ", e)   
-        return redirect('FinanceApp:epargnes') 
+        logger.exception("Erreur epargne_view pk=%s", pk)
+        return redirect('FinanceApp:epargnes')
 
 
 
@@ -451,14 +453,11 @@ def releve_epargne(request, pk):
         epargne = CompteEpargne.objects.get(deleted = False, pk = pk)
         transactions = epargne.transactions.filter(deleted = False).order_by('created_at')
         interets = epargne.interets.filter(deleted = False).order_by('created_at')
-        items = list(transactions) + list(interets)
-        sorted(items, key=lambda x: x.created_at)
-        
-        
+        items = sorted(list(transactions) + list(interets), key=lambda x: x.created_at)
+
         datas = []
         base = 0
         for item in items:
-            print(item.created_at)
             if type(item) == Interet:
                 base += item.montant
                 datas.append({
@@ -487,7 +486,7 @@ def releve_epargne(request, pk):
         return ctx
     
     except Exception as e:
-        print("Erreur invoice_view: ", e)
+        logger.exception("Erreur releve_epargne pk=%s", pk)
         return redirect('FinanceApp:epargnes')
     
 

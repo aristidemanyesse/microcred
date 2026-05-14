@@ -1,11 +1,16 @@
+import logging
+
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from faker import Faker
-from AuthentificationApp.models import Connexion, Employe
 from django.contrib.auth.hashers import make_password
+from django.http import JsonResponse
+from faker import Faker
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from AuthentificationApp.models import Connexion, Employe
+
+logger = logging.getLogger(__name__)
 
 
 def get_tokens_for_user(user):
@@ -52,7 +57,7 @@ def login_ajax(request):
         return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
     
     except Exception as e:
-        print("--------------------", e)
+        logger.exception("Erreur AuthentificationApp.views_ajax")
         return JsonResponse({"status": False, "message": str(e)})
 
 
@@ -88,6 +93,7 @@ def first_user(request):
                         user.reponse_secrete = make_password(reponse_secrete, salt=user.phrase_secrete)
                         user.is_new = False
                         user.secret = True
+                        user.brut = ''
                         user.save()
                         
                         login(request, user)
@@ -103,6 +109,7 @@ def first_user(request):
                             user.username = username
                             user.set_password(password)
                             user.is_new = False
+                            user.brut = ''
                             user.save()
                             
                             login(request, user)
@@ -154,6 +161,6 @@ def reset_password(request):
             return JsonResponse({"status": True})
 
         except Exception as e:
-            print("--------------------", e)
+            logger.exception("Erreur AuthentificationApp.views_ajax")
             return JsonResponse({"status": False, "message": "Une erreur s'est produite lors de l'opération, veuillez recommencer !"})
     
